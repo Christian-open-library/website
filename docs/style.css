@@ -82,9 +82,8 @@ header.site .bar { max-width: 72rem; margin: 0 auto; padding: .55rem 1.25rem; di
 .home-head h1 { font-size: clamp(2.2rem, 6vw, 2.9rem); }
 
 /* Fact strip */
-ul.facts { list-style: none; margin: 0; padding: .6rem 0; display: flex; flex-wrap: wrap; row-gap: .4rem; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-ul.facts li { display: flex; align-items: center; gap: .45rem; padding: 0 .9rem; border-left: 1px solid var(--line); font-size: .875rem; font-weight: 500; letter-spacing: .03em; text-transform: uppercase; color: var(--ink); white-space: nowrap; }
-ul.facts li:first-child { padding-left: 0; border-left: 0; }
+ul.facts { list-style: none; margin: 0; padding: .65rem 0; display: flex; flex-wrap: wrap; gap: .45rem 1.6rem; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+ul.facts li { display: flex; align-items: center; gap: .45rem; margin: 0; font-size: .875rem; font-weight: 500; letter-spacing: .03em; text-transform: uppercase; color: var(--ink); white-space: nowrap; }
 ul.facts svg { width: 17px; height: 17px; flex: none; }
 
 /* Buttons */
@@ -173,7 +172,8 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
   .wrap, header.site .bar, .foot { padding-left: 1rem; padding-right: 1rem; }
   .page-head { padding-top: 1.6rem; }
   .page-head .lead { font-size: 1.07rem; }
-  ul.facts li { padding: 0 .65rem; font-size: .8rem; }
+  ul.facts { gap: .45rem 1.2rem; }
+  ul.facts li { font-size: .8rem; }
   .actions .btn { flex: 1 1 auto; }
   .prose h2 { font-size: 1.2rem; margin-top: 1.9rem; }
   .address code { font-size: .88rem; overflow-wrap: anywhere; }
