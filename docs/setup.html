@@ -54,77 +54,68 @@
   <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18v12H3zM3 7l9 6 9-6"/></svg>Email sign-in</li>
   <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12l9-9h8v8l-9 9z"/><circle cx="16" cy="8" r="1.2"/></svg>Free</li>
 </ul>
-<p class="lead">It takes about five minutes. You paste one address into your AI app's settings, then sign in with your email address. You don't need a GitHub account.</p>
+<p class="lead">Three steps: copy the address, add it to your AI app, and sign in with your email. You don't need a GitHub account.</p>
   </div>
 </div>
 <div class="wrap prose">
+<h2>1. Copy the address</h2>
 <div class="address-box">
-  <p>The address to paste into your AI app:</p>
   <div class="address"><code>https://mcp.christianopenlibrary.org<wbr>/mcp</code></div>
 </div>
 
+<h2>2. Add it to your AI app</h2>
 <ul class="jump">
   <li><a href="#claude">Claude</a></li>
   <li><a href="#chatgpt">ChatGPT</a></li>
   <li><a href="#gemini">Gemini</a></li>
 </ul>
-<p class="note">Menu names change from time to time. If you don't see the exact words below, look in your app's settings for "connectors" or "MCP". Stuck? Write to <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a> and tell me which app you use.</p>
 
-<section class="app" id="claude" aria-labelledby="h-claude">
-  <h2 id="h-claude">Claude</h2>
-  <ol class="steps">
-    <li>Open Claude and go to <strong>Settings</strong>.</li>
-    <li>Choose <strong>Connectors</strong>.</li>
-    <li>Choose <strong>Add custom connector</strong>.</li>
-    <li>Paste the address above.</li>
-    <li>Choose <strong>Connect</strong>, then <a href="#signin">sign in</a>.</li>
-  </ol>
-</section>
+<h3 id="claude">Claude</h3>
+<ol class="steps">
+  <li>Open <strong>Settings</strong> &rsaquo; <strong>Connectors</strong>.</li>
+  <li>Choose <strong>Add custom connector</strong>.</li>
+  <li>Paste the address and choose <strong>Connect</strong>.</li>
+</ol>
 
-<section class="app" id="chatgpt" aria-labelledby="h-chatgpt">
-  <h2 id="h-chatgpt">ChatGPT</h2>
-  <p>This needs a paid ChatGPT plan.</p>
-  <ol class="steps">
-    <li>Open ChatGPT and go to <strong>Settings</strong>.</li>
-    <li>Choose <strong>Apps &amp; Connectors</strong>.</li>
-    <li>Turn on <strong>Developer mode</strong>.</li>
-    <li>Choose <strong>Create</strong>.</li>
-    <li>Paste the address above and choose <strong>OAuth</strong> as the sign-in method.</li>
-    <li>Save it, then <a href="#signin">sign in</a>.</li>
-  </ol>
-</section>
+<h3 id="chatgpt">ChatGPT <span class="tag">paid plans</span></h3>
+<ol class="steps">
+  <li>Open <strong>Settings</strong> &rsaquo; <strong>Apps &amp; Connectors</strong>.</li>
+  <li>Turn on <strong>Developer mode</strong>, then choose <strong>Create</strong>.</li>
+  <li>Paste the address, choose <strong>OAuth</strong> for sign-in, and save.</li>
+</ol>
 
-<section class="app" id="gemini" aria-labelledby="h-gemini">
-  <h2 id="h-gemini">Gemini</h2>
-  <ol class="steps">
-    <li>Open Gemini and go to <strong>Settings</strong>.</li>
-    <li>Choose <strong>Connected Apps</strong>.</li>
-    <li>Choose <strong>Add a custom app</strong>.</li>
-    <li>Paste the address above, then <a href="#signin">sign in</a>.</li>
-  </ol>
-</section>
+<h3 id="gemini">Gemini</h3>
+<ol class="steps">
+  <li>Open <strong>Settings</strong> &rsaquo; <strong>Connected Apps</strong>.</li>
+  <li>Choose <strong>Add a custom app</strong>.</li>
+  <li>Paste the address.</li>
+</ol>
 
-<h2 id="signin">Signing in</h2>
-<p>A sign-in page opens. Type your email address and I'll send you a short code. Type the code in, and you're connected. You can sign in with GitHub instead if you already have an account, but you don't need one.</p>
-<p class="note">Sign-in is handled by an outside service, WorkOS. <a href="privacy.html">What happens to your question</a> says exactly who sees what.</p>
+<p class="note">Can't find these menus? Their names change from time to time. Look in your app's settings for "connectors" or "MCP".</p>
 
-<h2>Then try it</h2>
-<p>Start a new conversation and ask something. You may need to switch the connector on for that conversation (look for a tools or connectors button near the message box). Naming the library in your first question helps your app know to use it.</p>
+<h2 id="signin">3. Sign in</h2>
+<ol class="steps">
+  <li>A sign-in page opens. Type your email address.</li>
+  <li>Type in the code that's emailed to you.</li>
+</ol>
+<p class="note">You can sign in with GitHub instead, but you don't need to. Sign-in is handled by WorkOS: see <a href="privacy.html">what happens to your question</a>.</p>
+
+<h2>Then ask a question</h2>
+<p>Start a new conversation. If your app has a tools or connectors button near the message box, make sure the library is switched on. Then ask, for example:</p>
 <ul class="questions">
   <li>Search the Christian Open Library: what did Calvin teach about the Lord's Supper?</li>
   <li>What did Spurgeon say about Psalm 23?</li>
   <li>Which historic writers cited Isaiah 53?</li>
-  <li>Find a passage about assurance of salvation in the Puritans.</li>
 </ul>
+<p class="note">Naming the library in your first question helps your app know to use it.</p>
 
-<div class="card">
-  <h2>Good to know</h2>
-  <ul>
-    <li><strong>Each person has a fair-use daily limit.</strong></li>
-    <li><strong>Your app writes the answer.</strong> The library finds and quotes the passages. Check a quotation against its source before you print or preach it. <a href="check.html">How to check it.</a></li>
-    <li><strong>If you remember only the gist,</strong> try two or three phrasings, or one distinctive phrase.</li>
-  </ul>
-</div>
+<h2>Good to know</h2>
+<ul>
+  <li>Your AI app writes the answer. Check a quotation against its source before you print or preach it. <a href="check.html">How to check it</a>.</li>
+  <li>If you remember only the gist, try two or three phrasings, or one distinctive phrase.</li>
+  <li>Each person has a fair-use daily limit.</li>
+  <li>Stuck? Write to <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a> and say which app you use.</li>
+</ul>
 </div>
 </main>
 <footer class="site">
