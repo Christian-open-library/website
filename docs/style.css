@@ -20,12 +20,18 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #111214; --tile: #1c1d20; --tile-hover: #24252a;
-    --ink: #f2f2ef; --text: #d9d9d4; --muted: #a7a7a1;
-    --line: #2b2c30; --line-2: #3a3b40; --dots: #4a4b50;
+    --bg: #121315; --tile: #1e1f23; --tile-hover: #26272c;
+    --ink: #f7f7f4; --text: #e8e8e3; --muted: #c2c2bb;
+    --line: #36373c; --line-2: #4d4e55; --dots: #6a6b72;
     --accent: #e2bc62; --accent-soft: rgba(226, 188, 98, .22);
-    --btn: #f2f2ef; --on-btn: #111214;
+    --btn: #f7f7f4; --on-btn: #121315;
   }
+}
+/* Light text on a dark background looks thinner, most of all on iPhones: weigh it a little more. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) body { font-weight: 450; }
+  :root:not([data-theme="light"]) a { text-decoration-color: var(--muted); }
+  :root:not([data-theme="light"]) .note, :root:not([data-theme="light"]) .small { font-weight: 450; }
 }
 
 *, *::before, *::after { box-sizing: border-box; }
