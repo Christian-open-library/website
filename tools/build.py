@@ -10,7 +10,7 @@ import re, pathlib
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC, OUT = ROOT / "src", ROOT / "docs"
 
-NAV = [("index", "Home"), ("setup", "Set it up"), ("check", "How to check it"),
+NAV = [("index", "Home"), ("setup", "Set it up"), ("check", "How to check it"), ("download", "Download"),
        ("privacy", "Privacy"), ("accuracy", "Accuracy"), ("corrections", "Corrections")]
 
 LAYOUT = """<!doctype html>

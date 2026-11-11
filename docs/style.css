@@ -135,6 +135,7 @@ dl.collection dd { margin: 0; font-size: .98rem; color: var(--text); }
 .jump a:hover { border-color: var(--muted); }
 .app { margin: 1.25rem 0; padding: 1.5rem 1.6rem .5rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
 .prose .app h2 { margin: 0 0 1rem; font-size: 1.6rem; }
+.prose .app h3 { margin: 0 0 .9rem; font: 500 1.35rem/1.3 var(--serif); }
 .app > p { color: var(--muted); font-size: .95rem; }
 
 /* How to check it */
@@ -175,7 +176,7 @@ footer.site { border-top: 1px solid var(--line); background: var(--bg-2); font-s
 .foot-small { font-size: .85rem; }
 
 /* Small screens */
-@media (max-width: 50rem) {
+@media (max-width: 62rem) {
   .nav-desktop { display: none; }
   .nav-mobile { display: block; }
 }
