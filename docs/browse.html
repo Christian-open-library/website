@@ -10,7 +10,7 @@
 <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="img/favicon.png" type="image/png">
 <link rel="preload" href="fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=93608af7">
+<link rel="stylesheet" href="style.css?v=c75b592e">
 </head>
 <body class="page-browse">
 <a class="skip" href="#main">Skip to the page</a>
@@ -62,21 +62,23 @@
     <input id="q" type="search" placeholder="Search" autocomplete="off" spellcheck="false" enterkeyhint="search">
     <button id="opts-toggle" class="opts-toggle" type="button" aria-expanded="false" aria-controls="opts">Filter</button>
   </div>
+  <div class="opts-line">
   <div id="opts" class="opts">
-    <select id="sort" aria-label="Sort by">
-      <option value="author">By author</option>
-      <option value="title">By title</option>
-      <option value="year">Oldest first</option>
-      <option value="year-desc">Newest first</option>
-    </select>
-    <select id="type" aria-label="Kind of work"><option value="">All kinds</option></select>
-    <select id="period" aria-label="Period"><option value="">All periods</option></select>
-    <button id="reset" class="reset" type="button" hidden>Clear</button>
+      <select id="sort" aria-label="Sort by">
+        <option value="author">By author</option>
+        <option value="title">By title</option>
+        <option value="year">Oldest first</option>
+        <option value="year-desc">Newest first</option>
+      </select>
+      <select id="type" aria-label="Kind of work"><option value="">All kinds</option></select>
+      <select id="period" aria-label="Period"><option value="">All periods</option></select>
+      <button id="reset" class="reset" type="button" hidden>Clear</button>
+    </div>
+    <p id="count" class="count" aria-live="polite">Loading the list&hellip;</p>
   </div>
 </form>
-<p id="count" class="count" aria-live="polite">Loading the list&hellip;</p>
-</div>
 <div class="works-head" aria-hidden="true"><span>Title</span><span>Author</span><span>Year</span></div>
+</div>
 <ul id="works" class="works"></ul>
 <nav id="az" class="az" aria-label="Jump to a letter" hidden></nav>
 <div id="empty" class="empty-state" hidden>
@@ -94,7 +96,7 @@
 
 <h2>Reading the books</h2>
 <p>This is a list of titles. To search inside the books, <a href="setup.html">add the library to your AI app</a>. To read them as files, <a href="download.html">download them</a>.</p>
-<script src="browse.js?v=4f3a2ed9" defer></script>
+<script src="browse.js?v=8ee8abf0" defer></script>
 </div>
 </main>
 <footer class="site">

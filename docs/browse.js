@@ -79,6 +79,7 @@
     li.appendChild(t);
     li.appendChild(cell('w-author', highlighted(w[0] || 'Unknown author')));
     li.appendChild(cell('w-year', w[2] || '–'));
+    li.dataset.i = i;
     return li;
   }
   function header(L) {
@@ -101,6 +102,40 @@
     shown = end;
     more.hidden = shown >= items.length;
     more.textContent = 'Show more (' + num(items.length - shown) + ' left)';
+  }
+
+  // Where each book's text came from, named for people rather than as a web address.
+  var SOURCES = [
+    [/quod\.lib\.umich\.edu/, 'Read it at EEBO-TCP (University of Michigan)'],
+    [/ccel\.org/, 'Read it at the Christian Classics Ethereal Library'],
+    [/archive\.org/, 'See the scanned book at the Internet Archive'],
+    [/gutenberg\.org/, 'Read it at Project Gutenberg'],
+    [/standardebooks\.org/, 'Read it at Standard Ebooks'],
+    [/wikisource\.org/, 'Read it at Wikisource'],
+    [/sefaria\.org/, 'Read it at Sefaria'],
+    [/romans45\.org|spurgeon/, 'Read it at the Spurgeon Archive'],
+    [/docsouth\.unc\.edu/, 'Read it at DocSouth (UNC)'],
+    [/crosswire\.org/, 'Source: The CrossWire Bible Society'],
+    [/tertullian\.org/, 'Read it at the Tertullian Project'],
+    [/github\.com|githubusercontent/, 'Source file (for the technically minded)']
+  ];
+  function sourceLabel(url) {
+    for (var k = 0; k < SOURCES.length; k++) if (SOURCES[k][0].test(url)) return SOURCES[k][1];
+    return 'Source: ' + url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0];
+  }
+  function details(i) {
+    var w = works[i], box = document.createElement('div');
+    box.className = 'w-more';
+    if (w[4]) {
+      var a = document.createElement('a');
+      a.href = w[4];
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = sourceLabel(w[4]) + ' \u2197';
+      box.appendChild(a);
+    }
+    if (w[5]) box.appendChild(cell('w-lic', w[5]));
+    return box;
   }
 
   // ---------- filtering ----------
@@ -322,9 +357,15 @@
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(function (entries) { if (entries[0].isIntersecting && !more.hidden) showMore(); }, { rootMargin: '800px' }).observe(more);
   }
+  // Tap or click a book: its whole title, and a link to where its text came from.
   list.addEventListener('click', function (e) {
+    if (e.target.closest('a')) return;
     var li = e.target.closest('li');
-    if (li && !li.classList.contains('letter')) li.classList.toggle('open');
+    if (!li || li.classList.contains('letter')) return;
+    var open = li.classList.toggle('open');
+    var box = li.querySelector('.w-more');
+    if (open && !box) li.appendChild(details(+li.dataset.i));
+    li.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
   document.addEventListener('keydown', function (e) {
     if (e.key === '/' && document.activeElement !== input && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); input.focus(); }
