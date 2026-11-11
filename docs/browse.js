@@ -90,7 +90,9 @@
   }
   function showMore() {
     var frag = document.createDocumentFragment();
-    var end = Math.min(shown + PAGE, items.length);
+    // In author or title order the whole list is drawn at once, so the A to Z bar never waits on loading.
+    var grouped = sortSel.value === 'author' || sortSel.value === 'title';
+    var end = grouped ? items.length : Math.min(shown + PAGE, items.length);
     for (var k = shown; k < end; k++) {
       var it = items[k];
       frag.appendChild(typeof it === 'string' ? header(it) : row(it));
@@ -239,7 +241,7 @@
   bubble.className = 'az-bubble';
   bubble.setAttribute('aria-hidden', 'true');
   document.body.appendChild(bubble);
-  var bubbleTimer, lastL = null;
+  var bubbleTimer, lastL = null, lastY = null, frame = 0, pendingL = null;
   // The letter under a point on the bar, from its fixed layout (not from what is drawn there).
   function letterAtY(y) {
     var btns = az.children;
@@ -250,19 +252,33 @@
     k = Math.max(0, Math.min(btns.length - 1, k));
     return btns[k].dataset.letter;
   }
-  function pick(y, force) {
-    var L = letterAtY(y);
-    if (!L || (L === lastL && !force)) return;
-    lastL = L;
-    jump(L);
+  function show(L) {
     bubble.textContent = L === '#' ? 'Other' : L;
     bubble.classList.add('show');
     clearTimeout(bubbleTimer);
   }
-  function release(y) { if (typeof y === 'number') pick(y, true); lastL = null; clearTimeout(bubbleTimer); bubbleTimer = setTimeout(function () { bubble.classList.remove('show'); }, 450); }
-  az.addEventListener('touchstart', function (e) { e.preventDefault(); pick(e.touches[0].clientY); }, { passive: false });
+  // While a finger moves, jump at most once per screen refresh, to the newest letter.
+  function pick(y) {
+    lastY = y;
+    var L = letterAtY(y);
+    if (!L || L === lastL) return;
+    lastL = L;
+    show(L);
+    pendingL = L;
+    if (!frame) frame = requestAnimationFrame(function () { frame = 0; if (pendingL) jump(pendingL); pendingL = null; });
+  }
+  // On release, the letter under the finger wins; check again once the page has settled.
+  function release(y) {
+    if (typeof y !== 'number') y = lastY;
+    var L = typeof y === 'number' ? letterAtY(y) : lastL;
+    if (frame) { cancelAnimationFrame(frame); frame = 0; pendingL = null; }
+    if (L) { show(L); jump(L); setTimeout(function () { jump(L); }, 120); }
+    lastL = null; lastY = null;
+    bubbleTimer = setTimeout(function () { bubble.classList.remove('show'); }, 450);
+  }
+  az.addEventListener('touchstart', function (e) { e.preventDefault(); lastL = null; pick(e.touches[0].clientY); }, { passive: false });
   az.addEventListener('touchmove', function (e) { e.preventDefault(); pick(e.touches[0].clientY); }, { passive: false });
-  az.addEventListener('touchend', function (e) { e.preventDefault(); release(e.changedTouches[0].clientY); }, { passive: false });
+  az.addEventListener('touchend', function (e) { e.preventDefault(); release(e.changedTouches.length ? e.changedTouches[0].clientY : undefined); }, { passive: false });
   az.addEventListener('touchcancel', function () { release(); });
   var mouseDown = false;
   az.addEventListener('mousedown', function (e) { mouseDown = true; pick(e.clientY); e.preventDefault(); });
