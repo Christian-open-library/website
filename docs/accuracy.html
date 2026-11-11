@@ -95,6 +95,11 @@
 </div>
 <p>In this test "NOT FOUND" was never wrong. A "close" match means the passage is about what was asked. It doesn't mean it is by the author you named, so check the author and title on every result.</p>
 
+<h2>How it searches</h2>
+
+<p>Each search runs two ways at once. A keyword search finds passages that contain your words, and it matches old spellings automatically. A meaning search finds passages about what you described. The meaning search uses embedding models from Voyage AI: the books are indexed with voyage-4-lite, and your question is understood by the larger voyage-4-large. A third Voyage model, rerank-3, then puts the combined results in order.</p>
+<p>To do this, Voyage sees your search words and the passages it is ranking, and keeps nothing (see <a href="privacy.html">Privacy</a>). The scores on this page were measured on exactly this setup. The code is <a href="https://github.com/Christian-open-library/Connector">public</a>.</p>
+
 <h2>What isn't measured</h2>
 <ul class="points">
   <li><strong>The AI app's answer.</strong> These tests cover what the connector returns. Your AI app then writes the answer, and it can summarize badly or quote from memory. Nothing here measures that.</li>
