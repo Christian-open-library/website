@@ -3,6 +3,7 @@
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var input = $('q'), sortSel = $('sort'), typeSel = $('type'), periodSel = $('period');
+  var toggle = $('opts-toggle'), bar = document.querySelector('.finder-bar');
   var resetBtn = $('reset'), list = $('works'), count = $('count'), more = $('more'), az = $('az');
   var PAGE = 400;
   var LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').concat('#');
@@ -176,13 +177,25 @@
     showMore();
     buildIndex();
     saveState();
-    var barEl = document.querySelector('.finder-bar');
-    document.documentElement.style.setProperty('--pinned', (parseFloat(getComputedStyle(barEl).top) + barEl.offsetHeight) + 'px');
+    setPinned();
+    var active = (typeSel.value ? 1 : 0) + (periodSel.value ? 1 : 0) + (sortSel.value !== 'author' ? 1 : 0);
+    toggle.textContent = active ? 'Filter (' + active + ')' : 'Filter';
     if (!keepScroll) {
-      var top = document.querySelector('.finder-bar');
-      if (window.scrollY > top.offsetTop) window.scrollTo(0, top.offsetTop);
+      // If the list has been scrolled, go back to its top, just under the pinned search bar.
+      var anchor = $('list-top').getBoundingClientRect().top + window.scrollY - parseFloat(getComputedStyle(bar).top);
+      if (window.scrollY > anchor) window.scrollTo(0, anchor);
     }
   }
+
+  function pinnedHeight() { return parseFloat(getComputedStyle(bar).top) + bar.offsetHeight; }
+  function setPinned() { document.documentElement.style.setProperty('--pinned', pinnedHeight() + 'px'); }
+  toggle.addEventListener('click', function () {
+    var open = !bar.classList.contains('open');
+    bar.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    setPinned();
+  });
+  window.addEventListener('resize', setPinned);
 
   // ---------- A to Z bar ----------
   function buildIndex() {
@@ -208,9 +221,7 @@
     while (shown < Math.min(idx + 80, items.length)) showMore();
     var li = list.children[idx];
     if (!li) return;
-    var barEl = document.querySelector('.finder-bar');
-    var pinned = parseFloat(getComputedStyle(barEl).top) + barEl.offsetHeight;
-    window.scrollTo(0, window.scrollY + li.getBoundingClientRect().top - pinned + 1);
+    window.scrollTo(0, window.scrollY + li.getBoundingClientRect().top - pinnedHeight() + 1);
   }
   var dragging = false;
   function letterAt(x, y) { var el = document.elementFromPoint(x, y); return el && el.dataset && el.dataset.letter; }
@@ -255,7 +266,13 @@
   // ---------- events ----------
   var timer;
   input.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(function () { update(); }, 120); });
-  [sortSel, typeSel, periodSel].forEach(function (s) { s.addEventListener('change', function () { update(); }); });
+  [sortSel, typeSel, periodSel].forEach(function (s) {
+    s.addEventListener('change', function () {
+      // On a phone, fold the panel away after a choice; the button still shows how many are on.
+      if (getComputedStyle(toggle).display !== 'none') { bar.classList.remove('open'); toggle.setAttribute('aria-expanded', 'false'); }
+      update();
+    });
+  });
   resetBtn.addEventListener('click', function () { input.value = ''; typeSel.value = ''; periodSel.value = ''; update(); input.focus(); });
   $('empty-clear').addEventListener('click', function () { resetBtn.click(); });
   more.addEventListener('click', showMore);
@@ -281,6 +298,7 @@
     Object.keys(TYPES).forEach(function (k) { if (typesSeen[k]) { var o = document.createElement('option'); o.value = k; typeSel.appendChild(o); } });
     PERIODS.forEach(function (p) { var o = document.createElement('option'); o.value = p[0]; periodSel.appendChild(o); });
     loadState();
+    if (typeSel.value || periodSel.value || sortSel.value !== 'author') { bar.classList.add('open'); toggle.setAttribute('aria-expanded', 'true'); }
     update(true);
   }).catch(function () {
     count.textContent = 'The list could not be loaded. Try reloading the page.';
