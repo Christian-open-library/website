@@ -229,26 +229,34 @@
   bubble.setAttribute('aria-hidden', 'true');
   document.body.appendChild(bubble);
   var bubbleTimer, lastL = null;
-  function pick(y) {
-    var r = az.getBoundingClientRect();
-    var el = document.elementFromPoint(r.left + r.width / 2, Math.min(Math.max(y, r.top + 1), r.bottom - 1));
-    var L = el && el.dataset && el.dataset.letter;
-    if (!L || L === lastL) return;
+  // The letter under a point on the bar, from its fixed layout (not from what is drawn there).
+  function letterAtY(y) {
+    var btns = az.children;
+    if (!btns.length) return null;
+    var first = btns[0].getBoundingClientRect(), last = btns[btns.length - 1].getBoundingClientRect();
+    var h = (last.bottom - first.top) / btns.length;
+    var k = Math.floor((y - first.top) / h);
+    k = Math.max(0, Math.min(btns.length - 1, k));
+    return btns[k].dataset.letter;
+  }
+  function pick(y, force) {
+    var L = letterAtY(y);
+    if (!L || (L === lastL && !force)) return;
     lastL = L;
     jump(L);
     bubble.textContent = L === '#' ? 'Other' : L;
     bubble.classList.add('show');
     clearTimeout(bubbleTimer);
   }
-  function release() { lastL = null; clearTimeout(bubbleTimer); bubbleTimer = setTimeout(function () { bubble.classList.remove('show'); }, 450); }
+  function release(y) { if (typeof y === 'number') pick(y, true); lastL = null; clearTimeout(bubbleTimer); bubbleTimer = setTimeout(function () { bubble.classList.remove('show'); }, 450); }
   az.addEventListener('touchstart', function (e) { e.preventDefault(); pick(e.touches[0].clientY); }, { passive: false });
   az.addEventListener('touchmove', function (e) { e.preventDefault(); pick(e.touches[0].clientY); }, { passive: false });
-  az.addEventListener('touchend', release);
-  az.addEventListener('touchcancel', release);
+  az.addEventListener('touchend', function (e) { e.preventDefault(); release(e.changedTouches[0].clientY); }, { passive: false });
+  az.addEventListener('touchcancel', function () { release(); });
   var mouseDown = false;
   az.addEventListener('mousedown', function (e) { mouseDown = true; pick(e.clientY); e.preventDefault(); });
   document.addEventListener('mousemove', function (e) { if (mouseDown) pick(e.clientY); });
-  document.addEventListener('mouseup', function () { if (mouseDown) { mouseDown = false; release(); } });
+  document.addEventListener('mouseup', function (e) { if (mouseDown) { mouseDown = false; release(e.clientY); } });
   az.addEventListener('keydown', function (e) {
     if ((e.key === 'Enter' || e.key === ' ') && e.target.dataset.letter) { e.preventDefault(); jump(e.target.dataset.letter); }
   });
