@@ -223,24 +223,32 @@
     if (!li) return;
     window.scrollTo(0, window.scrollY + li.getBoundingClientRect().top - pinnedHeight() + 1);
   }
-  var dragging = false;
-  function letterAt(x, y) { var el = document.elementFromPoint(x, y); return el && el.dataset && el.dataset.letter; }
-  az.addEventListener('pointerdown', function (e) {
-    dragging = true;
-    az.setPointerCapture(e.pointerId);
-    var L = letterAt(e.clientX, e.clientY);
-    if (L) jump(L);
-    e.preventDefault();
-  });
-  az.addEventListener('pointermove', function (e) {
-    if (!dragging) return;
+  // Tap or drag on the bar. Touch events are used on phones (Safari), pointer events elsewhere.
+  var bubble = document.createElement('div');
+  bubble.className = 'az-bubble';
+  bubble.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(bubble);
+  var bubbleTimer, lastL = null;
+  function pick(y) {
     var r = az.getBoundingClientRect();
-    var L = letterAt(r.left + r.width / 2, e.clientY);
-    if (L && L !== az.dataset.last) { az.dataset.last = L; jump(L); }
-  });
-  function stopDrag() { dragging = false; delete az.dataset.last; }
-  az.addEventListener('pointerup', stopDrag);
-  az.addEventListener('pointercancel', stopDrag);
+    var el = document.elementFromPoint(r.left + r.width / 2, Math.min(Math.max(y, r.top + 1), r.bottom - 1));
+    var L = el && el.dataset && el.dataset.letter;
+    if (!L || L === lastL) return;
+    lastL = L;
+    jump(L);
+    bubble.textContent = L === '#' ? 'Other' : L;
+    bubble.classList.add('show');
+    clearTimeout(bubbleTimer);
+  }
+  function release() { lastL = null; clearTimeout(bubbleTimer); bubbleTimer = setTimeout(function () { bubble.classList.remove('show'); }, 450); }
+  az.addEventListener('touchstart', function (e) { e.preventDefault(); pick(e.touches[0].clientY); }, { passive: false });
+  az.addEventListener('touchmove', function (e) { e.preventDefault(); pick(e.touches[0].clientY); }, { passive: false });
+  az.addEventListener('touchend', release);
+  az.addEventListener('touchcancel', release);
+  var mouseDown = false;
+  az.addEventListener('mousedown', function (e) { mouseDown = true; pick(e.clientY); e.preventDefault(); });
+  document.addEventListener('mousemove', function (e) { if (mouseDown) pick(e.clientY); });
+  document.addEventListener('mouseup', function () { if (mouseDown) { mouseDown = false; release(); } });
   az.addEventListener('keydown', function (e) {
     if ((e.key === 'Enter' || e.key === ' ') && e.target.dataset.letter) { e.preventDefault(); jump(e.target.dataset.letter); }
   });
