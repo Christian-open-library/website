@@ -21,11 +21,10 @@ LAYOUT = """<!doctype html>
 <title>{title}</title>
 <meta name="description" content="{desc}">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#0f1830">
+<meta name="theme-color" content="#ffffff">
 <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="img/favicon.png" type="image/png">
-<link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="page-{name}">
