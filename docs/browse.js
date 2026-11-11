@@ -226,9 +226,12 @@
     for (var k = LETTERS.indexOf(L); k < LETTERS.length && idx < 0; k++) idx = items.indexOf(LETTERS[k]);
     if (idx < 0) return;
     while (shown < Math.min(idx + 80, items.length)) showMore();
-    var li = list.children[idx];
-    if (!li) return;
-    window.scrollTo(0, window.scrollY + li.getBoundingClientRect().top - pinnedHeight() + 1);
+    var head = list.children[idx], first = list.children[idx + 1];
+    if (!head || !first) return;
+    // Letter headings stay pinned once scrolled past, so their position on screen says nothing
+    // about where they sit in the list. Measure from the first book under the heading instead.
+    var target = window.scrollY + first.getBoundingClientRect().top - pinnedHeight() - head.offsetHeight + 1;
+    window.scrollTo(0, Math.max(0, target));
     placeIndex();
   }
   // Tap or drag on the bar. Touch events are used on phones (Safari), pointer events elsewhere.
