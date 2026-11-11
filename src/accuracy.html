@@ -1,22 +1,24 @@
 <!-- title: How well it finds things | desc: Test results for the Christian Open Library connector, misses included. -->
+<p class="kicker">Test results</p>
 <h1>How well it finds things</h1>
-<p><em class="date">Tested 11 November 2026.</em></p>
 <p class="lead">The connector is tested on a fixed set of questions with known answers. This page gives the results, misses included.</p>
+<p class="meta">Tested 11 November 2026.</p>
+<!-- body -->
 
 <h2>Finding the right book</h2>
 <p>Each of 75 questions has a known right answer: a work the passage must come from. The test asks the live connector each question and checks whether a passage from that work is among the first 3 and the first 8 results.</p>
 <div class="tablewrap" role="region" aria-label="Results by kind of question" tabindex="0">
-<table>
+<table class="stack">
   <caption>Did the right book appear in the results?</caption>
   <thead><tr><th scope="col">Kind of question</th><th scope="col" class="num">Questions</th><th scope="col" class="num">In the first 3</th><th scope="col" class="num">In the first 8</th></tr></thead>
   <tbody>
-    <tr><th scope="row">A remembered quotation</th><td class="num">19</td><td class="num">17</td><td class="num">18</td></tr>
-    <tr><th scope="row">A paraphrase from memory</th><td class="num">16</td><td class="num">8</td><td class="num">9</td></tr>
-    <tr><th scope="row">A doctrine question</th><td class="num">13</td><td class="num">5</td><td class="num">10</td></tr>
-    <tr><th scope="row">A question in old spelling</th><td class="num">8</td><td class="num">7</td><td class="num">7</td></tr>
-    <tr><th scope="row">A search narrowed by author, year or collection</th><td class="num">13</td><td class="num">10</td><td class="num">11</td></tr>
-    <tr><th scope="row">An exact phrase</th><td class="num">6</td><td class="num">6</td><td class="num">6</td></tr>
-    <tr class="total"><th scope="row">All</th><td class="num">75</td><td class="num">53 (71%)</td><td class="num">61 (81%)</td></tr>
+    <tr><th scope="row">A remembered quotation</th><td data-label="Questions" class="num">19</td><td data-label="In the first 3" class="num">17</td><td data-label="In the first 8" class="num">18</td></tr>
+    <tr><th scope="row">A paraphrase from memory</th><td data-label="Questions" class="num">16</td><td data-label="In the first 3" class="num">8</td><td data-label="In the first 8" class="num">9</td></tr>
+    <tr><th scope="row">A doctrine question</th><td data-label="Questions" class="num">13</td><td data-label="In the first 3" class="num">5</td><td data-label="In the first 8" class="num">10</td></tr>
+    <tr><th scope="row">A question in old spelling</th><td data-label="Questions" class="num">8</td><td data-label="In the first 3" class="num">7</td><td data-label="In the first 8" class="num">7</td></tr>
+    <tr><th scope="row">A search narrowed by author, year or collection</th><td data-label="Questions" class="num">13</td><td data-label="In the first 3" class="num">10</td><td data-label="In the first 8" class="num">11</td></tr>
+    <tr><th scope="row">An exact phrase</th><td data-label="Questions" class="num">6</td><td data-label="In the first 3" class="num">6</td><td data-label="In the first 8" class="num">6</td></tr>
+    <tr class="total"><th scope="row">All</th><td data-label="Questions" class="num">75</td><td data-label="In the first 3" class="num">53 (71%)</td><td data-label="In the first 8" class="num">61 (81%)</td></tr>
   </tbody>
 </table>
 </div>
@@ -29,13 +31,13 @@
 <h2>Saying when it has nothing</h2>
 <p>Each result is marked as an exact, close, partial or loose match. When nothing is close, the result opens with "NO CLOSE MATCH". When everything is loose, it opens with "NOT FOUND". The cut-offs were set from the searches below, which were then run against the live connector.</p>
 <div class="tablewrap" role="region" aria-label="Results when the library has nothing" tabindex="0">
-<table>
+<table class="stack">
   <caption>Does it say so when it has nothing?</caption>
   <thead><tr><th scope="col">Test</th><th scope="col" class="num">Searches</th><th scope="col">Outcome</th></tr></thead>
   <tbody>
-    <tr><th scope="row">Subjects the library has nothing about (a home server, a sourdough starter, a salary cap)</th><td class="num">10</td><td>All 10 came back "NOT FOUND".</td></tr>
-    <tr><th scope="row">Modern authors the library doesn't have (Barth, Lewis, Keller, Packer and others)</th><td class="num">10</td><td>8 came back "NO CLOSE MATCH". 2 came back with a close match, because older writers in the library say something very similar.</td></tr>
-    <tr><th scope="row">The 75 questions above</th><td class="num">75</td><td>6 came back "NO CLOSE MATCH". In 4 of those the right work really was missing from the results. In the other 2 it was there.</td></tr>
+    <tr><th scope="row">Subjects the library has nothing about (a home server, a sourdough starter, a salary cap)</th><td data-label="Searches" class="num">10</td><td data-label="Outcome">All 10 came back "NOT FOUND".</td></tr>
+    <tr><th scope="row">Modern authors the library doesn't have (Barth, Lewis, Keller, Packer and others)</th><td data-label="Searches" class="num">10</td><td data-label="Outcome">8 came back "NO CLOSE MATCH". 2 came back with a close match, because older writers in the library say something very similar.</td></tr>
+    <tr><th scope="row">The 75 questions above</th><td data-label="Searches" class="num">75</td><td data-label="Outcome">6 came back "NO CLOSE MATCH". In 4 of those the right work really was missing from the results. In the other 2 it was there.</td></tr>
   </tbody>
 </table>
 </div>

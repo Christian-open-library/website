@@ -6,16 +6,19 @@
 <title>What happens to your question · Christian Open Library</title>
 <meta name="description" content="Who sees your question when you use the Christian Open Library, and what each one keeps.">
 <meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0f1830">
 <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="img/favicon.png" type="image/png">
+<link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="page-privacy">
 <a class="skip" href="#main">Skip to the page</a>
 <header class="site">
-  <div class="wrap">
-    <a class="brand" href="index.html"><img src="img/icon.svg" width="44" height="44" alt=""><span>Christian Open Library</span></a>
-    <nav aria-label="Main">
+  <div class="bar">
+    <a class="brand" href="index.html"><img src="img/icon.svg" width="34" height="34" alt=""><span>Christian Open Library</span></a>
+    <nav class="nav-desktop" aria-label="Main">
       <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="setup.html">Set it up</a></li>
@@ -25,16 +28,35 @@
         <li><a href="corrections.html">Corrections</a></li>
       </ul>
     </nav>
+    <a class="nav-cta" href="setup.html">Set it up</a>
+    <details class="nav-mobile">
+      <summary><span class="burger" aria-hidden="true"></span><span>Menu</span></summary>
+      <nav aria-label="Main">
+        <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="setup.html">Set it up</a></li>
+        <li><a href="check.html">How to check it</a></li>
+        <li><a href="privacy.html" aria-current="page">Privacy</a></li>
+        <li><a href="accuracy.html">Accuracy</a></li>
+        <li><a href="corrections.html">Corrections</a></li>
+        </ul>
+      </nav>
+    </details>
   </div>
 </header>
-<main id="main" class="wrap">
+<main id="main">
+<div class="page-head">
+  <div class="wrap">
+<p class="kicker">Privacy</p>
 <h1>What happens to your question</h1>
-<p><em class="date">Last checked 11 November 2026.</em></p>
 <p class="lead">When you ask your AI app something and it uses the Christian Open Library, your question passes through several hands. This page names each one and says what it sees and keeps.</p>
-
+<p class="meta">Last checked 11 November 2026.</p>
+  </div>
+</div>
+<div class="wrap prose">
 <div class="card">
   <h2>In short</h2>
-  <ul>
+  <ul class="summary">
     <li>The connector keeps no copy of your conversations or documents, and it doesn't log what you search for.</li>
     <li>It never sees your whole conversation or your files.</li>
     <li>Two outside services are involved: WorkOS for sign-in and Voyage AI for search. Cloudflare carries the traffic.</li>
@@ -100,14 +122,36 @@
   <li>Cloudflare: <a href="https://www.cloudflare.com/privacypolicy/">cloudflare.com/privacypolicy</a></li>
 </ul>
 <p>If anything here turns out to be wrong, it goes in the <a href="corrections.html">corrections log</a>.</p>
+</div>
 </main>
 <footer class="site">
-  <div class="wrap">
-    <p>Questions, corrections or a book that is missing? Write to <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a>.</p>
-    <p>A personal project of Matt Miller. It has no ads, no trackers and no cookies. Not a ministry of any church, presbytery or denomination.</p>
-    <p class="small">Soli Deo gloria.</p>
+  <div class="foot">
+    <div class="foot-about">
+      <p class="foot-brand"><img src="img/icon.svg" width="30" height="30" alt=""> Christian Open Library</p>
+      <p>About 4,600 public-domain Christian works, searchable from your AI app. A personal project of Matt Miller. Not a ministry of any church, presbytery or denomination.</p>
+    </div>
+    <nav class="foot-links" aria-label="Footer">
+      <p class="foot-h">Pages</p>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="setup.html">Set it up</a></li>
+        <li><a href="check.html">How to check it</a></li>
+        <li><a href="privacy.html">Privacy</a></li>
+        <li><a href="accuracy.html">Accuracy</a></li>
+        <li><a href="corrections.html">Corrections</a></li>
+      </ul>
+    </nav>
+    <div class="foot-contact">
+      <p class="foot-h">Contact</p>
+      <p><a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a></p>
+      <p>Questions, corrections, or a book that is missing.</p>
+    </div>
+  </div>
+  <div class="foot-base">
+    <p>No ads, no trackers, no cookies.</p>
+    <p class="sdg">Soli Deo gloria</p>
   </div>
 </footer>
-<script src="copy.js" defer></script>
+<script src="site.js" defer></script>
 </body>
 </html>
