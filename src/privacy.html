@@ -1,0 +1,73 @@
+<!-- title: What happens to your question | desc: Who sees your question when you use the Christian Open Library, and what each one keeps. -->
+<h1>What happens to your question</h1>
+<p><em class="date">Last checked 11 November 2026.</em></p>
+<p class="lead">When you ask your AI app something and it uses the Christian Open Library, your question passes through several hands. This page names each one and says what it sees and keeps.</p>
+
+<div class="card">
+  <h2>In short</h2>
+  <ul>
+    <li>The connector keeps no copy of your conversations or documents, and it doesn't log what you search for.</li>
+    <li>It never sees your whole conversation or your files.</li>
+    <li>Two outside services are involved: WorkOS for sign-in and Voyage AI for search. Cloudflare carries the traffic.</li>
+    <li>Your AI app holds the conversation itself, under its own privacy terms.</li>
+    <li>There are no ads, no analytics, no cookies and no tracking. Nothing is sold or shared for marketing. This website has none either.</li>
+  </ul>
+</div>
+
+<h2>Who sees what</h2>
+<dl class="who">
+  <div>
+    <dt>Your AI app (Claude, ChatGPT or Gemini)</dt>
+    <dd><span class="label">Sees</span>The whole conversation.</dd>
+    <dd><span class="label">Keeps</span>Whatever its own privacy terms say. This is the largest holder of your data, and the library has no say over it.</dd>
+  </div>
+  <div>
+    <dt>Cloudflare</dt>
+    <dd><span class="label">Sees</span>The requests your AI app sends to the connector, in transit.</dd>
+    <dd><span class="label">Keeps</span>Its own traffic records, under Cloudflare's terms.</dd>
+  </div>
+  <div>
+    <dt>WorkOS (sign-in)</dt>
+    <dd><span class="label">Sees</span>Your email address or GitHub login, and when you signed in.</dd>
+    <dd><span class="label">Keeps</span>Your sign-in account. I can see the list of people who have signed in. I use it to count sign-ups and, if needed, to block abuse.</dd>
+  </div>
+  <div>
+    <dt>The connector (a computer I run)</dt>
+    <dd><span class="label">Sees</span>The search your AI app sends: usually a short query it writes from your question, not the conversation.</dd>
+    <dd><span class="label">Keeps</span>No search text. See "What the connector records" below.</dd>
+  </div>
+  <div>
+    <dt>Voyage AI (search)</dt>
+    <dd><span class="label">Sees</span>The search words, and the library passages being ranked against them.</dd>
+    <dd><span class="label">Keeps</span>Nothing. The library's Voyage account is opted out of data use, so Voyage deletes the text once it has processed it and doesn't train on it.</dd>
+  </div>
+</dl>
+
+<h2>What the connector records</h2>
+<ul>
+  <li><strong>A log line for each request:</strong> which tool was used, whether it worked, how long it took, and a made-up ID for the person (part of a hash of the sign-in ID, not your email address). The words you searched for aren't in it.</li>
+  <li><strong>Counts for the daily limit:</strong> how many requests each ID has made today and this minute. They are cleared after a week.</li>
+  <li><strong>Monthly totals:</strong> how much searching cost. These aren't tied to any person.</li>
+</ul>
+<p>The connector has a troubleshooting switch that would add search text to the log. It is off.</p>
+
+<h2>What it does not receive</h2>
+<ul>
+  <li><strong>Your conversation.</strong> The AI app sends only the search it wants run.</li>
+  <li><strong>Your files.</strong> The connector has no way to read anything on your device or in your AI app.</li>
+  <li><strong>Your IP address or location.</strong> Requests normally come from your AI app's servers, not from you, and the server keeps no access log. If you connect a tool that runs on your own computer (Claude Code, for example), Cloudflare sees that computer's IP address as any website would.</li>
+</ul>
+
+<h2>Email and public forms</h2>
+<p>If you write to <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a>, only I read it. The library's forms on GitHub are public issues that anyone can read, so leave out anything private if you use them.</p>
+
+<h2>Check it yourself</h2>
+<p>The connector's code is public: <a href="https://github.com/Christian-open-library/Connector">github.com/Christian-open-library/Connector</a>. The logging is in <code>plugin/col-library-connector/src/Log.php</code>.</p>
+
+<h2>The outside services' own terms</h2>
+<ul>
+  <li>WorkOS: <a href="https://workos.com/legal/privacy">workos.com/legal/privacy</a></li>
+  <li>Voyage AI: <a href="https://www.voyageai.com/privacy">voyageai.com/privacy</a> and <a href="https://www.voyageai.com/tos">voyageai.com/tos</a></li>
+  <li>Cloudflare: <a href="https://www.cloudflare.com/privacypolicy/">cloudflare.com/privacypolicy</a></li>
+</ul>
+<p>If anything here turns out to be wrong, it goes in the <a href="corrections.html">corrections log</a>.</p>

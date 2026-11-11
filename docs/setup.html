@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Set it up · Christian Open Library</title>
+<meta name="description" content="Step-by-step: connect the Christian Open Library to Claude, ChatGPT or Gemini. Free, no GitHub account needed.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="img/favicon.png" type="image/png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to the page</a>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="index.html"><img src="img/icon.svg" width="44" height="44" alt=""><span>Christian Open Library</span></a>
+    <nav aria-label="Main">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="setup.html" aria-current="page">Set it up</a></li>
+        <li><a href="check.html">How to check it</a></li>
+        <li><a href="privacy.html">Privacy</a></li>
+        <li><a href="accuracy.html">Accuracy</a></li>
+        <li><a href="corrections.html">Corrections</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+<main id="main" class="wrap">
+<h1>Set it up</h1>
+<p class="lead">It takes about five minutes. You paste one address into your AI app's settings, then sign in with your email. You do not need a GitHub account.</p>
+
+<div class="card">
+  <h2>The address</h2>
+  <p>You will paste this into your AI app:</p>
+  <div class="address"><code>https://mcp.christianopenlibrary.org/mcp</code></div>
+</div>
+
+<h2>Choose your AI app</h2>
+<ul class="jump">
+  <li><a href="#claude">Claude</a></li>
+  <li><a href="#chatgpt">ChatGPT</a></li>
+  <li><a href="#gemini">Gemini</a></li>
+</ul>
+<p class="note">Menu names change from time to time. If you don't see the exact words below, look in your app's settings for "connectors" or "MCP". If you get stuck, write to <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a> and tell me which app you use.</p>
+
+<h2 id="claude">Claude</h2>
+<ol class="steps">
+  <li>Open Claude and go to <strong>Settings</strong>.</li>
+  <li>Choose <strong>Connectors</strong>.</li>
+  <li>Choose <strong>Add custom connector</strong>.</li>
+  <li>Paste the address above.</li>
+  <li>Choose <strong>Connect</strong>, then <a href="#signin">sign in</a>.</li>
+</ol>
+
+<h2 id="chatgpt">ChatGPT</h2>
+<p>This needs a paid ChatGPT plan.</p>
+<ol class="steps">
+  <li>Open ChatGPT and go to <strong>Settings</strong>.</li>
+  <li>Choose <strong>Apps &amp; Connectors</strong>.</li>
+  <li>Turn on <strong>Developer mode</strong>.</li>
+  <li>Choose <strong>Create</strong>.</li>
+  <li>Paste the address above and choose <strong>OAuth</strong> as the sign-in method.</li>
+  <li>Save it, then <a href="#signin">sign in</a>.</li>
+</ol>
+
+<h2 id="gemini">Gemini</h2>
+<ol class="steps">
+  <li>Open Gemini and go to <strong>Settings</strong>.</li>
+  <li>Choose <strong>Connected Apps</strong>.</li>
+  <li>Choose <strong>Add a custom app</strong>.</li>
+  <li>Paste the address above, then <a href="#signin">sign in</a>.</li>
+</ol>
+
+<h2 id="signin">Signing in</h2>
+<p>A sign-in page opens. Type your email address and I'll send you a short code. Type the code in, and you're connected. You can sign in with GitHub instead if you already have an account, but you don't need one.</p>
+<p>Sign-in is handled by an outside service, WorkOS. <a href="privacy.html">What happens to your question</a> says exactly who sees what.</p>
+
+<h2>Then try it</h2>
+<p>Start a new conversation and ask something. You may need to switch the connector on for that conversation (look for a tools or connectors button near the message box). Some questions to try:</p>
+<ul class="asks">
+  <li>Search the Christian Open Library: what did Calvin teach about the Lord's Supper?</li>
+  <li>What did Spurgeon say about Psalm 23?</li>
+  <li>Which historic writers cited Isaiah 53?</li>
+  <li>Find a passage about assurance of salvation in the Puritans.</li>
+</ul>
+<p>Naming the library in your first question helps your app know to use it.</p>
+
+<h2>Good to know</h2>
+<ul>
+  <li><strong>Each person has a fair-use daily limit.</strong></li>
+  <li><strong>Your app writes the answer.</strong> The library finds and quotes the passages. Check a quotation against its source before you print or preach it. <a href="check.html">How to check it.</a></li>
+  <li><strong>If you remember only the gist,</strong> try two or three phrasings, or one distinctive phrase.</li>
+</ul>
+</main>
+<footer class="site">
+  <div class="wrap">
+    <p>Questions, corrections or a book that is missing? Write to <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a>.</p>
+    <p>A personal project of Matt Miller. It has no ads, no trackers and no cookies. Not a ministry of any church, presbytery or denomination.</p>
+    <p class="small">Soli Deo gloria.</p>
+  </div>
+</footer>
+<script src="copy.js" defer></script>
+</body>
+</html>
