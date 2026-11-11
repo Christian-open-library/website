@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Browse the library · Christian Open Library</title>
+<meta name="description" content="Every work in the Christian Open Library, by author and title. Search for an author, a title or a word.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="img/favicon.png" type="image/png">
+<link rel="preload" href="fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css?v=9139f7b6">
+</head>
+<body class="page-browse">
+<a class="skip" href="#main">Skip to the page</a>
+<header class="site">
+  <div class="bar">
+    <a class="brand" href="index.html"><img src="img/icon.svg" width="34" height="34" alt=""><span>Christian Open Library</span></a>
+    <nav class="nav-desktop" aria-label="Main">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="setup.html">Set it up</a></li>
+        <li><a href="browse.html" aria-current="page">Browse</a></li>
+        <li><a href="check.html">How to check it</a></li>
+        <li><a href="download.html">Download</a></li>
+        <li><a href="privacy.html">Privacy</a></li>
+        <li><a href="accuracy.html">Accuracy</a></li>
+        <li><a href="corrections.html">Corrections</a></li>
+      </ul>
+    </nav>
+    <details class="nav-mobile">
+      <summary><span class="burger" aria-hidden="true"></span><span>Menu</span></summary>
+      <nav aria-label="Main">
+        <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="setup.html">Set it up</a></li>
+        <li><a href="browse.html" aria-current="page">Browse</a></li>
+        <li><a href="check.html">How to check it</a></li>
+        <li><a href="download.html">Download</a></li>
+        <li><a href="privacy.html">Privacy</a></li>
+        <li><a href="accuracy.html">Accuracy</a></li>
+        <li><a href="corrections.html">Corrections</a></li>
+        </ul>
+      </nav>
+    </details>
+  </div>
+</header>
+<main id="main">
+<div class="page-head">
+  <div class="wrap">
+<h1>Browse the library</h1>
+<p class="lead">Every work in the library, by author. Search for an author, a title or a word in a title.</p>
+  </div>
+</div>
+<div class="wrap prose">
+<form class="finder" role="search" onsubmit="return false">
+  <label for="q">Search the list</label>
+  <div class="finder-row">
+    <input id="q" type="search" placeholder="Author, title or word" autocomplete="off" spellcheck="false">
+    <select id="sort" aria-label="Sort by">
+      <option value="author">By author</option>
+      <option value="title">By title</option>
+      <option value="year">Oldest first</option>
+      <option value="year-desc">Newest first</option>
+    </select>
+  </div>
+</form>
+<p class="note">Old titles are spelled in many ways, so search for one distinctive word, such as <em>Baxter</em> or <em>saints rest</em>.</p>
+
+<p id="count" class="count" aria-live="polite">Loading the list&hellip;</p>
+<ul id="works" class="works"></ul>
+<p><button id="more" class="btn btn-secondary" type="button" hidden>Show more</button></p>
+<noscript><p>This list needs JavaScript. You can also open the <a href="https://github.com/Christian-open-library/.github/blob/main/catalog.csv">catalog on GitHub</a>.</p></noscript>
+
+<h2>Reading the books</h2>
+<p>This is a list of titles. To search inside the books, <a href="setup.html">add the library to your AI app</a>. To read them as files, <a href="download.html">download them</a>.</p>
+<script src="browse.js?v=23c03721" defer></script>
+</div>
+</main>
+<footer class="site">
+  <div class="foot">
+    <p class="foot-brand"><img src="img/icon.svg" width="28" height="28" alt=""> Christian Open Library</p>
+    <nav aria-label="Footer">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="setup.html">Set it up</a></li>
+        <li><a href="browse.html">Browse</a></li>
+        <li><a href="check.html">How to check it</a></li>
+        <li><a href="download.html">Download</a></li>
+        <li><a href="privacy.html">Privacy</a></li>
+        <li><a href="accuracy.html">Accuracy</a></li>
+        <li><a href="corrections.html">Corrections</a></li>
+      </ul>
+    </nav>
+    <p>Write to <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a> with questions, corrections, or a book that is missing.</p>
+    <p>The library on GitHub: <a href="https://github.com/Christian-open-library">github.com/Christian-open-library</a> (<a href="https://github.com/Christian-open-library/.github/issues/new?template=request-library-access.yml">ask to join</a>).</p>
+    <p class="foot-small">A personal project of Matt Miller. Not a ministry of any church, presbytery or denomination. No ads, trackers or cookies. Soli Deo gloria.</p>
+  </div>
+</footer>
+<script src="site.js?v=61087b75" defer></script>
+</body>
+</html>

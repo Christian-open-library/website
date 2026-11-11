@@ -1,0 +1,26 @@
+<!-- title: Browse the library | desc: Every work in the Christian Open Library, by author and title. Search for an author, a title or a word. -->
+<h1>Browse the library</h1>
+<p class="lead">Every work in the library, by author. Search for an author, a title or a word in a title.</p>
+<!-- body -->
+<form class="finder" role="search" onsubmit="return false">
+  <label for="q">Search the list</label>
+  <div class="finder-row">
+    <input id="q" type="search" placeholder="Author, title or word" autocomplete="off" spellcheck="false">
+    <select id="sort" aria-label="Sort by">
+      <option value="author">By author</option>
+      <option value="title">By title</option>
+      <option value="year">Oldest first</option>
+      <option value="year-desc">Newest first</option>
+    </select>
+  </div>
+</form>
+<p class="note">Old titles are spelled in many ways, so search for one distinctive word, such as <em>Baxter</em> or <em>saints rest</em>.</p>
+
+<p id="count" class="count" aria-live="polite">Loading the list&hellip;</p>
+<ul id="works" class="works"></ul>
+<p><button id="more" class="btn btn-secondary" type="button" hidden>Show more</button></p>
+<noscript><p>This list needs JavaScript. You can also open the <a href="https://github.com/Christian-open-library/.github/blob/main/catalog.csv">catalog on GitHub</a>.</p></noscript>
+
+<h2>Reading the books</h2>
+<p>This is a list of titles. To search inside the books, <a href="setup.html">add the library to your AI app</a>. To read them as files, <a href="download.html">download them</a>.</p>
+<script src="browse.js" defer></script>

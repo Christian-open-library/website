@@ -10,7 +10,7 @@ import hashlib, re, pathlib
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC, OUT = ROOT / "src", ROOT / "docs"
 
-NAV = [("index", "Home"), ("setup", "Set it up"), ("check", "How to check it"), ("download", "Download"),
+NAV = [("index", "Home"), ("setup", "Set it up"), ("browse", "Browse"), ("check", "How to check it"), ("download", "Download"),
        ("privacy", "Privacy"), ("accuracy", "Accuracy"), ("corrections", "Corrections")]
 
 LAYOUT = """<!doctype html>
@@ -99,7 +99,7 @@ def build():
                     f'<div class="wrap prose">\n{body.strip()}\n</div>')
         html = LAYOUT.format(title=full, desc=desc, name=name, nav="\n".join(items),
                              footnav="\n".join(foot), main=main,
-                             css_v=asset_version("style.css"), js_v=asset_version("site.js"))
+                             css_v=asset_version("style.css"), js_v=asset_version("site.js")).replace('src="browse.js"', 'src="browse.js?v=' + asset_version("browse.js") + '"')
         (OUT / f"{name}.html").write_text(html, encoding="utf-8")
         print("wrote", f"docs/{name}.html")
 

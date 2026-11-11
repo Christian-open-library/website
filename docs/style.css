@@ -46,6 +46,7 @@ strong { color: var(--ink); font-weight: 600; }
 em { font-style: italic; }
 .skip { position: absolute; left: -999px; top: .5rem; z-index: 100; padding: .55rem .9rem; border-radius: var(--radius); background: var(--btn); color: var(--on-btn); }
 .skip:focus { left: .5rem; }
+[hidden] { display: none !important; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .wrap { max-width: calc(var(--width) + 3rem); margin: 0 auto; padding: 0 1.5rem; }
 
@@ -140,6 +141,20 @@ ul.questions { list-style: none; padding: 0; margin: .4rem 0 1rem; }
 ul.questions li { position: relative; margin: 0 0 .4rem; padding-left: 1.75rem; color: var(--ink); line-height: 1.5; }
 ul.questions li::before { content: ""; position: absolute; left: .1rem; top: .3rem; width: 1rem; height: 1rem; background: var(--muted); -webkit-mask: var(--chat) center / contain no-repeat; mask: var(--chat) center / contain no-repeat; }
 
+/* Browse page */
+.finder { margin: .5rem 0 .4rem; }
+.finder label { display: block; margin: 0 0 .35rem; font-size: .9rem; font-weight: 600; color: var(--ink); }
+.finder-row { display: flex; flex-wrap: wrap; gap: .5rem; }
+.finder input, .finder select { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line-2); border-radius: var(--radius); min-height: 46px; }
+.finder input { flex: 1 1 16rem; min-width: 0; padding: .5rem .8rem; font-size: 1.05rem; }
+.finder select { flex: 0 0 auto; padding: .5rem 2rem .5rem .75rem; }
+.finder input:focus, .finder select:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
+.count { margin: 1.25rem 0 .25rem; font-size: .95rem; font-weight: 600; color: var(--ink); }
+ul.works { list-style: none; padding: 0; margin: 0 0 1rem; border-top: 1px solid var(--line); }
+ul.works li { margin: 0; padding: .6rem 0; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: .1rem; }
+.w-title { color: var(--ink); font-weight: 500; line-height: 1.4; }
+.w-meta { font-size: .92rem; color: var(--muted); }
+
 /* Tables */
 .tablewrap { overflow-x: auto; margin: .75rem 0 1.25rem; }
 table { border-collapse: collapse; width: 100%; font-size: .97rem; line-height: 1.45; }
@@ -163,7 +178,7 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
 .foot-small { font-size: .875rem; }
 
 /* Small screens */
-@media (max-width: 62rem) {
+@media (max-width: 70rem) {
   .nav-desktop { display: none; }
   .nav-mobile { display: block; }
 }
