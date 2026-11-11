@@ -2,11 +2,10 @@
 """Wrap each src/*.html fragment in the shared layout and write docs/*.html.
 
 A fragment starts with one line:  <!-- title: Page title | desc: One sentence. -->
-Everything before the line  <!-- body -->  is the page heading band (the hero on
-the home page); everything after it is the page itself.
+Everything before the line  <!-- body -->  is the page heading; the rest is the page.
 Run from anywhere:  python3 tools/build.py
 """
-import random, re, pathlib
+import re, pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC, OUT = ROOT / "src", ROOT / "docs"
@@ -39,7 +38,6 @@ LAYOUT = """<!doctype html>
 {nav}
       </ul>
     </nav>
-    <a class="nav-cta" href="setup.html">Set it up</a>
     <details class="nav-mobile">
       <summary><span class="burger" aria-hidden="true"></span><span>Menu</span></summary>
       <nav aria-label="Main">
@@ -55,25 +53,14 @@ LAYOUT = """<!doctype html>
 </main>
 <footer class="site">
   <div class="foot">
-    <div class="foot-about">
-      <p class="foot-brand"><img src="img/icon.svg" width="30" height="30" alt=""> Christian Open Library</p>
-      <p>About 4,600 public-domain Christian works, searchable from your AI app. A personal project of Matt Miller. Not a ministry of any church, presbytery or denomination.</p>
-    </div>
-    <nav class="foot-links" aria-label="Footer">
-      <p class="foot-h">Pages</p>
+    <p class="foot-brand"><img src="img/icon.svg" width="28" height="28" alt=""> Christian Open Library</p>
+    <nav aria-label="Footer">
       <ul>
 {footnav}
       </ul>
     </nav>
-    <div class="foot-contact">
-      <p class="foot-h">Contact</p>
-      <p><a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a></p>
-      <p>Questions, corrections, or a book that is missing.</p>
-    </div>
-  </div>
-  <div class="foot-base">
-    <p>No ads, no trackers, no cookies.</p>
-    <p class="sdg">Soli Deo gloria</p>
+    <p>Write to <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a> with questions, corrections, or a book that is missing.</p>
+    <p class="foot-small">A personal project of Matt Miller. Not a ministry of any church, presbytery or denomination. No ads, trackers or cookies. Soli Deo gloria.</p>
   </div>
 </footer>
 <script src="site.js" defer></script>
@@ -81,25 +68,9 @@ LAYOUT = """<!doctype html>
 </html>
 """
 
-# Faint Greek and Hebrew letters behind the home-page heading, after the logo.
-LETTERS = "αβγδεζηθικλμνξοπρστυφχψωΑΒΓΔΘΛΞΠΣΦΨΩאבגדהוזחטיכלמנסעפצקרשת"
-
-def letters_svg():
-    rnd = random.Random(1611)
-    cells = []
-    for row in range(8):
-        for col in range(8):
-            ch = rnd.choice(LETTERS)
-            op = rnd.choice([0.10, 0.14, 0.18, 0.22])
-            cells.append(f'<text x="{col*30+15}" y="{row*30+22}" fill-opacity="{op}">{ch}</text>')
-    return ('<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240">'
-            '<g font-family="Georgia, \'Times New Roman\', serif" font-size="17" fill="#c9a45c" text-anchor="middle">'
-            + "".join(cells) + "</g></svg>\n")
-
 def build():
     for key, _ in NAV:
         assert (SRC / f"{key}.html").exists(), key
-    (OUT / "img" / "letters.svg").write_text(letters_svg(), encoding="utf-8")
     for src in sorted(SRC.glob("*.html")):
         text = src.read_text(encoding="utf-8")
         m = re.match(r"<!--\s*title:\s*(.*?)\s*\|\s*desc:\s*(.*?)\s*-->\s*", text, re.S)
@@ -117,7 +88,8 @@ def build():
             items.append(f'        <li><a href="{key}.html"{cur}>{label}</a></li>')
         foot = [f'        <li><a href="{k}.html">{l}</a></li>' for k, l in NAV]
         if name == "index":
-            main = f'<section class="hero">\n  <div class="hero-in">\n{head.strip()}\n  </div>\n</section>\n{body.strip()}'
+            main = (f'<div class="page-head home-head">\n  <div class="wrap">\n{head.strip()}\n  </div>\n</div>\n'
+                    f'<div class="wrap prose">\n{body.strip()}\n</div>')
         else:
             main = (f'<div class="page-head">\n  <div class="wrap">\n{head.strip()}\n  </div>\n</div>\n'
                     f'<div class="wrap prose">\n{body.strip()}\n</div>')
