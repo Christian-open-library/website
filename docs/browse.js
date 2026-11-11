@@ -5,7 +5,7 @@
   var list = document.getElementById('works');
   var count = document.getElementById('count');
   var more = document.getElementById('more');
-  var PAGE = 100;
+  var PAGE = 400;
   var works = [], keys = [], shown = 0, matches = [];
 
   function fold(s) {
@@ -32,19 +32,20 @@
     return copy;
   }
 
+  function cell(cls, text) {
+    var s = document.createElement('span');
+    s.className = cls;
+    s.textContent = text;
+    return s;
+  }
   function row(w) {
     var li = document.createElement('li');
-    var t = document.createElement('span');
-    t.className = 'w-title';
-    t.textContent = w[1];
-    var m = document.createElement('span');
-    m.className = 'w-meta';
-    var bits = [w[0] || 'Unknown author'];
-    if (w[2]) bits.push(w[2]);
-    if (w[3] && w[3] !== 'book') bits.push(w[3]);
-    m.textContent = bits.join(' · ');
+    var title = w[1] + (w[3] && w[3] !== 'book' ? ' (' + w[3] + ')' : '');
+    var t = cell('w-title', title);
+    t.title = title;
     li.appendChild(t);
-    li.appendChild(m);
+    li.appendChild(cell('w-author', w[0] || 'Unknown author'));
+    li.appendChild(cell('w-year', w[2] || '\u2013'));
     return li;
   }
 
@@ -79,6 +80,16 @@
   input.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(update, 120); });
   sortSel.addEventListener('change', update);
   more.addEventListener('click', showMore);
+  // Tap or click a book to see its whole title.
+  list.addEventListener('click', function (e) {
+    var li = e.target.closest('li');
+    if (li) li.classList.toggle('open');
+  });
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting && !more.hidden) showMore();
+    }, { rootMargin: '800px' }).observe(more);
+  }
 
   fetch('catalog.json').then(function (r) { return r.json(); }).then(function (data) {
     works = data.works;
