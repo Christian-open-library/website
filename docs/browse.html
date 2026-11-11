@@ -10,7 +10,7 @@
 <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="img/favicon.png" type="image/png">
 <link rel="preload" href="fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=7b59872a">
+<link rel="stylesheet" href="style.css?v=1bab44cb">
 </head>
 <body class="page-browse">
 <a class="skip" href="#main">Skip to the page</a>
@@ -50,7 +50,7 @@
 <div class="page-head">
   <div class="wrap">
 <h1>Browse the library</h1>
-<p class="lead">Every work in the library. Search for an author, a title or a word. Old titles are spelled in many ways, so one distinctive word works best.</p>
+<p class="lead">Every work in the library. Search for an author, a title or a word, or narrow the list by kind and period. Old spellings are matched too: <em>deuill</em> finds <em>devil</em>.</p>
   </div>
 </div>
 <div class="wrap prose">
@@ -58,7 +58,7 @@
 <form class="finder" role="search" onsubmit="return false">
   <label for="q" class="sr">Search the list</label>
   <div class="finder-row">
-    <input id="q" type="search" placeholder="Search" autocomplete="off" spellcheck="false">
+    <input id="q" type="search" placeholder="Search" autocomplete="off" spellcheck="false" enterkeyhint="search">
     <select id="sort" aria-label="Sort by">
       <option value="author">Author</option>
       <option value="title">Title</option>
@@ -66,18 +66,33 @@
       <option value="year-desc">Newest</option>
     </select>
   </div>
+  <div class="finder-row filters">
+    <select id="type" aria-label="Kind of work"><option value="">All kinds</option></select>
+    <select id="period" aria-label="Period"><option value="">All periods</option></select>
+    <button id="reset" class="reset" type="button" hidden>Clear</button>
+  </div>
 </form>
 <p id="count" class="count" aria-live="polite">Loading the list&hellip;</p>
 </div>
 <div class="works-head" aria-hidden="true"><span>Title</span><span>Author</span><span>Year</span></div>
 <ul id="works" class="works"></ul>
 <nav id="az" class="az" aria-label="Jump to a letter" hidden></nav>
+<div id="empty" class="empty-state" hidden>
+  <p><strong>Nothing in the list matches.</strong> Some ways forward:</p>
+  <ul class="points">
+    <li>Search for one distinctive word, such as a surname or the key word of a title.</li>
+    <li>Old titles are spelled in many ways. The search already treats u and v, i and j, and doubled letters as the same, but try a different word if one doesn't match.</li>
+    <li><button id="empty-clear" class="linkish" type="button">Clear the search and filters</button>.</li>
+    <li>This list has titles only. To search inside the books, <a href="setup.html">ask your AI app</a>.</li>
+  </ul>
+  <p class="note">Is a book missing? Write to <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a>.</p>
+</div>
 <p><button id="more" class="btn btn-secondary" type="button" hidden>Show more</button></p>
 <noscript><p>This list needs JavaScript. You can also open the <a href="https://github.com/Christian-open-library/.github/blob/main/catalog.csv">catalog on GitHub</a>.</p></noscript>
 
 <h2>Reading the books</h2>
 <p>This is a list of titles. To search inside the books, <a href="setup.html">add the library to your AI app</a>. To read them as files, <a href="download.html">download them</a>.</p>
-<script src="browse.js?v=1f66d2d5" defer></script>
+<script src="browse.js?v=a5e21775" defer></script>
 </div>
 </main>
 <footer class="site">
