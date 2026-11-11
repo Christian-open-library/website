@@ -1,7 +1,7 @@
 <!-- title: How well it finds things | desc: Test results for the Christian Open Library connector, misses included. -->
 <h1>How well it finds things</h1>
 <p class="lead">The connector is tested on a fixed set of questions with known answers. Here are the results, misses included.</p>
-<p class="meta">Tested 11 November 2026.</p>
+<p class="meta">Tested 11 November 2026, after the search upgrade described below.</p>
 <!-- body -->
 
 <h2>Finding the right book</h2>
@@ -11,23 +11,25 @@
   <caption>Did the right book appear in the results?</caption>
   <thead><tr><th scope="col">Kind of question</th><th scope="col" class="num">Questions</th><th scope="col" class="num">In the first 3</th><th scope="col" class="num">In the first 8</th></tr></thead>
   <tbody>
-    <tr><th scope="row">A remembered quotation</th><td data-label="Questions" class="num">19</td><td data-label="In the first 3" class="num">17</td><td data-label="In the first 8" class="num">18</td></tr>
-    <tr><th scope="row">A paraphrase from memory</th><td data-label="Questions" class="num">16</td><td data-label="In the first 3" class="num">8</td><td data-label="In the first 8" class="num">9</td></tr>
-    <tr><th scope="row">A doctrine question</th><td data-label="Questions" class="num">13</td><td data-label="In the first 3" class="num">5</td><td data-label="In the first 8" class="num">10</td></tr>
-    <tr><th scope="row">A question in old spelling</th><td data-label="Questions" class="num">8</td><td data-label="In the first 3" class="num">7</td><td data-label="In the first 8" class="num">7</td></tr>
+    <tr><th scope="row">A remembered quotation</th><td data-label="Questions" class="num">19</td><td data-label="In the first 3" class="num">18</td><td data-label="In the first 8" class="num">19</td></tr>
+    <tr><th scope="row">A paraphrase from memory</th><td data-label="Questions" class="num">16</td><td data-label="In the first 3" class="num">12</td><td data-label="In the first 8" class="num">12</td></tr>
+    <tr><th scope="row">A doctrine question</th><td data-label="Questions" class="num">13</td><td data-label="In the first 3" class="num">6</td><td data-label="In the first 8" class="num">9</td></tr>
+    <tr><th scope="row">A question in old spelling</th><td data-label="Questions" class="num">8</td><td data-label="In the first 3" class="num">8</td><td data-label="In the first 8" class="num">8</td></tr>
     <tr><th scope="row">A search narrowed by author, year or collection</th><td data-label="Questions" class="num">13</td><td data-label="In the first 3" class="num">10</td><td data-label="In the first 8" class="num">11</td></tr>
     <tr><th scope="row">An exact phrase</th><td data-label="Questions" class="num">6</td><td data-label="In the first 3" class="num">6</td><td data-label="In the first 8" class="num">6</td></tr>
-    <tr class="total"><th scope="row">All</th><td data-label="Questions" class="num">75</td><td data-label="In the first 3" class="num">53 (71%)</td><td data-label="In the first 8" class="num">61 (81%)</td></tr>
+    <tr class="total"><th scope="row">All</th><td data-label="Questions" class="num">75</td><td data-label="In the first 3" class="num">60 (80%)</td><td data-label="In the first 8" class="num">65 (87%)</td></tr>
   </tbody>
 </table>
 </div>
 <ul class="points">
   <li><strong>It is strongest on quotations.</strong> If you remember the words, it nearly always finds them.</li>
-  <li><strong>It is weakest on paraphrases.</strong> If you remember only the gist, it finds the passage about half the time. Try two or three phrasings, or one distinctive phrase.</li>
+  <li><strong>It is weakest on paraphrases.</strong> If you remember only the gist, it finds the passage about three times in four. Try two or three phrasings, or one distinctive phrase.</li>
+  <li><strong>A search upgrade helped, but not everywhere.</strong> Earlier that day, before searches were understood by a larger Voyage AI model, the same test scored 53 of 75 in the first 3 and 61 of 75 in the first 8. Paraphrases improved most (9 of 16 became 12 of 16 in the first 8). Doctrine questions slipped from 10 to 9 of 13, which may be because the library also grew by about 130 books that day.</li>
   <li><strong>A miss doesn't always mean a wrong answer.</strong> On doctrine questions several works say much the same thing, and the test counts only the one named in advance.</li>
 </ul>
 
 <h2>Saying when it has nothing</h2>
+<p><em>These checks were run before that day's search upgrade and have not been repeated yet.</em></p>
 <p>Each result is marked as an exact, close, partial or loose match. When nothing is close, the result opens with "NO CLOSE MATCH". When everything is loose, it opens with "NOT FOUND". The cut-offs were set from the searches below, which were then run against the live connector.</p>
 <div class="tablewrap" role="region" aria-label="Results when the library has nothing" tabindex="0">
 <table class="stack">
