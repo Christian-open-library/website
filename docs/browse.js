@@ -6,7 +6,9 @@
   var count = document.getElementById('count');
   var more = document.getElementById('more');
   var PAGE = 400;
-  var works = [], keys = [], shown = 0, matches = [];
+  var az = document.getElementById('az');
+  var LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').concat('#');
+  var works = [], keys = [], surnames = [], shown = 0, matches = [];
 
   function fold(s) {
     return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -59,6 +61,75 @@
     more.textContent = 'Show more (' + num(matches.length - shown) + ' left)';
   }
 
+  // The catalog sorts authors by last name, ignoring brackets and Jr/Sr (books repo tools/build_catalog.py).
+  function surnameLetter(author) {
+    var toks = author.replace(/\(.*?\)/g, '').replace(/\b(Jr|Sr)\.?$/, '').trim().split(/\s+/);
+    return initial(toks.length ? toks[toks.length - 1] : '');
+  }
+  function initial(s) {
+    var c = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').charAt(0).toUpperCase();
+    return c >= 'A' && c <= 'Z' ? c : '#';
+  }
+  function letterOf(i) { return sortSel.value === 'title' ? initial(works[i][1]) : surnames[i]; }
+
+  function buildIndex() {
+    var mode = sortSel.value;
+    az.hidden = !(mode === 'author' || mode === 'title') || matches.length < 30;
+    if (az.hidden) return;
+    var have = {};
+    for (var i = 0; i < matches.length; i++) have[letterOf(matches[i])] = true;
+    az.textContent = '';
+    LETTERS.forEach(function (L) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = L;
+      b.dataset.letter = L;
+      if (!have[L]) b.className = 'empty';
+      b.setAttribute('aria-label', L === '#' ? 'Other' : L);
+      az.appendChild(b);
+    });
+  }
+
+  function jump(L) {
+    var start = LETTERS.indexOf(L), idx = -1;
+    for (var k = start; k < LETTERS.length && idx < 0; k++) {
+      for (var i = 0; i < matches.length; i++) { if (letterOf(matches[i]) === LETTERS[k]) { idx = i; break; } }
+    }
+    if (idx < 0) return;
+    while (shown < Math.min(idx + 80, matches.length)) showMore();
+    var li = list.children[idx];
+    if (!li) return;
+    // Where the search bar sits once it is pinned under the header.
+    var barEl = document.querySelector('.finder-bar');
+    var pinned = parseFloat(getComputedStyle(barEl).top) + barEl.offsetHeight;
+    window.scrollTo(0, window.scrollY + li.getBoundingClientRect().top - pinned - 2);
+  }
+
+  var dragging = false;
+  function letterAt(x, y) {
+    var el = document.elementFromPoint(x, y);
+    return el && el.dataset && el.dataset.letter;
+  }
+  az.addEventListener('pointerdown', function (e) {
+    dragging = true;
+    az.setPointerCapture(e.pointerId);
+    var L = letterAt(e.clientX, e.clientY);
+    if (L) jump(L);
+    e.preventDefault();
+  });
+  az.addEventListener('pointermove', function (e) {
+    if (!dragging) return;
+    var r = az.getBoundingClientRect();
+    var L = letterAt(r.left + r.width / 2, e.clientY);
+    if (L && L !== az.dataset.last) { az.dataset.last = L; jump(L); }
+  });
+  function stopDrag() { dragging = false; delete az.dataset.last; }
+  az.addEventListener('pointerup', stopDrag);
+  az.addEventListener('pointercancel', stopDrag);
+  az.addEventListener('keydown', function (e) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.dataset.letter) { e.preventDefault(); jump(e.target.dataset.letter); }
+  });
+
   function update() {
     var words = fold(input.value).split(/\s+/).filter(Boolean);
     var hits = [];
@@ -74,6 +145,7 @@
     else if (!matches.length) count.textContent = 'Nothing in the list matches "' + input.value.trim() + '". Try a single distinctive word.';
     else count.textContent = num(matches.length) + ' of ' + num(works.length) + ' works match';
     showMore();
+    buildIndex();
   }
 
   var timer;
@@ -94,6 +166,7 @@
   fetch('catalog.json').then(function (r) { return r.json(); }).then(function (data) {
     works = data.works;
     keys = works.map(function (w) { return ' ' + fold(w[0] + ' ' + w[1] + ' ' + w[2] + ' ' + w[3]); });
+    surnames = works.map(function (w) { return surnameLetter(w[0]); });
     var q = new URLSearchParams(location.search).get('q');
     if (q) input.value = q;
     update();
