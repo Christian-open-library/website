@@ -6,4 +6,5 @@ Plain static site, served by GitHub Pages from `/docs` on `main`. All links are 
 - `docs/style.css`, `docs/site.js`, `docs/img/` and `docs/fonts/` are edited directly.
 - Fonts (Geist, Geist Mono) are served from `docs/fonts/` under the SIL Open Font License; no outside requests.
 - No trackers, analytics, cookies or outside fonts. Keep it that way: the privacy page says so.
-- Sources of the words: the `.github` repo (`profile/README.md`, `PRIVACY.md`, `ACCURACY.md`, `CORRECTIONS.md`). See HANDOFF.md.
+- Live at https://christianopenlibrary.org (custom domain set on GitHub Pages; Cloudflare: apex and www CNAME to christian-open-library.github.io, DNS only).
+- This site is the one kept copy of the Privacy, Accuracy and Corrections pages; the `.github` repo's files point here. Add new corrections to `src/corrections.html`.
