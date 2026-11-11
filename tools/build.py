@@ -5,7 +5,7 @@ A fragment starts with one line:  <!-- title: Page title | desc: One sentence. -
 Everything before the line  <!-- body -->  is the page heading; the rest is the page.
 Run from anywhere:  python3 tools/build.py
 """
-import re, pathlib
+import hashlib, re, pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC, OUT = ROOT / "src", ROOT / "docs"
@@ -25,7 +25,7 @@ LAYOUT = """<!doctype html>
 <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="img/favicon.png" type="image/png">
 <link rel="preload" href="fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v={css_v}">
 </head>
 <body class="page-{name}">
 <a class="skip" href="#main">Skip to the page</a>
@@ -62,10 +62,14 @@ LAYOUT = """<!doctype html>
     <p class="foot-small">A personal project of Matt Miller. Not a ministry of any church, presbytery or denomination. No ads, trackers or cookies. Soli Deo gloria.</p>
   </div>
 </footer>
-<script src="site.js" defer></script>
+<script src="site.js?v={js_v}" defer></script>
 </body>
 </html>
 """
+
+def asset_version(name):
+    """Short hash of a file, added to its link so browsers fetch a changed file at once."""
+    return hashlib.sha256((OUT / name).read_bytes()).hexdigest()[:8]
 
 def build():
     for key, _ in NAV:
@@ -93,7 +97,8 @@ def build():
             main = (f'<div class="page-head">\n  <div class="wrap">\n{head.strip()}\n  </div>\n</div>\n'
                     f'<div class="wrap prose">\n{body.strip()}\n</div>')
         html = LAYOUT.format(title=full, desc=desc, name=name, nav="\n".join(items),
-                             footnav="\n".join(foot), main=main)
+                             footnav="\n".join(foot), main=main,
+                             css_v=asset_version("style.css"), js_v=asset_version("site.js"))
         (OUT / f"{name}.html").write_text(html, encoding="utf-8")
         print("wrote", f"docs/{name}.html")
 

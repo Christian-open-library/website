@@ -98,7 +98,7 @@ ul.facts svg { width: 17px; height: 17px; flex: none; }
 .prose li { margin-bottom: .4rem; }
 .prose ul ul { margin-top: .4rem; }
 .note, .small { font-size: .95rem; color: var(--muted); }
-code { font: .92em/1.4 var(--mono); padding: .08em .35em; border-radius: 4px; background: var(--tile); color: var(--ink); overflow-wrap: anywhere; }
+code { font: .92em/1.4 var(--mono); color: var(--ink); overflow-wrap: anywhere; }
 
 /* Plain bulleted list */
 ul.points { list-style: none; padding: 0; margin: .4rem 0 1rem; }
@@ -125,7 +125,7 @@ ol.steps li::before { content: counter(st); position: absolute; left: 0; top: .1
 .address-box { margin: .5rem 0 .75rem; }
 .address-box p { margin: 0 0 .35rem; font-size: .85rem; font-weight: 500; color: var(--muted); }
 .address { display: flex; gap: .5rem; flex-wrap: wrap; }
-.address code { flex: 1 1 20rem; display: flex; align-items: center; min-height: 44px; padding: .4rem .8rem; font-size: 1rem; background: var(--tile); border: 1px solid var(--line); border-radius: var(--radius); overflow-wrap: normal; user-select: all; }
+.address code { flex: 1 1 20rem; display: flex; align-items: center; min-height: 44px; padding: .4rem .8rem; font-size: 1rem; background: var(--bg); border: 1px solid var(--line-2); border-radius: var(--radius); overflow-wrap: normal; user-select: all; }
 button.copy { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; min-height: 44px; padding: 0 1.1rem; border: 0; border-radius: var(--radius); background: var(--btn); color: var(--on-btn); font: 600 .95rem/1 var(--sans); cursor: pointer; }
 button.copy:hover { opacity: .88; }
 button.copy svg { width: 15px; height: 15px; }
@@ -136,15 +136,15 @@ ul.questions li { position: relative; margin: 0 0 .4rem; padding-left: 1.75rem; 
 ul.questions li::before { content: ""; position: absolute; left: .1rem; top: .3rem; width: 1rem; height: 1rem; background: var(--muted); -webkit-mask: var(--chat) center / contain no-repeat; mask: var(--chat) center / contain no-repeat; }
 
 /* Tables */
-.tablewrap { overflow-x: auto; margin: .75rem 0 1.25rem; border: 1px solid var(--line); border-radius: var(--radius); }
+.tablewrap { overflow-x: auto; margin: .75rem 0 1.25rem; }
 table { border-collapse: collapse; width: 100%; font-size: .97rem; line-height: 1.45; }
 tbody th { width: 30%; }
-caption { text-align: left; padding: .75rem 1rem .5rem; font-weight: 600; color: var(--ink); }
-th, td { padding: .6rem 1rem; text-align: left; vertical-align: top; border-top: 1px solid var(--line); }
-thead th { font-size: .8rem; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; color: var(--muted); background: var(--tile); }
+caption { text-align: left; padding: 0 0 .5rem; font-weight: 600; color: var(--ink); }
+th, td { padding: .6rem 1rem .6rem 0; text-align: left; vertical-align: top; border-top: 1px solid var(--line); }
+thead th { font-size: .8rem; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; color: var(--muted); border-top: 0; border-bottom: 1px solid var(--line-2); }
 tbody th { font-weight: 500; color: var(--ink); }
 .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
-tr.total th, tr.total td { font-weight: 700; color: var(--ink); background: var(--tile); }
+tr.total th, tr.total td { font-weight: 700; color: var(--ink); border-top: 1px solid var(--line-2); }
 
 /* Footer */
 footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(--muted); }
@@ -180,7 +180,6 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
   table.stack tbody th { border: 0; padding: 0 0 .35rem; font-weight: 600; }
   table.stack td { border: 0; padding: .1rem 0; display: flex; justify-content: space-between; gap: 1rem; text-align: right; white-space: normal; }
   table.stack td::before { content: attr(data-label); color: var(--muted); font-size: .88rem; text-align: left; flex: none; max-width: 45%; }
-  table.stack tr.total { background: var(--tile); }
   table.stack tr.total th, table.stack tr.total td { background: none; }
   table.stack td[data-label="Outcome"], table.stack td[data-label="Sees"], table.stack td[data-label="Keeps"] { display: block; text-align: left; margin-bottom: .35rem; }
   table.stack td[data-label="Outcome"]::before, table.stack td[data-label="Sees"]::before, table.stack td[data-label="Keeps"]::before { display: block; margin-bottom: .05rem; font-size: .8rem; text-transform: uppercase; letter-spacing: .03em; }
