@@ -173,6 +173,8 @@ ul.works li.letter:hover { background: var(--bg); }
 
 /* A to Z bar on the right, as on an iPhone */
 .az { position: fixed; z-index: 20; right: max(.25rem, calc((100vw - 73rem) / 2 - 1.5rem)); top: calc(var(--pinned, 9rem) + .5rem); display: flex; flex-direction: column; touch-action: none; user-select: none; -webkit-user-select: none; }
+.az { opacity: 0; visibility: hidden; transition: opacity .15s, visibility .15s; }
+.az.on { opacity: 1; visibility: visible; }
 .az button { display: block; width: 1.6rem; height: 1.15rem; flex: none; min-height: 0; padding: 0; border: 0; background: none; color: var(--ink); font: 600 .72rem/1 var(--sans); cursor: pointer; border-radius: 4px; }
 .az button:hover { background: var(--tile); }
 .az button.empty { color: var(--dots); }

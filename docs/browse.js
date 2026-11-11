@@ -178,6 +178,7 @@
     buildIndex();
     saveState();
     setPinned();
+    placeIndex();
     var active = (typeSel.value ? 1 : 0) + (periodSel.value ? 1 : 0) + (sortSel.value !== 'author' ? 1 : 0);
     toggle.textContent = active ? 'Filter (' + active + ')' : 'Filter';
     if (!keepScroll) {
@@ -196,6 +197,12 @@
     setPinned();
   });
   window.addEventListener('resize', setPinned);
+  // Show the letters only once the list has reached the pinned search bar, so they never
+  // cover the page heading and never move while a finger is on them.
+  function placeIndex() {
+    az.classList.toggle('on', list.getBoundingClientRect().top <= pinnedHeight() + 2);
+  }
+  window.addEventListener('scroll', placeIndex, { passive: true });
 
   // ---------- A to Z bar ----------
   function buildIndex() {
@@ -222,6 +229,7 @@
     var li = list.children[idx];
     if (!li) return;
     window.scrollTo(0, window.scrollY + li.getBoundingClientRect().top - pinnedHeight() + 1);
+    placeIndex();
   }
   // Tap or drag on the bar. Touch events are used on phones (Safari), pointer events elsewhere.
   var bubble = document.createElement('div');
