@@ -1,15 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="512" height="512" role="img" aria-label="Christian Open Library">
   <rect width="256" height="256" rx="56" fill="#1a1a1a"/>
-  <path d="M120 190 L136 190 L136 226 L128 218 L120 226 Z" fill="#e2bc62"/>
-  <path d="M32 180 C66 168 102 172 128 188 C154 172 190 168 224 180 L224 192 C190 180 154 184 128 200 C102 184 66 180 32 192 Z" fill="#e2bc62"/>
-  <path d="M123 70 C100 56 70 53 40 60 L40 172 C70 165 100 168 123 182 Z" fill="#f7f7f4"/>
-  <path d="M133 70 C156 56 186 53 216 60 L216 172 C186 165 156 168 133 182 Z" fill="#f7f7f4"/>
-  <g fill="none" stroke="#c4c4c4" stroke-width="6" stroke-linecap="round">
-    <path d="M58 89 C76 85 94 87 108 93"/>
-    <path d="M58 111 C76 107 94 109 108 115"/>
-    <path d="M58 133 C76 129 94 131 108 137"/>
-    <path d="M148 93 C162 87 180 85 198 89"/>
-    <path d="M148 115 C162 109 180 107 198 111"/>
-    <path d="M148 137 C162 131 180 129 198 133"/>
+  <g transform="translate(128 128) scale(1.15) translate(-128 -177)">
+    <path d="M128 150 C 104 138, 70 136, 42 144 L42 208 C 70 200, 104 202, 128 214 Z" fill="#f4efe2"/>
+    <path d="M128 150 C 152 138, 186 136, 214 144 L214 208 C 186 200, 152 202, 128 214 Z" fill="#f4efe2"/>
+    <path d="M36 210 C 66 200, 102 202, 128 217 C 154 202, 190 200, 220 210" fill="none" stroke="#e2bc62" stroke-width="6" stroke-linecap="round"/>
+    <g stroke="#1a1a1a" stroke-opacity="0.28" stroke-width="2.4" stroke-linecap="round" fill="none">
+      <path d="M54 160 C 76 154, 100 156, 118 166"/>
+      <path d="M54 172 C 76 166, 100 168, 118 178"/>
+      <path d="M54 184 C 76 178, 100 180, 118 190"/>
+      <path d="M202 160 C 180 154, 156 156, 138 166"/>
+      <path d="M202 172 C 180 166, 156 168, 138 178"/>
+      <path d="M202 184 C 180 178, 156 180, 138 190"/>
+    </g>
+    <path d="M128 152 L128 214" stroke="#1a1a1a" stroke-opacity="0.35" stroke-width="3"/>
   </g>
 </svg>
