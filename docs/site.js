@@ -14,14 +14,15 @@
     btn.type = 'button';
     btn.className = 'copy';
     btn.innerHTML = icon + '<span>Copy</span>';
-    btn.setAttribute('aria-label', 'Copy the address');
+    var what = box.dataset.what || 'the address';
+    btn.setAttribute('aria-label', 'Copy ' + what);
     btn.addEventListener('click', function () {
       navigator.clipboard.writeText(code.textContent.trim()).then(function () {
         btn.innerHTML = done + '<span>Copied</span>';
-        live.textContent = 'Address copied';
+        live.textContent = 'Copied';
         setTimeout(function () { btn.innerHTML = icon + '<span>Copy</span>'; live.textContent = ''; }, 2500);
       }, function () {
-        live.textContent = 'Could not copy. Press and hold the address to copy it.';
+        live.textContent = 'Could not copy. Press and hold the text to copy it.';
       });
     });
     box.appendChild(btn);

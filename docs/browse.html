@@ -21,7 +21,7 @@
 <meta property="og:image:alt" content="Christian Open Library: an open book on a dark tile, with the site's name.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=c75b592e">
+<link rel="stylesheet" href="style.css?v=0540c7a0">
 </head>
 <body class="page-browse">
 <a class="skip" href="#main">Skip to the page</a>
@@ -61,7 +61,7 @@
 <div class="page-head">
   <div class="wrap">
 <h1>Browse the library</h1>
-<p class="lead">Every work in the library. Search for an author, a title or a word, or narrow the list by kind and period. Old spellings are matched too: <em>heaven</em> finds <em>The Opening of Heauen Gates</em>.</p>
+<p class="lead">Every work in the library. Search for an author, a title or a word, or narrow the list by kind and period. Old spellings are matched too: <em>heaven</em> finds <em>The Opening of Heauen Gates</em>. Tap a book for its full title, its editions and where to read it.</p>
   </div>
 </div>
 <div class="wrap prose">
@@ -70,12 +70,18 @@
 <form class="finder" role="search" onsubmit="return false">
   <label for="q" class="sr">Search the list</label>
   <div class="finder-row">
-    <input id="q" type="search" placeholder="Search" autocomplete="off" spellcheck="false" enterkeyhint="search">
+    <div class="search-box">
+      <input id="q" type="search" placeholder="Search authors and titles" autocomplete="off" spellcheck="false" enterkeyhint="search"
+        role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggest">
+      <button id="q-clear" class="q-clear" type="button" aria-label="Clear the search" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      <ul id="suggest" class="suggest" role="listbox" aria-label="Suggestions" hidden></ul>
+    </div>
     <button id="opts-toggle" class="opts-toggle" type="button" aria-expanded="false" aria-controls="opts">Filter</button>
   </div>
   <div class="opts-line">
   <div id="opts" class="opts">
       <select id="sort" aria-label="Sort by">
+        <option value="best" hidden disabled>Best match</option>
         <option value="author">By author</option>
         <option value="title">By title</option>
         <option value="year">Oldest first</option>
@@ -90,15 +96,33 @@
 </form>
 <div class="works-head" aria-hidden="true"><span>Title</span><span>Author</span><span>Year</span></div>
 </div>
-<ul id="works" class="works"></ul>
+<p id="notice" class="notice" role="status" hidden></p>
+<div id="authors" class="author-cards" hidden></div>
+<ul id="works" class="works loading" aria-busy="true">
+<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
+</ul>
 <nav id="az" class="az" aria-label="Jump to a letter" hidden></nav>
 <div id="empty" class="empty-state" hidden>
-  <p><strong>Nothing in the list matches.</strong> Some ways forward:</p>
+  <p><strong>No titles or authors match.</strong> This list has titles only. To search inside the books, ask your AI app, once <a href="setup.html">the library is added to it</a>:</p>
+  <div class="address-box">
+    <div class="address" data-what="the question"><code id="empty-q"></code></div>
+  </div>
+  <p>Or try again here:</p>
   <ul class="points">
     <li>Search for one distinctive word, such as a surname or the key word of a title.</li>
     <li>Old titles are spelled in many ways. The search already treats u and v, i and j, and doubled letters as the same, but try a different word if one doesn't match.</li>
     <li><button id="empty-clear" class="linkish" type="button">Clear the search and filters</button>.</li>
-    <li>This list has titles only. To search inside the books, <a href="setup.html">ask your AI app</a>.</li>
   </ul>
   <p class="note">Is a book missing? Write to <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a>.</p>
 </div>
@@ -107,7 +131,7 @@
 
 <h2>Reading the books</h2>
 <p>This is a list of titles. To search inside the books, <a href="setup.html">add the library to your AI app</a>. To read them as files, <a href="download.html">download them</a>.</p>
-<script src="browse.js?v=8ee8abf0" defer></script>
+<script src="browse.js?v=b1c77e3c" defer></script>
 </div>
 </main>
 <footer class="site">
@@ -130,6 +154,6 @@
     <p class="foot-small">A personal project of Matt Miller. Not a ministry of any church, presbytery or denomination. No ads, trackers or cookies. Soli Deo gloria.</p>
   </div>
 </footer>
-<script src="site.js?v=61087b75" defer></script>
+<script src="site.js?v=0063a701" defer></script>
 </body>
 </html>
