@@ -11,7 +11,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC, OUT = ROOT / "src", ROOT / "docs"
 
 NAV = [("index", "Home"), ("setup", "Set it up"), ("browse", "Browse"), ("check", "How to check it"), ("download", "Download"),
-       ("privacy", "Privacy"), ("accuracy", "Accuracy"), ("corrections", "Corrections")]
+       ("privacy", "Privacy"), ("accuracy", "Accuracy"), ("corrections", "Corrections"), ("support", "Support")]
 
 LAYOUT = """<!doctype html>
 <html lang="en">

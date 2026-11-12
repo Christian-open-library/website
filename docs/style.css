@@ -332,3 +332,4 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
   header.site, .actions, button.copy, .skip, .jump { display: none !important; }
   body { background: #fff; color: #000; }
 }
+.cost-card { width: 100%; max-width: 720px; height: auto; border-radius: 8px; }
