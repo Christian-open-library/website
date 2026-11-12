@@ -333,5 +333,3 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
   body { background: #fff; color: #000; }
 }
 .cost-card { width: 100%; max-width: 720px; height: auto; border-radius: 8px; }
-.foot-groups { display: flex; flex-wrap: wrap; gap: .25rem 3rem; margin-bottom: .4rem; }
-.foot-head { font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0 0 .4rem !important; }
