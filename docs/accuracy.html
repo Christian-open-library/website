@@ -91,7 +91,7 @@
 </ul>
 
 <h2>Saying when it has nothing</h2>
-<p><em>These checks were run before that day's search upgrade and have not been repeated yet.</em></p>
+<p class="meta">Tested again 12 November 2026, on the current connector.</p>
 <p>Each result is marked as an exact, close, partial or loose match. When nothing is close, the result opens with "NO CLOSE MATCH". When everything is loose, it opens with "NOT FOUND". The cut-offs were set from the searches below, which were then run against the live connector.</p>
 <div class="tablewrap" role="region" aria-label="Results when the library has nothing" tabindex="0">
 <table class="stack">
@@ -100,11 +100,12 @@
   <tbody>
     <tr><th scope="row">Subjects the library has nothing about (a home server, a sourdough starter, a salary cap)</th><td data-label="Searches" class="num">10</td><td data-label="Outcome">All 10 came back "NOT FOUND".</td></tr>
     <tr><th scope="row">Modern authors the library doesn't have (Barth, Lewis, Keller, Packer and others)</th><td data-label="Searches" class="num">10</td><td data-label="Outcome">8 came back "NO CLOSE MATCH". 2 came back with a close match, because older writers in the library say something very similar.</td></tr>
-    <tr><th scope="row">The 75 questions above</th><td data-label="Searches" class="num">75</td><td data-label="Outcome">6 came back "NO CLOSE MATCH". In 4 of those the right work really was missing from the results. In the other 2 it was there.</td></tr>
+    <tr><th scope="row">The 75 questions above</th><td data-label="Searches" class="num">75</td><td data-label="Outcome">1 came back "NO CLOSE MATCH", and the right work was in its results anyway. The right work was missing from 7 results, and none of those 7 carried a warning.</td></tr>
   </tbody>
 </table>
 </div>
-<p>In this test "NOT FOUND" was never wrong. A "close" match means the passage is about what was asked. It doesn't mean it is by the author you named, so check the author and title on every result.</p>
+<p>The first run, on 11 November before the search upgrade, gave the same results for the first two tests. On the 75 questions it gave 6 warnings, 4 of them where the right work really was missing. So a missing warning doesn't prove the right book was found.</p>
+<p>In both runs "NOT FOUND" was never wrong. A "close" match means the passage is about what was asked. It doesn't mean it is by the author you named, so check the author and title on every result.</p>
 
 <h2>How it searches</h2>
 
