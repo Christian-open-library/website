@@ -1,7 +1,7 @@
 <!-- title: How well it finds things | desc: Test results for the Christian Open Library connector, misses included. -->
 <h1>How well it finds things</h1>
 <p class="lead">The connector is tested on a fixed set of questions with known answers. Here are the results, misses included.</p>
-<p class="meta">Tested 11 November 2026, after the search upgrade described below.</p>
+<p class="meta">Tested 12 November 2026 on the live connector.</p>
 <!-- body -->
 
 <h2>Finding the right book</h2>
@@ -12,19 +12,21 @@
   <thead><tr><th scope="col">Kind of question</th><th scope="col" class="num">Questions</th><th scope="col" class="num">In the first 3</th><th scope="col" class="num">In the first 8</th></tr></thead>
   <tbody>
     <tr><th scope="row">A remembered quotation</th><td data-label="Questions" class="num">19</td><td data-label="In the first 3" class="num">18</td><td data-label="In the first 8" class="num">19</td></tr>
-    <tr><th scope="row">A paraphrase from memory</th><td data-label="Questions" class="num">16</td><td data-label="In the first 3" class="num">12</td><td data-label="In the first 8" class="num">12</td></tr>
-    <tr><th scope="row">A doctrine question</th><td data-label="Questions" class="num">13</td><td data-label="In the first 3" class="num">6</td><td data-label="In the first 8" class="num">9</td></tr>
+    <tr><th scope="row">A paraphrase from memory</th><td data-label="Questions" class="num">16</td><td data-label="In the first 3" class="num">14</td><td data-label="In the first 8" class="num">14</td></tr>
+    <tr><th scope="row">A doctrine question</th><td data-label="Questions" class="num">13</td><td data-label="In the first 3" class="num">7</td><td data-label="In the first 8" class="num">11</td></tr>
     <tr><th scope="row">A question in old spelling</th><td data-label="Questions" class="num">8</td><td data-label="In the first 3" class="num">8</td><td data-label="In the first 8" class="num">8</td></tr>
-    <tr><th scope="row">A search narrowed by author, year or collection</th><td data-label="Questions" class="num">13</td><td data-label="In the first 3" class="num">10</td><td data-label="In the first 8" class="num">11</td></tr>
+    <tr><th scope="row">A search narrowed by author, year or collection</th><td data-label="Questions" class="num">13</td><td data-label="In the first 3" class="num">11</td><td data-label="In the first 8" class="num">12</td></tr>
     <tr><th scope="row">An exact phrase</th><td data-label="Questions" class="num">6</td><td data-label="In the first 3" class="num">6</td><td data-label="In the first 8" class="num">6</td></tr>
-    <tr class="total"><th scope="row">All</th><td data-label="Questions" class="num">75</td><td data-label="In the first 3" class="num">60 (80%)</td><td data-label="In the first 8" class="num">65 (87%)</td></tr>
+    <tr class="total"><th scope="row">All</th><td data-label="Questions" class="num">75</td><td data-label="In the first 3" class="num">64 (85%)</td><td data-label="In the first 8" class="num">70 (93%)</td></tr>
   </tbody>
 </table>
 </div>
 <ul class="points">
   <li><strong>It is strongest on quotations.</strong> If you remember the words, it nearly always finds them.</li>
-  <li><strong>It is weakest on paraphrases.</strong> If you remember only the gist, it finds the passage about three times in four. Try two or three phrasings, or one distinctive phrase.</li>
-  <li><strong>A search upgrade helped, but not everywhere.</strong> Earlier that day, before searches were understood by a larger Voyage AI model, the same test scored 53 of 75 in the first 3 and 61 of 75 in the first 8. Paraphrases improved most (9 of 16 became 12 of 16 in the first 8). Doctrine questions slipped from 10 to 9 of 13, which may be because the library also grew by about 130 books that day.</li>
+  <li><strong>It is weakest on paraphrases.</strong> If you remember only the gist, it finds the passage about seven times in eight. Try two or three phrasings, or one distinctive phrase.</li>
+  <li><strong>Part of the gain since 11 November is a fairer answer key.</strong> On 11 November the test scored 60 of 75 in the first 3 and 65 of 75 in the first 8. Two "misses" were Brooks's <em>Precious Remedies</em> and Owen's <em>Mortification of Sin</em> found inside their authors' collected works, which hold the same text; those volumes now count. The rest of the change came from search and library changes. Doctrine questions were not re-graded: when another sound writer answers, it still counts as a miss.</li>
+  <li><strong>The 5 misses.</strong> Two doctrine questions, where other works say much the same. Three "who said this?" questions, where it found the right subject but the wrong source: a sermon retelling Augustine's conversion instead of his <em>Confessions</em>, Puritans on sorrow for sin instead of Thomas à Kempis, and other Spurgeon volumes instead of the sermon asked for.</li>
+  <li><strong>A search upgrade helped.</strong> On 11 November, before searches were understood by a larger Voyage AI model, the same test scored 53 of 75 in the first 3 and 61 of 75 in the first 8.</li>
   <li><strong>A miss doesn't always mean a wrong answer.</strong> On doctrine questions several works say much the same thing, and the test counts only the one named in advance.</li>
 </ul>
 
@@ -38,12 +40,12 @@
   <tbody>
     <tr><th scope="row">Subjects the library has nothing about (a home server, a sourdough starter, a salary cap)</th><td data-label="Searches" class="num">10</td><td data-label="Outcome">All 10 came back "NOT FOUND".</td></tr>
     <tr><th scope="row">Modern authors the library doesn't have (Barth, Lewis, Keller, Packer and others)</th><td data-label="Searches" class="num">10</td><td data-label="Outcome">8 came back "NO CLOSE MATCH". 2 came back with a close match, because older writers in the library say something very similar.</td></tr>
-    <tr><th scope="row">The 75 questions above</th><td data-label="Searches" class="num">75</td><td data-label="Outcome">1 came back "NO CLOSE MATCH", and the right work was in its results anyway. The right work was missing from 7 results, and none of those 7 carried a warning.</td></tr>
+    <tr><th scope="row">The 75 questions above</th><td data-label="Searches" class="num">75</td><td data-label="Outcome">None came back "NO CLOSE MATCH". The right work was missing from 5 results. None of the 5 carried a warning, but one (the retelling of Augustine's conversion) is now marked as quoting Augustine, pointing to the source.</td></tr>
   </tbody>
 </table>
 </div>
-<p>The first run, on 11 November before the search upgrade, gave the same results for the first two tests. On the 75 questions it gave 6 warnings, 4 of them where the right work really was missing. So a missing warning doesn't prove the right book was found.</p>
-<p>In both runs "NOT FOUND" was never wrong. A "close" match means the passage is about what was asked. It doesn't mean it is by the author you named, so check the author and title on every result.</p>
+<p>The first run, on 11 November before the search upgrade, gave the same results for the first two tests. On the 75 questions it gave 6 warnings, 4 of them where the right work really was missing; a run earlier on 12 November gave 1. So a missing warning doesn't prove the right book was found.</p>
+<p>In every run "NOT FOUND" was never wrong. A "close" match means the passage is about what was asked, not that it is the source. The connector now tells the AI so, and tells it to use the quote checker for "who said this?" questions. When a close passage credits the words to another writer ("the story of Augustine", "so Richard Baxter wrote"), the result says it may be quoting or retelling that writer. On these 95 searches that note appeared twice, both times correctly. It can't catch a passage that is simply on the same subject, so still check the author and title on every result.</p>
 
 <h2>How it searches</h2>
 
