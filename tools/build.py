@@ -24,6 +24,17 @@ LAYOUT = """<!doctype html>
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="img/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Christian Open Library">
+<meta property="og:title" content="{title}">
+<meta property="og:description" content="{desc}">
+<meta property="og:url" content="{url}">
+<meta property="og:image" content="https://christianopenlibrary.org/img/og.png?v={og_v}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Christian Open Library: an open book on a dark tile, with the site's name.">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css?v={css_v}">
 </head>
@@ -97,7 +108,8 @@ def build():
         else:
             main = (f'<div class="page-head">\n  <div class="wrap">\n{head.strip()}\n  </div>\n</div>\n'
                     f'<div class="wrap prose">\n{body.strip()}\n</div>')
-        html = LAYOUT.format(title=full, desc=desc, name=name, nav="\n".join(items),
+        url = "https://christianopenlibrary.org/" + ("" if name == "index" else f"{name}.html")
+        html = LAYOUT.format(title=full, desc=desc, name=name, url=url, og_v=asset_version("img/og.png"), nav="\n".join(items),
                              footnav="\n".join(foot), main=main,
                              css_v=asset_version("style.css"), js_v=asset_version("site.js")).replace('src="browse.js"', 'src="browse.js?v=' + asset_version("browse.js") + '"')
         (OUT / f"{name}.html").write_text(html, encoding="utf-8")
