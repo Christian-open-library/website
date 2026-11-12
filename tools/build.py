@@ -10,8 +10,12 @@ import hashlib, re, pathlib
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC, OUT = ROOT / "src", ROOT / "docs"
 
-NAV = [("index", "Home"), ("setup", "Set it up"), ("browse", "Browse"), ("check", "How to check it"), ("download", "Download"),
-       ("privacy", "Privacy"), ("accuracy", "Accuracy"), ("corrections", "Corrections"), ("support", "Support")]
+NAV = [("index", "Home"), ("setup", "Set it up"), ("browse", "Browse"), ("check", "How to check it"), ("support", "Support")]
+# Footer: every page, grouped. Pages not in the top menu mark their group's menu item as current.
+FOOT = [("Use it", [("setup", "Set it up"), ("browse", "Browse"), ("download", "Download"), ("support", "Support")]),
+        ("How far to trust it", [("check", "How to check it"), ("accuracy", "Accuracy"), ("corrections", "Corrections"),
+                                 ("privacy", "Privacy")])]
+PARENT = {"accuracy": "check", "corrections": "check", "privacy": "check", "download": "browse"}
 
 LAYOUT = """<!doctype html>
 <html lang="en">
@@ -64,10 +68,8 @@ LAYOUT = """<!doctype html>
 <footer class="site">
   <div class="foot">
     <p class="foot-brand"><img src="img/icon.svg" width="28" height="28" alt=""> Christian Open Library</p>
-    <nav aria-label="Footer">
-      <ul>
+    <nav aria-label="Footer" class="foot-groups">
 {footnav}
-      </ul>
     </nav>
     <p>Write to <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a> with questions, corrections, or a book that is missing.</p>
     <p>The library on GitHub: <a href="https://github.com/Christian-open-library">github.com/Christian-open-library</a> (<a href="https://github.com/Christian-open-library/.github/issues/new?template=request-library-access.yml">ask to join</a>).</p>
@@ -84,7 +86,7 @@ def asset_version(name):
     return hashlib.sha256((OUT / name).read_bytes()).hexdigest()[:8]
 
 def build():
-    for key, _ in NAV:
+    for key, _ in NAV + [p for _, g in FOOT for p in g]:
         assert (SRC / f"{key}.html").exists(), key
     for src in sorted(SRC.glob("*.html")):
         text = src.read_text(encoding="utf-8")
@@ -99,9 +101,12 @@ def build():
         full = title if name == "index" else f"{title} · Christian Open Library"
         items = []
         for key, label in NAV:
-            cur = ' aria-current="page"' if key == name else ""
+            cur = ' aria-current="page"' if key == PARENT.get(name, name) else ""
             items.append(f'        <li><a href="{key}.html"{cur}>{label}</a></li>')
-        foot = [f'        <li><a href="{k}.html">{l}</a></li>' for k, l in NAV]
+        foot = []
+        for heading, pages in FOOT:
+            links = "\n".join(f'          <li><a href="{k}.html">{l}</a></li>' for k, l in pages)
+            foot.append(f'      <div>\n        <p class="foot-head">{heading}</p>\n        <ul>\n{links}\n        </ul>\n      </div>')
         if name == "index":
             main = (f'<div class="page-head home-head">\n  <div class="wrap">\n{head.strip()}\n  </div>\n</div>\n'
                     f'<div class="wrap prose">\n{body.strip()}\n</div>')
