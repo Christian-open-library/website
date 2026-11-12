@@ -7,6 +7,10 @@ const svg = fs.readFileSync(path.join(DOCS, 'img/icon.svg'), 'utf8');
 const icon = 'data:image/svg+xml;base64,' + Buffer.from(svg).toString('base64');
 const font = 'data:font/woff2;base64,' + fs.readFileSync(path.join(DOCS, 'fonts/geist-latin-wght-normal.woff2')).toString('base64');
 
+// Greek and Hebrew letters from the first icon, repeated in a fixed shuffled order
+const LETTERS = 'הקΣΛבνμשביטרμηυκζדשיγחΒכפטכλαגεδνπחβקΣ';
+const letters = Array.from({ length: 72 }, (_, i) => `<span>${[...LETTERS][(i * 7 + 3) % [...LETTERS].length]}</span>`).join('');
+
 const card = `<!doctype html><style>
 @font-face { font-family: Geist; src: url(${font}) format("woff2"); font-weight: 100 900; }
 html, body { margin: 0; }
@@ -16,8 +20,12 @@ img { width: 280px; height: 280px; flex: none; }
 h1 { font-size: 84px; line-height: 1.02; letter-spacing: -.03em; font-weight: 700; margin: 0 0 28px; }
 p { font-size: 32px; line-height: 1.35; color: #555; margin: 0; }
 .bar { position: absolute; left: 0; right: 0; bottom: 0; height: 14px; background: #e2bc62; }
+.letters { position: absolute; left: 0; right: 0; top: 0; height: 150px; overflow: hidden; font-family: 'DejaVu Serif', Georgia, serif; color: #c9a45c; font-size: 30px;
+           display: grid; grid-template-columns: repeat(24, 50px); grid-auto-rows: 44px; justify-content: center; padding-top: 14px;
+           -webkit-mask-image: linear-gradient(#000, transparent); mask-image: linear-gradient(#000, transparent); opacity: .5; }
+.letters span { text-align: center; }
 .url { position: absolute; left: 96px; bottom: 44px; font-size: 26px; color: #555; letter-spacing: .01em; }
-</style><img src="${icon}"><div><h1>Christian Open Library</h1>
+</style><div class="letters">${letters}</div><img src="${icon}"><div><h1>Christian Open Library</h1>
 <p>About 4,800 public-domain Christian books, searchable from Claude, ChatGPT or Gemini.</p></div>
 <div class="url">christianopenlibrary.org</div><div class="bar"></div>`;
 

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="512" height="512" role="img" aria-label="Christian Open Library">
   <rect width="256" height="256" rx="56" fill="#1a1a1a"/>
-  <g transform="translate(128 128) scale(1.15) translate(-128 -177)">
+  <g transform="translate(128 128) scale(1.25) translate(-128 -177)">
     <path d="M128 150 C 104 138, 70 136, 42 144 L42 208 C 70 200, 104 202, 128 214 Z" fill="#f4efe2"/>
     <path d="M128 150 C 152 138, 186 136, 214 144 L214 208 C 186 200, 152 202, 128 214 Z" fill="#f4efe2"/>
     <path d="M36 210 C 66 200, 102 202, 128 217 C 154 202, 190 200, 220 210" fill="none" stroke="#e2bc62" stroke-width="6" stroke-linecap="round"/>
