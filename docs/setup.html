@@ -55,7 +55,7 @@
   <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v5M15 3v5M7 8h10v3a5 5 0 0 1-10 0zM12 16v5"/></svg>Claude, ChatGPT, Gemini</li>
   <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18v12H3zM3 7l9 6 9-6"/></svg>Email sign-in</li>
 </ul>
-<p class="lead">Three steps: copy the address, add it to your AI app, and sign in with your email. You don't need a GitHub account.</p>
+<p class="lead">Four steps: copy the address, add it to your AI app, sign in with your email, and let it search. You don't need a GitHub account.</p>
   </div>
 </div>
 <div class="wrap prose">
@@ -100,6 +100,15 @@
   <li>Type in the code that's emailed to you.</li>
 </ol>
 <p class="note">You can sign in with GitHub instead, but you don't need to. Sign-in is handled by WorkOS: see <a href="privacy.html">what happens to your question</a>.</p>
+
+<h2 id="permissions">4. Let it search without asking</h2>
+<p>The first time your app uses the library, it may ask whether to allow it. The library only reads books: it can't change, send or delete anything. So it's safe to let it run without asking each time.</p>
+<ul class="points">
+  <li><strong>Claude:</strong> when it asks, choose <strong>Always allow</strong>. To set this ahead of time, open <strong>Settings</strong> &rsaquo; <strong>Connectors</strong>, choose the library, and set its tools to <strong>Always allow</strong>. If Claude keeps asking anyway, set it there again.</li>
+  <li><strong>ChatGPT:</strong> the library's tools are marked read-only, so it usually won't ask. If it does, choose <strong>Confirm</strong>.</li>
+  <li><strong>Gemini:</strong> if it asks, choose to allow it.</li>
+</ul>
+<p class="note">Prefer to approve each search? Leave it on <strong>Needs approval</strong>. Don't choose <strong>Blocked</strong> or <strong>Never</strong>: then the library can't answer at all.</p>
 
 <h2>Then ask a question</h2>
 <p>Start a new conversation. If your app has a tools or connectors button near the message box, make sure the library is switched on. Then ask, for example:</p>
