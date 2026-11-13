@@ -334,3 +334,56 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
 }
 .cost-card { width: 100%; max-width: 720px; height: auto; border-radius: 8px; }
 .cost-card-small { max-width: 420px; }
+
+/* Home page (2026-11 redesign) */
+.nav-desktop .nav-give a { margin-left: .4rem; background: var(--btn); color: var(--on-btn); font-weight: 600; }
+.nav-desktop .nav-give a:hover { background: var(--btn); color: var(--on-btn); opacity: .88; }
+.nav-desktop .nav-give a[aria-current="page"] { background: var(--btn); color: var(--on-btn); box-shadow: 0 0 0 2px var(--accent); }
+
+.demo { margin: 1.75rem 0 .5rem; padding: 1.1rem 1.1rem 1rem; background: var(--tile); border: 1px solid var(--line); border-radius: 12px; }
+.demo-who { display: block; margin-bottom: .3rem; font-size: .74rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.demo .demo-q { width: fit-content; max-width: 100%; margin: 0 0 .8rem auto; padding: .65rem .9rem; background: var(--btn); color: var(--on-btn); border-radius: 12px 12px 3px 12px; font-weight: 500; }
+.demo-q .demo-who { color: inherit; opacity: .7; }
+.demo-a { padding: .85rem 1rem .9rem; background: var(--bg); border: 1px solid var(--line); border-radius: 12px 12px 12px 3px; }
+.demo blockquote { margin: 0 0 .6rem; padding-left: .9rem; border-left: 3px solid var(--accent); color: var(--ink); font-size: 1.12rem; line-height: 1.5; }
+.demo .demo-src { margin: 0; font-size: .92rem; color: var(--muted); }
+.demo .demo-src a { color: var(--ink); font-weight: 600; white-space: nowrap; }
+.demo figcaption { margin-top: .8rem; font-size: .92rem; color: var(--muted); text-align: center; }
+
+.prose ol.tiles, .prose ul.cards, .prose ul.chips, .prose ul.more { list-style: none; padding: 0; }
+.tiles, .cards { display: grid; gap: .7rem; margin: .4rem 0 1rem; }
+.tiles { grid-template-columns: repeat(3, 1fr); }
+.cards { grid-template-columns: repeat(3, 1fr); }
+.tiles li, .cards li { margin: 0; padding: .9rem 1rem 1rem; background: var(--tile); border: 1px solid var(--line); border-radius: 10px; }
+.prose .tiles h3, .prose .cards h3 { display: block; margin: .55rem 0 .2rem; font-size: 1rem; font-weight: 650; }
+.prose .tiles p, .prose .cards p { margin: 0; font-size: .93rem; line-height: 1.45; color: var(--muted); }
+.tile-n { display: inline-grid; place-items: center; width: 1.7rem; height: 1.7rem; border-radius: 50%; background: var(--btn); color: var(--on-btn); font-size: .9rem; font-weight: 700; }
+.card-ic { display: inline-grid; place-items: center; width: 2.1rem; height: 2.1rem; border-radius: 8px; background: var(--accent-soft); color: var(--ink); }
+.card-ic svg { width: 1.2rem; height: 1.2rem; }
+
+.prose p.say { margin: .2rem 0 .8rem; padding: .8rem 1rem; background: var(--tile); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; color: var(--ink); font-size: 1.05rem; }
+.chips { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0 0 .9rem; }
+.chips li { margin: 0; padding: .2rem .65rem; border: 1px solid var(--line-2); border-radius: 999px; font-size: .88rem; font-weight: 500; color: var(--ink); }
+.chips li:last-child { border-color: transparent; color: var(--muted); padding-left: .2rem; }
+
+.give { display: grid; grid-template-columns: 1fr minmax(0, 22rem); gap: 1.5rem; align-items: center; margin: .4rem 0 1rem; }
+.give .actions { margin: .2rem 0 .7rem; }
+.more { display: grid; grid-template-columns: repeat(3, 1fr); gap: .7rem; margin: .3rem 0 1.2rem; }
+.more li { margin: 0; padding: .8rem 1rem; border: 1px solid var(--line); border-radius: 10px; }
+.more a { display: block; font-weight: 650; text-decoration: none; }
+.more a::after { content: " \2192"; }
+.more span { display: block; margin-top: .15rem; font-size: .9rem; line-height: 1.4; color: var(--muted); }
+.credits { margin-top: 1rem; border-top: 1px solid var(--line); padding-top: .8rem; }
+.credits summary { cursor: pointer; font-weight: 600; color: var(--ink); }
+.credits .small { margin-top: .6rem; }
+@media (max-width: 46rem) {
+  .tiles, .more { grid-template-columns: 1fr; }
+  .cards { grid-template-columns: 1fr; }
+  .cards li { display: grid; grid-template-columns: auto 1fr; column-gap: .8rem; align-items: start; padding: .75rem .9rem .8rem; }
+  .cards .card-ic { grid-row: span 2; }
+  .prose .cards h3 { margin-top: 0; }
+  .give { grid-template-columns: 1fr; }
+  .tiles li { display: grid; grid-template-columns: auto 1fr; column-gap: .75rem; align-items: start; }
+  .tiles .tile-n { grid-row: span 2; }
+  .prose .tiles h3 { margin-top: .1rem; }
+}
