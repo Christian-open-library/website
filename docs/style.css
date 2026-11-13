@@ -340,13 +340,17 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
 .nav-desktop .nav-give a:hover { background: var(--btn); color: var(--on-btn); opacity: .88; }
 .nav-desktop .nav-give a[aria-current="page"] { background: var(--btn); color: var(--on-btn); box-shadow: 0 0 0 2px var(--accent); }
 
-.demo { margin: 1.75rem 0 .5rem; padding: 1rem 1.25rem 1rem; background: var(--tile); border: 1px solid var(--line); border-radius: 12px; }
-.demo-who { display: block; margin-bottom: .15rem; font-size: .74rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-.demo .demo-q { margin: 0 0 .85rem; padding-bottom: .8rem; border-bottom: 1px solid var(--line-2); color: var(--ink); font-size: 1.08rem; font-weight: 600; }
-.demo blockquote { margin: .35rem 0 .6rem; padding-left: .9rem; border-left: 3px solid var(--accent); color: var(--ink); font-size: 1.12rem; line-height: 1.5; }
-.demo .demo-src { margin: 0; font-size: .92rem; color: var(--muted); }
+.demo { margin: 1.5rem 0 .25rem; }
+.demo-card { display: grid; grid-template-columns: minmax(13rem, 32%) 1fr; border: 1px solid var(--line-2); border-radius: 12px; overflow: hidden; }
+.demo-who { display: block; margin-bottom: .25rem; font-size: .72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.demo .demo-q { display: flex; flex-direction: column; justify-content: center; margin: 0; padding: .9rem 1.1rem; background: var(--btn); color: var(--on-btn); font-size: 1.08rem; font-weight: 600; line-height: 1.35; }
+.demo-q .demo-who { color: var(--accent); }
+.demo-a { padding: .8rem 1.1rem .85rem; background: var(--tile); }
+.demo blockquote { margin: 0 0 .4rem; padding-left: .8rem; border-left: 3px solid var(--accent); color: var(--ink); font-size: 1.08rem; line-height: 1.45; }
+.demo .demo-src { margin: 0; font-size: .9rem; color: var(--muted); }
 .demo .demo-src a { color: var(--ink); font-weight: 600; white-space: nowrap; }
-.demo figcaption { margin-top: .85rem; padding-top: .7rem; border-top: 1px solid var(--line-2); font-size: .92rem; color: var(--muted); }
+.demo figcaption { margin-top: .5rem; font-size: .9rem; color: var(--muted); }
+@media (max-width: 46rem) { .demo-card { grid-template-columns: 1fr; } .demo .demo-q { padding: .75rem 1rem; } }
 
 .prose ol.tiles, .prose ul.cards, .prose ul.chips, .prose ul.more { list-style: none; padding: 0; }
 .tiles, .cards { display: grid; gap: .7rem; margin: .4rem 0 1rem; }
