@@ -18,7 +18,7 @@ body { width: 1200px; height: 630px; background: #fff; font-family: Geist, sans-
        display: flex; align-items: center; gap: 64px; padding: 0 96px; box-sizing: border-box; position: relative; }
 img { width: 280px; height: 280px; flex: none; }
 h1 { font-size: 84px; line-height: 1.02; letter-spacing: -.03em; font-weight: 700; margin: 0 0 28px; }
-p { font-size: 32px; line-height: 1.35; color: #555; margin: 0; }
+p { font-size: 32px; line-height: 1.35; color: #555; margin: 0; text-wrap: balance; }
 .bar { position: absolute; left: 0; right: 0; bottom: 0; height: 14px; background: #e2bc62; }
 .letters { position: absolute; left: 0; right: 0; top: 0; height: 150px; overflow: hidden; font-family: 'DejaVu Serif', Georgia, serif; color: #c9a45c; font-size: 30px;
            display: grid; grid-template-columns: repeat(24, 50px); grid-auto-rows: 44px; justify-content: center; padding-top: 14px;
@@ -26,7 +26,7 @@ p { font-size: 32px; line-height: 1.35; color: #555; margin: 0; }
 .letters span { text-align: center; }
 .url { position: absolute; left: 96px; bottom: 44px; font-size: 26px; color: #555; letter-spacing: .01em; }
 </style><div class="letters">${letters}</div><img src="${icon}"><div><h1>Christian Open Library</h1>
-<p>About 4,800 public-domain Christian books, searchable from Claude, ChatGPT or Gemini.</p></div>
+<p>About 4,800 public-domain Christian books, searchable from Claude, ChatGPT, Gemini or Grok.</p></div>
 <div class="url">christianopenlibrary.org</div><div class="bar"></div>`;
 
 (async () => {
