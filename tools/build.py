@@ -12,6 +12,8 @@ SRC, OUT = ROOT / "src", ROOT / "docs"
 
 NAV = [("index", "Home"), ("setup", "Set it up"), ("browse", "Browse"), ("check", "How to check it"), ("download", "Download"),
        ("privacy", "Privacy"), ("accuracy", "Accuracy"), ("corrections", "Corrections"), ("support", "Give")]
+# The menu at the top shows only these; the footer lists every page.
+TOP = ("index", "setup", "browse", "check", "download", "support")
 
 LAYOUT = """<!doctype html>
 <html lang="en">
@@ -100,8 +102,11 @@ def build():
         full = title if name == "index" else f"{title} · Christian Open Library"
         items = []
         for key, label in NAV:
+            if key not in TOP:
+                continue
             cur = ' aria-current="page"' if key == name else ""
-            items.append(f'        <li><a href="{key}.html"{cur}>{label}</a></li>')
+            cls = ' class="nav-give"' if key == "support" else ""
+            items.append(f'        <li{cls}><a href="{key}.html"{cur}>{label}</a></li>')
         foot = [f'        <li><a href="{k}.html">{l}</a></li>' for k, l in NAV]
         if name == "index":
             main = (f'<div class="page-head home-head">\n  <div class="wrap">\n{head.strip()}\n  </div>\n</div>\n'
