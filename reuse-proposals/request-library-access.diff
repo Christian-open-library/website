@@ -1,0 +1,15 @@
+24a25,34
+>   - type: dropdown
+>     id: app
+>     attributes:
+>       label: Will you put the books in an app, website or AI service?
+>       description: "Apps, websites, AI services, AI training and anything paid aren't allowed, and the library doesn't take requests for them. Up to 10 books in a free project are fine. [The rules](https://christianopenlibrary.org/download.html#reuse)."
+>       options:
+>         - "No"
+>         - "Yes"
+>     validations:
+>       required: true
+30c40
+<         - label: "I've read [what members may do with the books](https://christianopenlibrary.org/download.html#reuse). I won't pass on a copy of the whole collection, republish it, or put it in an app or AI service without asking first."
+---
+>         - label: "I've read [what members may do with the books](https://christianopenlibrary.org/download.html#reuse). I won't pass on a copy of the collection, republish it, put it in an app, website or AI service, use it for AI training, or use it in anything paid."
