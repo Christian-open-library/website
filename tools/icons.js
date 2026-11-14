@@ -26,7 +26,7 @@ p { font-size: 32px; line-height: 1.35; color: #555; margin: 0; text-wrap: balan
 .letters span { text-align: center; }
 .url { position: absolute; left: 96px; bottom: 44px; font-size: 26px; color: #555; letter-spacing: .01em; }
 </style><div class="letters">${letters}</div><img src="${icon}"><div><h1>Christian Open Library</h1>
-<p>About 4,800 public-domain Christian books, searchable from Claude, ChatGPT, Gemini or Grok.</p></div>
+<p>About 6,400 public-domain Christian books, searchable from Claude, ChatGPT, Gemini or Grok.</p></div>
 <div class="url">christianopenlibrary.org</div><div class="bar"></div>`;
 
 (async () => {
