@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for your interest. We'll invite your GitHub account; watch for the email from GitHub and accept it.
+        Thanks for your interest. If approved, we'll invite your GitHub account; watch for the email from GitHub and accept it.
         You don't need to ask for the AI connector: anyone can sign in to it with their email or GitHub.
         **This request is public.** Don't include an email address, phone number or other private details.
   - type: input
@@ -26,10 +26,11 @@ body:
     id: app
     attributes:
       label: Will you put the books in an app, website or AI service?
-      description: "Apps, websites, AI services, AI training and anything paid aren't allowed, and the library doesn't take requests for them. Up to 10 books in a free project are fine. [The rules](https://christianopenlibrary.org/download.html#reuse)."
+      description: "Up to 10 books in a free project are fine. More than that, AI training and anything paid aren't allowed, and the library doesn't take requests for them. [The rules](https://christianopenlibrary.org/download.html#reuse)."
       options:
         - "No"
-        - "Yes"
+        - "Yes, up to 10 books in a free project"
+        - "Yes, more than 10 books, or for AI training, or in something paid"
     validations:
       required: true
   - type: checkboxes
@@ -37,5 +38,5 @@ body:
     attributes:
       label: Terms
       options:
-        - label: "I've read [what members may do with the books](https://christianopenlibrary.org/download.html#reuse). I won't pass on a copy of the collection, republish it, put it in an app, website or AI service, use it for AI training, or use it in anything paid."
+        - label: "I've read [what members may do with the books](https://christianopenlibrary.org/download.html#reuse). Except as a book's own license allows, I won't pass on a copy of the collection, republish it, build an app, website or AI service on it, use it for AI training, or use it in anything paid."
           required: true
