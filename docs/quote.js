@@ -11,7 +11,24 @@
   var go = document.getElementById('qc-go');
   var msg = document.getElementById('qc-msg');
   var out = document.getElementById('qc-result');
+  var clearBtn = document.getElementById('qc-clear');
+  var pasteBtn = document.getElementById('qc-paste');
+  var tries = document.querySelectorAll('.qc-try button');
   var busy = false;
+  var waitTimer = null;
+  var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Brings the answer (or the "checking" line) into view: on a phone it would otherwise be below the screen. */
+  function show(node, block) {
+    if (node && node.scrollIntoView) node.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: block });
+  }
+  /* The box grows with the text, and the clear button shows only when there is something to clear. */
+  function fit() {
+    quoteBox.style.height = 'auto';
+    quoteBox.style.height = Math.min(quoteBox.scrollHeight + 2, 420) + 'px';
+    if (clearBtn) clearBtn.hidden = !quoteBox.value;
+  }
+  function setBox(text) { quoteBox.value = text; fit(); }
 
   function el(tag, cls, text) {
     var e = document.createElement(tag);
@@ -71,16 +88,21 @@
     not_found: ['none', 'Not found in the library']
   };
 
+  var MARK = { yes: '✓', warn: '≈', no: '✗', none: '?' };
+
   function render(d) {
     out.textContent = '';
     var head = HEAD[d.verdict] || ['none', 'Checked'];
     var who = d.author;
     var p = d.primary;
     var card = el('article', 'qc-card qc-' + head[0]);
+    card.tabIndex = -1;
     var title = head[1];
     if (d.verdict === 'other_author' && who) title = 'Found, but not by ' + who;
     if (d.verdict === 'quoting' && who && p && p.credit) title = 'Found, but ' + who + ' was quoting ' + p.credit;
-    add(card, el('h2', 'qc-verdict', title));
+    var mark = el('span', 'qc-mark', MARK[head[0]] || '?');
+    mark.setAttribute('aria-hidden', 'true');
+    add(card, add(el('h2', 'qc-verdict'), mark, el('span', null, title)));
     var asked = el('p', 'qc-asked');
     add(asked, '“' + d.quote + '”', who ? ' — credited to ' + who : '');
     add(card, asked);
@@ -157,9 +179,20 @@
     var btn = el('button', 'btn btn-secondary', 'Share this check');
     btn.type = 'button';
     btn.addEventListener('click', function () { shareIt(d, title, btn); });
-    add(share, btn);
+    var again = el('button', 'btn btn-secondary', 'Check another');
+    again.type = 'button';
+    again.addEventListener('click', function () {
+      setBox('');
+      say('');
+      if (history.replaceState) history.replaceState(null, '', location.pathname + location.search);
+      show(form, 'center');
+      quoteBox.focus({ preventScroll: true });
+    });
+    add(share, btn, again);
     add(card, share);
     add(out, card);
+    show(card, 'start');
+    card.focus({ preventScroll: true });
   }
 
   function shareUrl(q, a) {
@@ -173,7 +206,7 @@
       navigator.share({ title: 'Did they really say it?', text: text, url: url }).catch(function () {});
       return;
     }
-    var done = function () { btn.textContent = 'Link copied'; setTimeout(function () { btn.textContent = 'Share this check'; }, 2500); };
+    var done = function () { btn.textContent = 'Link copied ✓'; setTimeout(function () { btn.textContent = 'Share this check'; }, 2500); };
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text + ' ' + url).then(done, function () { prompt('Copy this link:', url); });
     } else {
@@ -225,8 +258,16 @@
     busy = true;
     go.disabled = true;
     go.textContent = 'Checking…';
+    Array.prototype.forEach.call(tries, function (b) { b.disabled = true; });
+    quoteBox.blur();
     out.textContent = '';
-    add(out, el('p', 'qc-wait', 'Checking 6,400 books…'));
+    var waitText = el('span', null, 'Checking 6,400 books…');
+    var wait = add(el('p', 'qc-wait'), el('span', 'qc-spin'), waitText);
+    add(out, wait);
+    show(wait, 'center');
+    var step = 0, later = ['Comparing the wording…', 'Still checking. Long quotations take a little longer…'];
+    clearInterval(waitTimer);
+    waitTimer = setInterval(function () { if (step < later.length) waitText.textContent = later[step++]; }, 3500);
     if (history.replaceState) history.replaceState(null, '', '#q=' + encodeURIComponent(q) + (a ? '&a=' + encodeURIComponent(a) : ''));
     fetch(ENDPOINT, {
       method: 'POST',
@@ -242,11 +283,15 @@
       } else {
         out.textContent = '';
         say((res.d && res.d.error) || 'The checker didn’t answer. Please try again in a moment.');
+        show(msg, 'center');
       }
     }).catch(function () {
       out.textContent = '';
       say('The checker couldn’t be reached. Check your connection and try again.');
+      show(msg, 'center');
     }).then(function () {
+      clearInterval(waitTimer);
+      Array.prototype.forEach.call(tries, function (b) { b.disabled = false; });
       busy = false;
       go.disabled = false;
       go.textContent = 'Check it';
@@ -257,12 +302,24 @@
   quoteBox.addEventListener('keydown', function (e) {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); check(); }
   });
-  Array.prototype.forEach.call(document.querySelectorAll('.qc-try button'), function (b) {
+  Array.prototype.forEach.call(tries, function (b) {
     b.addEventListener('click', function () {
-      quoteBox.value = joined(b.getAttribute('data-q'), b.getAttribute('data-a') || '');
+      setBox(joined(b.getAttribute('data-q'), b.getAttribute('data-a') || ''));
       check();
     });
   });
+  quoteBox.addEventListener('input', function () { fit(); if (!msg.hidden) say(''); });
+  if (clearBtn) clearBtn.addEventListener('click', function () { setBox(''); say(''); quoteBox.focus(); });
+  /* "Paste" saves a long press on a phone. The browser asks first; if it says no, the box is ready for a normal paste. */
+  if (pasteBtn && navigator.clipboard && navigator.clipboard.readText) {
+    pasteBtn.hidden = false;
+    pasteBtn.addEventListener('click', function () {
+      navigator.clipboard.readText().then(function (t) {
+        t = (t || '').trim().slice(0, 1600);
+        if (t) { setBox(t); say(''); } else { quoteBox.focus(); }
+      }, function () { quoteBox.focus(); });
+    });
+  }
 
   /* A shared link: #q=...&a=... */
   function fromHash() {
@@ -278,7 +335,7 @@
       if (kv.slice(0, i) === 'a') a = v.slice(0, 100);
     });
     if (q) {
-      quoteBox.value = joined(q, a);
+      setBox(joined(q, a));
       // Inside another site's frame, wait for a click: otherwise any page could make its visitors run checks.
       if (window.top === window.self) check();
     }
