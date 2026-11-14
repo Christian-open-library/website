@@ -406,7 +406,6 @@ ul.works li[data-u]:not(.open) { content-visibility: auto; contain-intrinsic-siz
 .rule-no { --c: var(--no); --soft: var(--no-soft); --mark: var(--cross); }
 .rule-never { --c: var(--no); --soft: var(--no-soft); --mark: var(--stop); }
 .prose .rule h3 { margin: 0 0 .6rem; color: var(--c); font-size: 1.12rem; }
-.rule h3::before { content: ""; width: 1.25rem; height: 1.25rem; flex: none; background: var(--c); -webkit-mask: var(--mark) center / contain no-repeat; mask: var(--mark) center / contain no-repeat; }
 .rule .note { margin: -.3rem 0 .5rem; }
 .rule ul.points li { padding-left: 1.5rem; }
 .rule ul.points li::before { left: 0; top: .32em; width: 1rem; height: 1rem; border-radius: 0; background: var(--c); -webkit-mask: var(--mark) center / contain no-repeat; mask: var(--mark) center / contain no-repeat; }
