@@ -10,10 +10,10 @@ import hashlib, re, pathlib
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC, OUT = ROOT / "src", ROOT / "docs"
 
-NAV = [("index", "Home"), ("setup", "Set it up"), ("browse", "Browse"), ("check", "How to check it"), ("download", "Download"),
+NAV = [("index", "Home"), ("setup", "Set it up"), ("browse", "Browse"), ("quote", "Check a quote"), ("check", "How to check it"), ("download", "Download"),
        ("privacy", "Privacy"), ("accuracy", "Accuracy"), ("corrections", "Corrections"), ("support", "Give")]
 # The menu at the top shows only these; the footer lists every page.
-TOP = ("index", "setup", "browse", "check", "download", "support")
+TOP = ("index", "setup", "browse", "quote", "check", "download", "support")
 
 LAYOUT = """<!doctype html>
 <html lang="en">
@@ -117,7 +117,7 @@ def build():
         url = "https://christianopenlibrary.org/" + ("" if name == "index" else f"{name}.html")
         html = LAYOUT.format(title=full, desc=desc, name=name, url=url, og_v=asset_version("img/og.png"), nav="\n".join(items),
                              footnav="\n".join(foot), main=main,
-                             css_v=asset_version("style.css"), js_v=asset_version("site.js")).replace('src="browse.js"', 'src="browse.js?v=' + asset_version("browse.js") + '"')
+                             css_v=asset_version("style.css"), js_v=asset_version("site.js")).replace('src="browse.js"', 'src="browse.js?v=' + asset_version("browse.js") + '"').replace('src="quote.js"', 'src="quote.js?v=' + asset_version("quote.js") + '"')
         (OUT / f"{name}.html").write_text(html, encoding="utf-8")
         print("wrote", f"docs/{name}.html")
 

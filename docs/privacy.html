@@ -21,7 +21,7 @@
 <meta property="og:image:alt" content="Christian Open Library: an open book on a dark tile, with the site's name.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=0edd21c2">
+<link rel="stylesheet" href="style.css?v=9dc7bf68">
 </head>
 <body class="page-privacy">
 <a class="skip" href="#main">Skip to the page</a>
@@ -33,6 +33,7 @@
         <li><a href="index.html">Home</a></li>
         <li><a href="setup.html">Set it up</a></li>
         <li><a href="browse.html">Browse</a></li>
+        <li><a href="quote.html">Check a quote</a></li>
         <li><a href="check.html">How to check it</a></li>
         <li><a href="download.html">Download</a></li>
         <li class="nav-give"><a href="support.html">Give</a></li>
@@ -45,6 +46,7 @@
         <li><a href="index.html">Home</a></li>
         <li><a href="setup.html">Set it up</a></li>
         <li><a href="browse.html">Browse</a></li>
+        <li><a href="quote.html">Check a quote</a></li>
         <li><a href="check.html">How to check it</a></li>
         <li><a href="download.html">Download</a></li>
         <li class="nav-give"><a href="support.html">Give</a></li>
@@ -58,7 +60,7 @@
   <div class="wrap">
 <h1>What happens to your question</h1>
 <p class="lead">When your AI app uses the library, your question passes through a few hands. Here is each one, what it sees, and what it keeps.</p>
-<p class="meta">Last checked 11 November 2026.</p>
+<p class="meta">Last checked 14 November 2026.</p>
   </div>
 </div>
 <div class="wrap prose">
@@ -67,6 +69,7 @@
   <li>The connector keeps no copy of your conversations or documents, and it doesn't log what you search for.</li>
   <li>It never sees your whole conversation or your files.</li>
   <li>Two outside services are involved: WorkOS for sign-in and Voyage AI for search. Cloudflare carries the traffic.</li>
+  <li>The <a href="quote.html">quotation checker</a> on this website keeps no copy of the words you check either.</li>
   <li>Your AI app holds the conversation itself, under its own privacy terms.</li>
   <li>No ads, analytics, cookies or tracking, on the connector or this website. Nothing is sold or shared for marketing.</li>
 </ul>
@@ -97,7 +100,16 @@
 <ul class="points">
   <li><strong>Your conversation.</strong> The AI app sends only the search it wants run.</li>
   <li><strong>Your files.</strong> The connector can't read anything on your device or in your AI app.</li>
-  <li><strong>Your IP address or location.</strong> Requests normally come from your AI app's servers, not from you, and the server keeps no access log. If you connect a tool that runs on your own computer (Claude Code, for example), Cloudflare sees that computer's IP address as any website would.</li>
+  <li><strong>Your IP address or location.</strong> Requests normally come from your AI app's servers, not from you, and the server keeps no access log. If you connect a tool that runs on your own computer (Claude Code, for example), Cloudflare sees that computer's IP address as any website would. The quotation checker on this website is different: see below.</li>
+</ul>
+
+<h2 id="checker">The quotation checker on this website</h2>
+<p>The <a href="quote.html">quotation checker</a> runs in your browser and sends the words you check straight to the library's server, without signing in.</p>
+<ul class="points">
+  <li><strong>The words you check</strong> go to the library's server and to Voyage AI (to find reworded quotations), as a search from your AI app does. Neither keeps them, and the server's log line says only which answer it gave and how long it took.</li>
+  <li><strong>Your IP address</strong> reaches the server through Cloudflare, because your browser is calling it. It is used only to count checks for the daily limit, and only as a scrambled code made from the address and the date with a secret key. The code changes every day, and the day's codes are deleted the next day. The address itself isn't stored.</li>
+  <li><strong>Share links</strong> carry the quotation inside the link, after the <code>#</code>. Browsers don't send that part to websites, so this website (hosted on GitHub Pages) never receives it. Anyone you send the link to can read it.</li>
+  <li><strong>No cookies, accounts or tracking</strong>, as on the rest of this site.</li>
 </ul>
 
 <h2>Email and public forms</h2>
@@ -119,6 +131,7 @@
         <li><a href="index.html">Home</a></li>
         <li><a href="setup.html">Set it up</a></li>
         <li><a href="browse.html">Browse</a></li>
+        <li><a href="quote.html">Check a quote</a></li>
         <li><a href="check.html">How to check it</a></li>
         <li><a href="download.html">Download</a></li>
         <li><a href="privacy.html">Privacy</a></li>

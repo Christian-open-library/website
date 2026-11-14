@@ -409,3 +409,56 @@ ul.works li[data-u]:not(.open) { content-visibility: auto; contain-intrinsic-siz
 .rule .note { margin: -.3rem 0 .5rem; }
 .rule ul.points li { padding-left: 1.5rem; }
 .rule ul.points li::before { left: 0; top: .32em; width: 1rem; height: 1rem; border-radius: 0; background: var(--c); -webkit-mask: var(--mark) center / contain no-repeat; mask: var(--mark) center / contain no-repeat; }
+
+/* Quotation checker (quote.html, quote.js) */
+:root { --warn: #8a5a00; --warn-soft: #fbf3dc; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --warn: #e2bc62; --warn-soft: rgba(226, 188, 98, .12); }
+}
+.qc { margin: .4rem 0 .8rem; }
+.qc label { display: block; margin: 0 0 .3rem; font-weight: 600; color: var(--ink); }
+.qc-opt { font-weight: 400; color: var(--muted); }
+.qc textarea, .qc input { box-sizing: border-box; width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line-2); border-radius: var(--radius); padding: .6rem .8rem; }
+.qc textarea { min-height: 7rem; resize: vertical; line-height: 1.45; }
+.qc input { min-height: 44px; }
+.qc textarea:focus, .qc input:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
+.qc-row { display: flex; gap: .8rem; align-items: flex-end; margin-top: .8rem; }
+.qc-who { flex: 1 1 auto; min-width: 0; }
+.qc-row .btn { flex: none; min-width: 8rem; cursor: pointer; }
+.qc-row .btn:disabled { opacity: .6; cursor: progress; }
+.qc-msg { margin: .6rem 0 0; color: var(--no); font-weight: 500; }
+.qc-try { display: flex; flex-wrap: wrap; gap: .4rem .5rem; align-items: center; margin: 0 0 1.4rem; font-size: .93rem; color: var(--muted); }
+.qc-try button { font: inherit; font-size: .9rem; color: var(--ink); background: var(--tile); border: 1px solid var(--line); border-radius: 999px; padding: .3rem .75rem; cursor: pointer; }
+.qc-try button:hover { background: var(--tile-hover); }
+.qc-wait { color: var(--muted); }
+.qc-card { --c: var(--muted); --soft: var(--tile); margin: 0 0 1.6rem; padding: 1.1rem 1.25rem .6rem; background: var(--soft); border-left: 5px solid var(--c); border-radius: var(--radius); }
+.qc-yes { --c: var(--yes); --soft: var(--yes-soft); }
+.qc-warn { --c: var(--warn); --soft: var(--warn-soft); }
+.qc-no { --c: var(--no); --soft: var(--no-soft); }
+.prose .qc-card h2.qc-verdict { margin: 0 0 .35rem; color: var(--c); font-size: 1.35rem; line-height: 1.25; }
+.qc-asked { margin: 0 0 .8rem; color: var(--muted); font-style: italic; overflow-wrap: anywhere; }
+.qc-line { margin: 0 0 .6rem; }
+.qc-line cite, .qc-others cite { font-style: italic; }
+.qc-label { margin: .9rem 0 .25rem; font-size: .82rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.qc-words { margin: 0; padding: .55rem .9rem; background: var(--bg); border-left: 3px solid var(--accent); border-radius: 0 var(--radius) var(--radius) 0; color: var(--ink); font-size: 1.08rem; line-height: 1.5; overflow-wrap: anywhere; }
+.qc-given { border-left-color: var(--line-2); color: var(--text); }
+.qc-words strong { background: var(--accent-soft); border-radius: 3px; padding: 0 .1em; }
+.qc-small { margin: .5rem 0; font-size: .9rem; color: var(--muted); }
+.qc-context, .qc-others { margin: .8rem 0; }
+.qc-context summary, .qc-others summary { cursor: pointer; font-weight: 600; color: var(--ink); }
+.qc-context p { margin: .5rem 0 0; line-height: 1.55; overflow-wrap: anywhere; }
+.qc-context mark { background: var(--accent-soft); color: var(--ink); padding: 0 .1em; }
+.qc-others ul { margin: .5rem 0 0; padding-left: 1.2rem; font-size: .93rem; }
+.qc-others li { margin: .25rem 0; }
+.qc-links { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; margin: .9rem 0 .3rem; font-weight: 600; }
+.qc-links a { color: var(--ink); }
+.qc-permission a { font-weight: 600; color: var(--ink); }
+.qc-share { margin: .9rem 0 .5rem; }
+.qc-share .btn { cursor: pointer; }
+.qc-cta { margin: 0 0 1rem; padding: 1rem 1.25rem .4rem; background: var(--tile); border: 1px solid var(--line); border-radius: 10px; }
+.prose .qc-cta h2 { margin: 0 0 .4rem; font-size: 1.15rem; }
+@media (max-width: 40rem) {
+  .qc-row { flex-direction: column; align-items: stretch; }
+  .qc-row .btn { width: 100%; }
+  .qc-card { padding: .9rem 1rem .5rem; }
+}
