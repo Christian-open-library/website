@@ -8,6 +8,8 @@
 
 <h3>The connector</h3>
 <ul class="points">
+  <li><strong>Full names could defeat the quotation checker.</strong> It matched a name only if the library used every word of it, so a quotation credited to "Charles Haddon Spurgeon" or "Augustine of Hippo" could be reported as not by him, because the library lists them as Charles Spurgeon and Augustine. It now also tries the first and last name, and the name before "of".</li>
+  <li><strong>A check that ran out of time could say "not found".</strong> When the quotation checker ran short of time before it had searched, it could report the words as not in the library without saying the search was cut short. It now says so, and the website's checker asks you to try again instead of giving an answer.</li>
   <li><strong>"Found word for word" could be wrong in scanned books.</strong> The quotation checker reported a word-for-word match when one word differed by a single letter in a scanned book. Such a difference may be a misreading of the scan or a different word. It now says a word differs and to check the scan, and when both are ordinary words (not and now, sin and son) it says "worded differently".</li>
   <li><strong>Quotations joined by "..." were too easily "found".</strong> Pieces of only a word or two, scattered through a passage, counted as found word for word. They are now reported as found with words left out.</li>
 </ul>

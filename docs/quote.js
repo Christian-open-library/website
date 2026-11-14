@@ -8,7 +8,6 @@
   var form = document.getElementById('qc-form');
   if (!form) return;
   var quoteBox = document.getElementById('qc-quote');
-  var authorBox = document.getElementById('qc-author');
   var go = document.getElementById('qc-go');
   var msg = document.getElementById('qc-msg');
   var out = document.getElementById('qc-result');
@@ -29,17 +28,18 @@
     return parent;
   }
   function link(href, text) {
+    if (!/^https?:\/\//i.test(String(href))) return null;
     var a = el('a', null, text);
     a.href = href;
     a.rel = 'noopener';
     return a;
   }
-  /* "**word**" marks from the server become <strong>. */
-  function marked(text) {
+  /* [[text, differs], ...] from the server: the words that differ become <strong>. */
+  function marked(pieces) {
     var span = el('span');
-    String(text).split('**').forEach(function (part, i) {
-      if (part === '') return;
-      add(span, i % 2 ? el('strong', null, part) : part);
+    (Array.isArray(pieces) ? pieces : []).forEach(function (p) {
+      if (!Array.isArray(p) || typeof p[0] !== 'string' || p[0] === '') return;
+      add(span, p[1] === true ? el('strong', null, p[0]) : p[0]);
     });
     return span;
   }
@@ -49,8 +49,10 @@
   /* "John Owen (1616–1683), Of the Mortification of Sin (1668), p. 11" as nodes, the title in italics. */
   function where(m) {
     var f = document.createDocumentFragment();
-    if (m.author) add(f, m.author + (m.dates ? ' (' + m.dates + ')' : '') + ', ');
-    add(f, el('cite', null, m.title), m.year ? ' (' + m.year + ')' : ' (year not known)', m.pages ? ', ' + m.pages : '');
+    // "Various" (a journal) says nothing; a title that already ends with its year doesn't need it again.
+    if (m.author && !/^various$/i.test(m.author)) add(f, m.author + (m.dates ? ' (' + m.dates + ')' : '') + ', ');
+    var hasYear = m.year && new RegExp('\\b' + m.year + '\\)?$').test(m.title);
+    add(f, el('cite', null, m.title), hasYear ? '' : (m.year ? ' (' + m.year + ')' : ' (year not known)'), m.pages ? ', ' + m.pages : '');
     return f;
   }
   function closeness(m) {
@@ -119,8 +121,8 @@
         if (p.exact) {
           add(card, el('p', 'qc-label', 'The library’s wording'), add(el('blockquote', 'qc-words'), p.text));
         } else {
-          add(card, el('p', 'qc-label', 'The real wording'), add(el('blockquote', 'qc-words'), marked(p.marked || p.text)),
-            el('p', 'qc-label', 'The wording you gave'), add(el('blockquote', 'qc-words qc-given'), marked(p.given_marked || d.quote)));
+          add(card, el('p', 'qc-label', 'The real wording'), add(el('blockquote', 'qc-words'), p.marked ? marked(p.marked) : p.text),
+            el('p', 'qc-label', 'The wording you gave'), add(el('blockquote', 'qc-words qc-given'), p.given_marked ? marked(p.given_marked) : d.quote));
           add(card, el('p', 'qc-small', 'Words that differ are in bold. Spelling, capitals and punctuation aren’t compared.'));
         }
         if (p.before || p.after) {
@@ -179,6 +181,35 @@
     }
   }
 
+  /* One box: the quotation as people copy it, with the credit if there is one:
+       "words" — C. H. Spurgeon, Morning and Evening  |  words -Spurgeon  |  words, then "~ John Owen" on a new line
+       Spurgeon said, "words"  |  Spurgeon: "words"
+     A credit must look like a name (1 to 6 capitalized words), so a dash inside the quotation isn't taken for
+     one. What follows the name (a comma, "in", a title in brackets, a date) is dropped. */
+  var SMALL = /^(of|de|du|la|le|van|von|der|den|the|and|à|da|di)$/i;
+  function nameOf(s) {
+    s = s.replace(/^\s*by\s+/i, '').split(/\s*(?:[,;(\[:]|\s(?:in|from|on)\s|\d)/)[0].trim();
+    s = s.replace(/[\s”"'*_]+$/, '');
+    var w = s.split(/\s+/).filter(Boolean);
+    if (!w.length || w.length > 6 || s.length > 60 || !/^\p{Lu}/u.test(w[0])) return '';
+    for (var i = 0; i < w.length; i++) {
+      if (!/^[\p{L}.'’-]+$/u.test(w[i])) return '';
+      if (!/^\p{Lu}/u.test(w[i]) && !SMALL.test(w[i])) return '';
+    }
+    return s.replace(/,$/, '');
+  }
+  function unquote(t) { return t.replace(/^[\s“”‘’"'«»]+|[\s“”‘’"'«»]+$/g, ''); }
+  function split(text) {
+    var t = text.trim(), m, who;
+    // The last dash: "\s-" (a hyphen needs a space before it, so "Jean-Baptiste" stays whole), or a long dash or ~.
+    m = t.match(/^([\s\S]*\S)\s+(?:—|–|~|-{1,2})\s*([^\n—–~]{1,120})$/) || t.match(/^([\s\S]*\S)\s*(?:—|–|~)\s*([^\n—–~]{1,120})$/);
+    if (m && (who = nameOf(m[2]))) return { quote: unquote(m[1]), author: who };
+    m = t.match(/^([^\n"“:]{2,60}?)\s+(?:said|says|wrote|writes)\s*[,:]?\s*([“"][\s\S]+)$/i) || t.match(/^([^\n"“:]{2,60}?):\s*([“"][\s\S]+)$/);
+    if (m && (who = nameOf(m[1]))) return { quote: unquote(m[2]), author: who };
+    return { quote: unquote(t), author: '' };
+  }
+  function joined(q, a) { return a ? '“' + q + '” — ' + a : q; }
+
   function say(text) {
     msg.textContent = text;
     msg.hidden = !text;
@@ -186,8 +217,8 @@
 
   function check() {
     if (busy) return;
-    var q = quoteBox.value.replace(/^[\s“”"']+|[\s“”"']+$/g, '');
-    var a = authorBox.value.trim().replace(/^[—–-]+\s*/, '');
+    var parts = split(quoteBox.value);
+    var q = parts.quote.slice(0, 1500), a = parts.author;
     if (!q) { say('Type or paste the words to check.'); quoteBox.focus(); return; }
     if (words(q) < 4) { say('That is too short to check: give at least 4 words.'); quoteBox.focus(); return; }
     say('');
@@ -228,8 +259,7 @@
   });
   Array.prototype.forEach.call(document.querySelectorAll('.qc-try button'), function (b) {
     b.addEventListener('click', function () {
-      quoteBox.value = b.getAttribute('data-q');
-      authorBox.value = b.getAttribute('data-a') || '';
+      quoteBox.value = joined(b.getAttribute('data-q'), b.getAttribute('data-a') || '');
       check();
     });
   });
@@ -248,9 +278,9 @@
       if (kv.slice(0, i) === 'a') a = v.slice(0, 100);
     });
     if (q) {
-      quoteBox.value = q;
-      authorBox.value = a;
-      check();
+      quoteBox.value = joined(q, a);
+      // Inside another site's frame, wait for a click: otherwise any page could make its visitors run checks.
+      if (window.top === window.self) check();
     }
   }
   fromHash();

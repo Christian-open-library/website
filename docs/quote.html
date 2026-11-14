@@ -64,13 +64,10 @@
 </div>
 <div class="wrap prose">
 <form id="qc-form" class="qc" novalidate>
-  <label for="qc-quote">The quotation</label>
-  <textarea id="qc-quote" rows="4" maxlength="1500" placeholder="Be killing sin, or it will be killing you." spellcheck="false"></textarea>
+  <label for="qc-quote" class="sr">The quotation, with the name if you have it</label>
+  <textarea id="qc-quote" rows="4" maxlength="1600" placeholder="&ldquo;Be killing sin, or it will be killing you.&rdquo; &mdash; John Owen" spellcheck="false"></textarea>
   <div class="qc-row">
-    <div class="qc-who">
-      <label for="qc-author">Credited to <span class="qc-opt">(optional)</span></label>
-      <input id="qc-author" type="text" maxlength="100" placeholder="John Owen" autocomplete="off" spellcheck="false">
-    </div>
+    <p class="qc-hint">Paste the quote as you found it, with the name if it has one.</p>
     <button id="qc-go" class="btn btn-primary" type="submit">Check it</button>
   </div>
   <p id="qc-msg" class="qc-msg" role="alert" hidden></p>
@@ -107,8 +104,8 @@
 <p>More on this: <a href="check.html">how to check a quotation</a>.</p>
 
 <h2>Privacy</h2>
-<p>The words you check go to the library's server and to Voyage AI, which helps find reworded quotations. Neither keeps them. A share link carries the quotation inside the link itself, after the <code>#</code>, so this website never receives it. Your IP address is used only to count checks for the daily limit, as a scrambled code that changes every day and is deleted the next day. <a href="privacy.html#checker">Details</a>.</p>
-<script src="quote.js?v=28c5dedd" defer></script>
+<p>The words you check go to the library's server and to Voyage AI, which helps find reworded quotations. Cloudflare carries them. Neither the server nor Voyage keeps them. A share link carries the quotation inside the link itself, after the <code>#</code>, so this website never receives it. Your IP address is used only to count checks for the daily limit, as a scrambled code that changes every day and is deleted the next day. <a href="privacy.html#checker">Details</a>.</p>
+<script src="quote.js?v=ae0a99f3" defer></script>
 </div>
 </main>
 <footer class="site">
