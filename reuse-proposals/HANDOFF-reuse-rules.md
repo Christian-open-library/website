@@ -7,6 +7,7 @@ Drafts only. Nothing merged, deployed, pushed to .github, posted or sent.
   `download.html#reuse` rewritten as Yes / No / Never, "use the originals", and each book's own
   license. No invitation to ask: "the library doesn't take requests for other uses". `setup.html#terms`
   and the home tile point to it (the old "ask first" / "ask before building on it" are gone).
+  Adds a one-line "Why". License notes are folded (tap to open) to keep it short.
   "A few" = **10 books per free project**, counted for the whole project (series, rotating sites,
   several projects by the same people count as one). Screenshot: reuse-proposals/reuse-390px.png.
 - **Access form**: reuse-proposals/request-library-access.yml (diff vs live: .diff). New required
@@ -31,8 +32,7 @@ ads or sponsorship; no sharing download or sign-in in a church/class; own human 
 marked; approve.sh no longer says "share"; email prompt may point to the rules; greeting uses a
 display name only if it looks like a plain first name; judge sees earlier closed requests; form says
 "If approved, we'll invite".
-Rejected: banning loading the books into one's own AI tool (NotebookLM etc.) for personal study:
-that would reopen Matt's "personal study: yes". Training and datasets stay banned. Matt's call.
+Matt, 2026-11-14: loading the books into your own AI tool for your own study is a YES (added); training and datasets stay banned.
 Rejected: "promotes a paid product" in the paid line: would catch every church site.
 Checked: permission documents (URCNA) are not in the books catalog.
 
