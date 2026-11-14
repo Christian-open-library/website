@@ -394,3 +394,19 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
 ul.works li[data-u]:not(.open) { content-visibility: auto; contain-intrinsic-size: auto 1.3rem; }
 @media (max-width: 40rem) { ul.works li[data-u]:not(.open) { contain-intrinsic-size: auto 2.5rem; } }
 .prose details.credits { margin-bottom: 1rem; }
+
+/* Reuse rules (download.html#reuse): Yes / No / Never blocks */
+:root { --yes: #2f7a4b; --yes-soft: #eef6f0; --no: #b3261e; --no-soft: #fcefee;
+  --cross: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M7 7l10 10M17 7L7 17'/%3E%3C/svg%3E");
+  --stop: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='8'/%3E%3Cpath d='M6.5 17.5l11-11'/%3E%3C/svg%3E"); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --yes: #86cf9f; --yes-soft: rgba(134, 207, 159, .1); --no: #f2a097; --no-soft: rgba(242, 160, 151, .1); }
+}
+.rule { --c: var(--yes); --soft: var(--yes-soft); --mark: var(--tick); margin: 1.25rem 0; padding: .9rem 1.1rem .35rem; background: var(--soft); border-left: 4px solid var(--c); border-radius: var(--radius); }
+.rule-no { --c: var(--no); --soft: var(--no-soft); --mark: var(--cross); }
+.rule-never { --c: var(--no); --soft: var(--no-soft); --mark: var(--stop); }
+.prose .rule h3 { margin: 0 0 .6rem; color: var(--c); font-size: 1.12rem; }
+.rule h3::before { content: ""; width: 1.25rem; height: 1.25rem; flex: none; background: var(--c); -webkit-mask: var(--mark) center / contain no-repeat; mask: var(--mark) center / contain no-repeat; }
+.rule .note { margin: -.3rem 0 .5rem; }
+.rule ul.points li { padding-left: 1.5rem; }
+.rule ul.points li::before { left: 0; top: .32em; width: 1rem; height: 1rem; border-radius: 0; background: var(--c); -webkit-mask: var(--mark) center / contain no-repeat; mask: var(--mark) center / contain no-repeat; }
