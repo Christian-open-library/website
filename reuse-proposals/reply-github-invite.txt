@@ -1,5 +1,0 @@
-Thanks for asking. I've invited you to the library for your own reading and study: accept the invitation from GitHub's email or at https://github.com/orgs/Christian-open-library/invitation.
-
-Apart from what a book's own open license allows, the library's books can't be used in an app, website or AI service built on the collection (more than 10 books), for AI training, or in anything paid, and I don't make exceptions on request. The rules: https://christianopenlibrary.org/download.html#reuse
-
-The originals are free at their own sources (each file names its source: CCEL, Internet Archive, EEBO-TCP, Project Gutenberg and others), so you can use them there, on those sites' own terms.
