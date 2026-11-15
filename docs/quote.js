@@ -342,12 +342,9 @@
     });
     if (q) {
       setBox(joined(q, a));
-      // The check runs by itself only in a page the visitor opened: not inside another site's frame, not in a
-      // window another page opened and can keep reloading, and at most 3 times in one tab (a count is kept for
-      // the tab, never the words). Otherwise the box is filled in and waits for a click.
-      var runs = 99;
-      try { runs = Number(sessionStorage.getItem('qc-auto')) || 0; sessionStorage.setItem('qc-auto', String(runs + 1)); } catch (e) { runs = 99; }
-      if (window.top === window.self && !window.opener && runs < 3) check({ quote: q, author: a });
+      // The check runs by itself only in a page the visitor opened: not inside another site's frame, and not in a
+      // window another page opened and can keep reloading. There the box is filled in and waits for a click.
+      if (window.top === window.self && !window.opener) check({ quote: q, author: a });
     }
   }
   fromHash();
