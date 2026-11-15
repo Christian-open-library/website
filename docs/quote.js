@@ -158,7 +158,7 @@
     var line = '', notes = [];
     if (!p) {
       line = 'No work in the library has these words or a close match.';
-      notes.push(['This does not prove the quotation is false. The library holds about 6,400 works, not everything ever written.']);
+      notes.push(['This does not prove the quotation is false. The library holds about 7,100 works, not everything ever written.']);
       if (who) notes.push([d.author_works > 0
         ? 'The library holds ' + plural(d.author_works, 'work') + ' by ' + who + ', not the complete writings.'
         : 'The library holds no works by ' + who + '.']);
@@ -262,7 +262,7 @@
   function shareIt(d, title, btn) {
     var url = shareUrl(d.quote, d.author || '');
     var short = d.quote.length > 90 ? d.quote.slice(0, 87).replace(/\s+\S*$/, '') + '…' : d.quote;
-    var text = '“' + short + '”' + (d.author ? ' (' + d.author + ')' : '') + ': ' + title + '. Checked against the text of 6,400 books:';
+    var text = '“' + short + '”' + (d.author ? ' (' + d.author + ')' : '') + ': ' + title + '. Checked against the text of 7,100 books:';
     if (navigator.share) {
       navigator.share({ title: 'Check a quote', text: text, url: url }).catch(function () {});
       return;
@@ -326,7 +326,7 @@
     Array.prototype.forEach.call(tries, function (b) { b.disabled = true; });
     quoteBox.blur();
     out.textContent = '';
-    var waitText = el('span', null, 'Searching 6,400 books…');
+    var waitText = el('span', null, 'Searching 7,100 books…');
     var wait = add(el('p', 'qc-wait'), el('span', 'qc-spin'), waitText);
     add(out, wait);
     show(wait, 'center');
