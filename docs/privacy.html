@@ -21,7 +21,7 @@
 <meta property="og:image:alt" content="Christian Open Library: an open book on a dark tile, with the site's name.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=287c163b">
+<link rel="stylesheet" href="style.css?v=eae28584">
 </head>
 <body class="page-privacy">
 <a class="skip" href="#main">Skip to the page</a>
@@ -107,6 +107,7 @@
 <p>The <a href="quote.html">quotation checker</a> runs in your browser and sends the words you check straight to the library's server, without signing in.</p>
 <ul class="points">
   <li><strong>The words you check</strong> go to the library's server and to Voyage AI (to find reworded quotations), as a search from your AI app does. Neither keeps them, and the server's log line says only which answer it gave and how long it took.</li>
+  <li><strong>Answers</strong> are kept on the server for a day, so a share link opened by many people is checked only once. Each is locked with a key made from the words checked, so it can't be read, or even matched to a quotation, by anyone who doesn't already have the exact words.</li>
   <li><strong>Your IP address</strong> reaches the server through Cloudflare, because your browser is calling it. It is used only to count checks for the daily limit, and only as a scrambled code made from the address and the date with a secret key. The code changes every day, and the day's codes are deleted the next day. The address itself isn't stored.</li>
   <li><strong>Share links</strong> carry the quotation inside the link, after the <code>#</code>. Browsers don't send that part to websites, so this website (hosted on GitHub Pages) never receives it. Anyone you send the link to can read it.</li>
   <li><strong>No cookies, accounts or tracking</strong>, as on the rest of this site.</li>
