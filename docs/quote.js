@@ -334,13 +334,16 @@
     Array.prototype.forEach.call(tries, function (b) { b.disabled = true; });
     quoteBox.blur();
     out.textContent = '';
-    var waitText = el('span', null, 'Searching 7,100 books…');
-    var wait = add(el('p', 'qc-wait'), el('span', 'qc-spin'), waitText);
+    /* A quiet placeholder in the shape of the answer, with a thin line moving along its top edge. */
+    var wait = el('div', 'qc-card qc-wait');
+    wait.setAttribute('role', 'status');
+    var waitText = el('p', 'qc-wait-label', 'Searching 7,100 books');
+    add(wait, add(el('span', 'qc-wait-track'), el('span', 'qc-wait-bar')), waitText,
+      el('span', 'qc-bone qc-bone-1'), el('span', 'qc-bone qc-bone-2'), el('span', 'qc-bone qc-bone-3'));
     add(out, wait);
     show(wait, 'center');
-    var step = 0, later = ['Comparing the wording…', 'Still searching. Longer quotations take more time…'];
-    clearInterval(waitTimer);
-    waitTimer = setInterval(function () { if (step < later.length) waitText.textContent = later[step++]; }, 3500);
+    clearTimeout(waitTimer);
+    waitTimer = setTimeout(function () { waitText.textContent = 'Still searching. Long quotations take a little longer.'; }, 9000);
     var stop = window.AbortController ? new AbortController() : null;
     var giveUp = setTimeout(function () { if (stop) stop.abort(); }, 30000);
     fetch(ENDPOINT, {
@@ -365,7 +368,7 @@
       say('The checker couldn’t be reached. Check your connection and try again.');
       show(msg, 'center');
     }).then(function () {
-      clearInterval(waitTimer);
+      clearTimeout(waitTimer);
       clearTimeout(giveUp);
       Array.prototype.forEach.call(tries, function (b) { b.disabled = false; });
       busy = false;

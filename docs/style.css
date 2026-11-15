@@ -434,11 +434,18 @@ ul.works li[data-u]:not(.open) { content-visibility: auto; contain-intrinsic-siz
 .qc-try button:disabled { opacity: .55; cursor: default; }
 .qc-note { margin: 1.1rem 0 2rem; font-size: .88rem; color: var(--muted); }
 
-.qc-wait { display: flex; align-items: center; gap: .7rem; margin: 0 0 2rem; padding: 1rem 1.1rem; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); font-weight: 500; scroll-margin: 6rem 0; }
-.qc-spin { flex: none; width: 1.15rem; height: 1.15rem; border: 2.5px solid var(--line-2); border-top-color: var(--ink); border-radius: 50%; animation: qc-spin .8s linear infinite; }
-@keyframes qc-spin { to { transform: rotate(360deg); } }
+.qc-card.qc-wait { position: relative; border-top-color: var(--line); padding-bottom: 1.4rem; animation: qc-fade .3s ease-out; scroll-margin: 6rem 0; }
+.qc-wait-track { position: absolute; top: -4px; left: -1px; right: -1px; height: 4px; overflow: hidden; border-radius: 8px 8px 0 0; }
+.qc-wait-bar { display: block; width: 35%; height: 100%; background: var(--ink); animation: qc-slide 1.5s cubic-bezier(.45, .05, .55, .95) infinite; }
+.prose .qc-wait-label { margin: 0 0 1.05rem; color: var(--muted); font-size: .92rem; font-weight: 500; }
+.qc-bone { display: block; height: .75rem; margin: 0 0 .7rem; border-radius: 4px; background: var(--line); animation: skel 1.6s ease-in-out infinite; }
+.qc-bone-1 { width: 92%; }
+.qc-bone-2 { width: 78%; animation-delay: .15s; }
+.qc-bone-3 { width: 44%; margin: 1.1rem 0 0; animation-delay: .3s; }
+@keyframes qc-slide { from { transform: translateX(-100%); } to { transform: translateX(290%); } }
+@keyframes qc-fade { from { opacity: 0; } }
 @keyframes qc-in { from { opacity: 0; transform: translateY(6px); } }
-@media (prefers-reduced-motion: reduce) { .qc-spin { animation-duration: 2.4s; } .qc-card { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { .qc-wait-bar { animation-duration: 3s; } .qc-bone { animation: none; } .qc-card { animation: none !important; } }
 
 .qc-card { --c: var(--muted); --soft: var(--tile); margin: 0 0 1.2rem; padding: 1.3rem 1.3rem 1.1rem; border: 1px solid var(--line); border-top: 4px solid var(--c); border-radius: 8px; background: var(--bg); outline: 0; scroll-margin-top: 4.6rem; animation: qc-in .25s ease-out; }
 .qc-yes { --c: var(--yes); --soft: var(--yes-soft); }
