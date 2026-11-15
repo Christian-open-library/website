@@ -48,7 +48,7 @@
     if (!/^https?:\/\//i.test(String(href))) return null;
     var a = el('a', null, text);
     a.href = href;
-    a.rel = 'noopener';
+    a.rel = 'noopener noreferrer';
     return a;
   }
   /* [[text, differs], ...] from the server: the words that differ become <strong>. */
@@ -68,8 +68,9 @@
     var f = document.createDocumentFragment();
     // "Various" (a journal) says nothing; a title that already ends with its year doesn't need it again.
     if (m.author && !/^various$/i.test(m.author)) add(f, m.author + (m.dates ? ' (' + m.dates + ')' : '') + ', ');
-    var hasYear = m.year && new RegExp('\\b' + m.year + '\\)?$').test(m.title);
-    add(f, el('cite', null, m.title), hasYear ? '' : (m.year ? ' (' + m.year + ')' : ' (year not known)'), m.pages ? ', ' + m.pages : '');
+    var y = typeof m.year === 'number' ? String(m.year) : '', t = String(m.title);
+    var hasYear = y !== '' && (t.slice(-y.length) === y || t.slice(-y.length - 1) === y + ')');
+    add(f, el('cite', null, t), hasYear ? '' : (y ? ' (' + y + ')' : ' (year not known)'), m.pages ? ', ' + m.pages : '');
     return f;
   }
   function closeness(m) {
@@ -92,7 +93,9 @@
 
   function render(d) {
     out.textContent = '';
-    var head = HEAD[d.verdict] || ['none', 'Checked'];
+    d.quote = String(d.quote || '');
+    d.author = d.author ? String(d.author) : '';
+    var head = Object.prototype.hasOwnProperty.call(HEAD, d.verdict) ? HEAD[d.verdict] : ['none', 'Checked'];
     var who = d.author;
     var p = d.primary;
     var card = el('article', 'qc-card qc-' + head[0]);
@@ -151,7 +154,7 @@
     if (d.common) notes.push(['These exact words are in many works. They may be a Bible verse, a proverb or a common saying.']);
     if (d.earlier) notes.push([(d.earlier.exact ? 'The same words are' : 'Similar words are') + ' in an earlier work: ', where(d.earlier), '.' + (who ? ' ' + who + ' may have been quoting it.' : '')]);
     if (p && !p.credit && p.quoting) notes.push(['The writer appears to be quoting someone at this point. Read the passage in context.']);
-    (d.notes || []).forEach(function (n) { notes.push([n]); });
+    (Array.isArray(d.notes) ? d.notes.slice(0, 20) : []).forEach(function (n) { notes.push([String(n)]); });
     if (p && p.about) notes.push([p.author + ': ' + p.about + '.']);
     if (p && p.church) notes.push([p.church]);
     if (notes.length) {
@@ -166,15 +169,16 @@
         add(el('p'), p.before ? p.before + ' ' : '', el('mark', null, p.text), p.after ? ' ' + p.after : ''));
       add(card, ctx);
     }
-    if (d.others && d.others.length) {
+    var others = Array.isArray(d.others) ? d.others.slice(0, 50) : [], total = Number(d.others_total) || others.length;
+    if (others.length) {
       var also = el('details', 'qc-fold');
-      add(also, el('summary', null, 'Also in ' + plural(d.others_total, 'other work')));
+      add(also, el('summary', null, 'Also in ' + plural(total, 'other work')));
       var ul = el('ul');
-      d.others.forEach(function (m) {
+      others.forEach(function (m) {
         add(ul, add(el('li'), where(m), ' · ' + closeness(m), m.credit ? ' · credited there to ' + m.credit : ''));
       });
       add(also, ul);
-      if (d.others_total > d.others.length) add(also, el('p', 'qc-small', 'And ' + (d.others_total - d.others.length) + ' more. Earliest first.'));
+      if (total > others.length) add(also, el('p', 'qc-small', 'And ' + (total - others.length) + ' more. Earliest first.'));
       add(card, also);
     }
 
@@ -187,7 +191,7 @@
     again.addEventListener('click', function () {
       setBox('');
       say('');
-      if (history.replaceState) history.replaceState(null, '', location.pathname + location.search);
+      noHash();
       window.scrollTo({ top: 0, behavior: calm ? 'auto' : 'smooth' });
       quoteBox.focus({ preventScroll: true });
     });
@@ -252,10 +256,14 @@
     msg.hidden = !text;
   }
 
-  function check() {
+  /* A cut at a fixed length can split an emoji in two, and half of one can't be sent or put in a link. */
+  function cut(text, n) { return text.slice(0, n).replace(/[\uD800-\uDBFF]$/, ''); }
+
+  /* direct: the quotation and name from a share link, used as they are (the box's text isn't read again). */
+  function check(direct) {
     if (busy) return;
-    var parts = split(quoteBox.value);
-    var q = parts.quote.slice(0, 1500), a = parts.author;
+    var parts = direct || split(quoteBox.value);
+    var q = cut(parts.quote, 1500), a = cut(parts.author || '', 100);
     if (!q) { say('Type or paste the words to check.'); quoteBox.focus(); return; }
     if (words(q) < 4) { say('That is too short to check: give at least 4 words.'); quoteBox.focus(); return; }
     say('');
@@ -272,13 +280,15 @@
     var step = 0, later = ['Comparing the wording…', 'Still searching. Longer quotations take more time…'];
     clearInterval(waitTimer);
     waitTimer = setInterval(function () { if (step < later.length) waitText.textContent = later[step++]; }, 3500);
-    if (history.replaceState) history.replaceState(null, '', '#q=' + encodeURIComponent(q) + (a ? '&a=' + encodeURIComponent(a) : ''));
+    var stop = window.AbortController ? new AbortController() : null;
+    var giveUp = setTimeout(function () { if (stop) stop.abort(); }, 30000);
     fetch(ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
       body: JSON.stringify(a ? { quote: q, author: a } : { quote: q }),
       credentials: 'omit',
-      referrerPolicy: 'no-referrer'
+      referrerPolicy: 'no-referrer',
+      signal: stop ? stop.signal : undefined
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, d: d }; });
     }).then(function (res) {
@@ -295,6 +305,7 @@
       show(msg, 'center');
     }).then(function () {
       clearInterval(waitTimer);
+      clearTimeout(giveUp);
       Array.prototype.forEach.call(tries, function (b) { b.disabled = false; });
       busy = false;
       go.disabled = false;
@@ -303,6 +314,7 @@
   }
 
   form.addEventListener('submit', function (e) { e.preventDefault(); check(); });
+  function noHash() { if (location.hash && history.replaceState) history.replaceState(null, '', location.pathname + location.search); }
   quoteBox.addEventListener('keydown', function (e) {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); check(); }
   });
@@ -313,7 +325,7 @@
     });
   });
   quoteBox.addEventListener('input', function () { fit(); if (!msg.hidden) say(''); });
-  if (clearBtn) clearBtn.addEventListener('click', function () { setBox(''); say(''); quoteBox.focus(); });
+  if (clearBtn) clearBtn.addEventListener('click', function () { setBox(''); say(''); noHash(); quoteBox.focus(); });
 
   /* A shared link: #q=...&a=... */
   function fromHash() {
@@ -325,13 +337,17 @@
       if (i < 0) return;
       var v;
       try { v = decodeURIComponent(kv.slice(i + 1).replace(/\+/g, ' ')); } catch (e) { return; }
-      if (kv.slice(0, i) === 'q') q = v.slice(0, 1500);
-      if (kv.slice(0, i) === 'a') a = v.slice(0, 100);
+      if (kv.slice(0, i) === 'q') q = cut(v, 1500);
+      if (kv.slice(0, i) === 'a') a = cut(v, 100);
     });
     if (q) {
       setBox(joined(q, a));
-      // Inside another site's frame, wait for a click: otherwise any page could make its visitors run checks.
-      if (window.top === window.self) check();
+      // The check runs by itself only in a page the visitor opened: not inside another site's frame, not in a
+      // window another page opened and can keep reloading, and at most 3 times in one tab (a count is kept for
+      // the tab, never the words). Otherwise the box is filled in and waits for a click.
+      var runs = 99;
+      try { runs = Number(sessionStorage.getItem('qc-auto')) || 0; sessionStorage.setItem('qc-auto', String(runs + 1)); } catch (e) { runs = 99; }
+      if (window.top === window.self && !window.opener && runs < 3) check({ quote: q, author: a });
     }
   }
   fromHash();
