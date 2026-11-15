@@ -109,22 +109,38 @@
 
     /* Words of the Bible: the verse comes first, then the books that quote it. */
     var b = d.bible && typeof d.bible === 'object' && d.bible.ref ? d.bible : null;
+    /* A verse that is only close gives way to a book by the writer named that has the words exactly, or at least
+       as closely; the verse is then mentioned in a note. */
+    var nearNote = '';
+    if (b && b.near) {
+      var bookShare = p && Number(p.words) > 0 ? Number(p.same) / Number(p.words) : 0;
+      var bookWins = who && (d.verdict === 'exact' || d.verdict === 'scan_letters'
+        || ((d.verdict === 'reworded' || d.verdict === 'left_out') && bookShare >= Number(b.same) / Number(b.words)));
+      if (bookWins) {
+        nearNote = 'The words are close to ' + String(b.ref) + ' (' + String(b.translation || '') + ').';
+        b = null;
+      }
+    }
     if (b) {
-      card.className = 'qc-card qc-yes';
-      mark.textContent = MARK.yes;
-      title = 'Found in the Bible: ' + String(b.ref);
+      var near = b.near === true;
+      card.className = 'qc-card ' + (near ? 'qc-warn' : 'qc-yes');
+      mark.textContent = near ? MARK.warn : MARK.yes;
+      title = (near ? 'Close to the Bible: ' : 'Found in the Bible: ') + String(b.ref);
       card.firstChild.lastChild.textContent = title;
-      var inAuthor = who && p && d.author_works > 0 && d.verdict !== 'other_author' && d.verdict !== 'quoting';
+      if (near) add(card, el('p', 'qc-line', Number(b.same) + ' of the ' + Number(b.words) + ' words submitted are in this verse, in the same order. The wording submitted may be from a translation the library does not hold, or quoted from memory.'));
+      var inAuthor = !near && who && p && d.author_works > 0 && d.verdict !== 'other_author' && d.verdict !== 'quoting';
       if (inAuthor) add(card, add(el('p', 'qc-line'), who + ' quotes these words in ', el('cite', null, String(p.title)), (typeof p.year === 'number' && String(p.title).slice(-4) !== String(p.year) ? ' (' + p.year + ')' : '') + (p.pages ? ', ' + p.pages : '') + '.'));
       add(card, add(el('figure', 'qc-quote'), add(el('blockquote', 'qc-words'), String(b.text || '')),
         add(el('figcaption', 'qc-cite'), String(b.ref) + ', ' + String(b.translation || ''))));
+      if (near) add(card, el('p', 'qc-label', 'Wording submitted'), add(el('blockquote', 'qc-words qc-given'), d.quote));
       var bn = el('ul', 'qc-notes'), also = Array.isArray(b.more) ? b.more.slice(0, 6).map(String) : [];
       var rest = (Number(b.total) || 1) - 1 - also.length;
       if (also.length) add(bn, el('li', null, 'Also at ' + also.join(', ') + (rest > 0 ? ' and ' + plural(rest, 'other verse') : '') + '.'));
-      if (who && d.author_works > 0 && !inAuthor) add(bn, el('li', null, 'None of the library’s ' + plural(d.author_works, 'work') + ' by ' + who + ' contains these words.'));
-      add(bn, el('li', null, 'Compared word for word with the translation named. Capitals and punctuation are not compared.'));
+      if (!near && who && d.author_works > 0 && !inAuthor) add(bn, el('li', null, 'None of the library’s ' + plural(d.author_works, 'work') + ' by ' + who + ' contains these words.'));
+      if (near && p && d.verdict === 'exact' && !p.licensed) add(bn, add(el('li'), 'The wording submitted is word for word in ', where(p), '.'));
+      add(bn, el('li', null, near ? 'Compared with seven translations; this verse is the closest. Compare it with your own Bible before quoting.' : 'Compared word for word with the translation named. Capitals and punctuation are not compared.'));
       add(card, bn);
-      var quoted = (p ? [p] : []).concat(Array.isArray(d.others) ? d.others.slice(0, 50) : []);
+      var quoted = near ? [] : (p ? [p] : []).concat(Array.isArray(d.others) ? d.others.slice(0, 50) : []);
       if (quoted.length) {
         var n = Math.max(quoted.length, (Number(d.others_total) || 0) + (p ? 1 : 0));
         var qf = el('details', 'qc-fold'), ql = el('ul');
@@ -185,6 +201,7 @@
     if (d.common) notes.push(['These exact words are in many works. They may be a Bible verse, a proverb or a common saying.']);
     if (d.earlier) notes.push([(d.earlier.exact ? 'The same words are' : 'Similar words are') + ' in an earlier work: ', where(d.earlier), '.' + (who ? ' ' + who + ' may have been quoting it.' : '')]);
     if (p && !p.credit && p.quoting) notes.push(['The writer appears to be quoting someone at this point. Read the passage in context.']);
+    if (nearNote) notes.push([nearNote]);
     (Array.isArray(d.notes) ? d.notes.slice(0, 20) : []).forEach(function (n) { notes.push([String(n)]); });
     if (p && p.about) notes.push([p.author + ': ' + p.about + '.']);
     if (p && p.church) notes.push([p.church]);
