@@ -86,6 +86,7 @@
     reworded: ['warn', 'Found with different wording'],
     quoting: ['warn', 'Found as a quotation of someone else'],
     other_author: ['no', 'Found, but not under this name'],
+    named: ['warn', 'Found only as quoted'],
     not_found: ['none', 'Not found in the library']
   };
 
@@ -95,13 +96,15 @@
     out.textContent = '';
     d.quote = String(d.quote || '');
     d.author = d.author ? String(d.author) : '';
-    var head = Object.prototype.hasOwnProperty.call(HEAD, d.verdict) ? HEAD[d.verdict] : ['none', 'Checked'];
     var who = d.author;
     var p = d.primary;
+    /* The earliest work with the words names the credited writer next to them ("Well says Baxter, ..."). */
+    var named = d.verdict === 'other_author' && who && p && p.named;
+    var head = named ? HEAD.named : Object.prototype.hasOwnProperty.call(HEAD, d.verdict) ? HEAD[d.verdict] : ['none', 'Checked'];
     var card = el('article', 'qc-card qc-' + head[0]);
     card.tabIndex = -1;
     var title = head[1];
-    if (d.verdict === 'other_author' && who) title = 'Not found in the works of ' + who;
+    if (d.verdict === 'other_author' && who) title = named ? 'Found only as quoted by another writer' : 'Not found in the works of ' + who;
     if (d.verdict === 'quoting' && who && p && p.credit) title = who + ' was quoting ' + p.credit;
     var mark = el('span', 'qc-mark', MARK[head[0]] || '?');
     mark.setAttribute('aria-hidden', 'true');
@@ -170,6 +173,11 @@
       line = p.same + ' of the ' + p.words + ' words submitted match, in the same order. The wording in the source is below.';
     } else if (d.verdict === 'quoting') {
       line = 'The line that follows these words in the source credits them to ' + p.credit + '.';
+    } else if (named) {
+      line = 'The earliest work in the library with these words gives them as ' + who + '’s. '
+        + (d.author_works > 0 ? 'None of the library’s ' + plural(d.author_works, 'work') + ' by ' + who + ' contains them.'
+          : 'The library holds no works by ' + who + '.');
+      notes.push(['Read the passage in context. ' + who + ' may well have written these words in a work, edition or translation the library does not hold.']);
     } else if (d.verdict === 'other_author') {
       line = !who ? 'Earliest work in the library with these words:'
         : d.author_works > 0 ? 'None of the library’s ' + plural(d.author_works, 'work') + ' by ' + who + ' contains these words. Earliest work that does:'
