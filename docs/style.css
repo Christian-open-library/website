@@ -482,9 +482,14 @@ ul.works li[data-u]:not(.open) { content-visibility: auto; contain-intrinsic-siz
 .qc-why li::before { content: counter(why); position: absolute; left: 0; top: .1rem; width: 1.55rem; height: 1.55rem; border: 1.5px solid var(--ink); border-radius: 50%; font-size: .85rem; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: center; }
 .qc-why li strong { display: block; color: var(--ink); }
 @media (min-width: 48rem) { .prose .qc-why ol { grid-template-columns: repeat(3, 1fr); gap: 1.6rem; } .qc-why li { padding: 2.2rem 0 0; } }
-.qc-more { margin: 2rem 0 0; border-bottom: 1px solid var(--line); }
-.qc-more details { border-top: 1px solid var(--line); }
-.qc-more summary { padding: .85rem 0; cursor: pointer; font-weight: 600; color: var(--ink); }
+.prose .qc-why h2::after { content: none; }
+.page-quote .prose { padding-bottom: 1.5rem; }
+.qc-more { margin: 2.6rem 0 0; }
+.qc-more details + details { border-top: 1px solid var(--line); }
+.qc-more summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .95rem 0; list-style: none; cursor: pointer; font-weight: 600; color: var(--ink); }
+.qc-more summary::-webkit-details-marker { display: none; }
+.qc-more summary::after { content: ""; flex: none; width: .5rem; height: .5rem; margin-right: .3rem; border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted); transform: translateY(-.15rem) rotate(45deg); transition: transform .15s; }
+.qc-more details[open] summary::after { transform: translateY(.1rem) rotate(-135deg); }
 .qc-more details > :last-child { margin-bottom: 1.1rem; }
 @media (max-width: 40rem) {
   .qc-card { padding: 1.1rem 1rem 1rem; }
