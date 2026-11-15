@@ -107,6 +107,37 @@
     mark.setAttribute('aria-hidden', 'true');
     add(card, add(el('h2', 'qc-verdict'), mark, el('span', null, title)));
 
+    /* Words of the Bible: the verse comes first, then the books that quote it. */
+    var b = d.bible && typeof d.bible === 'object' && d.bible.ref ? d.bible : null;
+    if (b) {
+      card.className = 'qc-card qc-yes';
+      mark.textContent = MARK.yes;
+      title = 'Found in the Bible: ' + String(b.ref);
+      card.firstChild.lastChild.textContent = title;
+      var inAuthor = who && p && d.author_works > 0 && d.verdict !== 'other_author' && d.verdict !== 'quoting';
+      if (inAuthor) add(card, add(el('p', 'qc-line'), who + ' quotes these words in ', el('cite', null, String(p.title)), (typeof p.year === 'number' ? ' (' + p.year + ')' : '') + (p.pages ? ', ' + p.pages : '') + '.'));
+      add(card, add(el('figure', 'qc-quote'), add(el('blockquote', 'qc-words'), String(b.text || '')),
+        add(el('figcaption', 'qc-cite'), String(b.ref) + ', ' + String(b.translation || ''))));
+      var bn = el('ul', 'qc-notes'), also = Array.isArray(b.more) ? b.more.slice(0, 6).map(String) : [];
+      var rest = (Number(b.total) || 1) - 1 - also.length;
+      if (also.length) add(bn, el('li', null, 'Also at ' + also.join(', ') + (rest > 0 ? ' and ' + plural(rest, 'other verse') : '') + '.'));
+      if (who && d.author_works > 0 && !inAuthor) add(bn, el('li', null, 'None of the library’s ' + plural(d.author_works, 'work') + ' by ' + who + ' contains these words.'));
+      add(bn, el('li', null, 'Compared word for word with the translation named. Capitals and punctuation are not compared.'));
+      add(card, bn);
+      var quoted = (p ? [p] : []).concat(Array.isArray(d.others) ? d.others.slice(0, 50) : []);
+      if (quoted.length) {
+        var n = Math.max(quoted.length, (Number(d.others_total) || 0) + (p ? 1 : 0));
+        var qf = el('details', 'qc-fold'), ql = el('ul');
+        add(qf, el('summary', null, 'Quoted in ' + plural(n, 'work') + ' in the library'));
+        quoted.forEach(function (m) { add(ql, add(el('li'), where(m), ' · ' + closeness(m))); });
+        add(qf, ql);
+        if (n > quoted.length) add(qf, el('p', 'qc-small', 'And ' + (n - quoted.length) + ' more. Earliest first.'));
+        add(card, qf);
+      }
+      finish(card, d, title);
+      return;
+    }
+
     /* One short line under the verdict; the book itself is named under the words, like a citation. */
     var line = '', notes = [];
     if (!p) {
@@ -182,6 +213,11 @@
       add(card, also);
     }
 
+    finish(card, d, title);
+  }
+
+  /* The buttons under a result; then the result is shown. */
+  function finish(card, d, title) {
     var share = el('p', 'qc-share');
     var btn = el('button', 'btn btn-secondary', 'Share result');
     btn.type = 'button';
