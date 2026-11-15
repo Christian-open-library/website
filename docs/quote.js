@@ -243,7 +243,7 @@
   /* The buttons under a result; then the result is shown. */
   function finish(card, d, title) {
     var share = el('p', 'qc-share');
-    var btn = el('button', 'btn btn-secondary', 'Share result');
+    var btn = el('button', 'btn btn-secondary', 'Share link');
     btn.type = 'button';
     btn.addEventListener('click', function () { shareIt(d, title, btn); });
     var again = el('button', 'btn btn-secondary', 'New check');
@@ -255,7 +255,14 @@
       window.scrollTo({ top: 0, behavior: calm ? 'auto' : 'smooth' });
       quoteBox.focus({ preventScroll: true });
     });
-    add(share, btn, again);
+    var pic = el('button', 'btn btn-secondary', 'Share image');
+    pic.type = 'button';
+    pic.disabled = true;
+    var file = null;
+    /* Drawn now, so the click can hand it to the share sheet at once (Safari shares only straight from a tap). */
+    picture(d, title, card.className).then(function (f) { file = f; pic.disabled = !f; }, function () { pic.hidden = true; });
+    pic.addEventListener('click', function () { if (file) sharePicture(file, pic); });
+    add(share, btn, pic, again);
     add(card, share);
     add(out, card);
     if (cta) cta.hidden = false;
@@ -274,12 +281,115 @@
       navigator.share({ title: 'Check a quote', text: text, url: url }).catch(function () {});
       return;
     }
-    var done = function () { btn.textContent = 'Link copied ✓'; setTimeout(function () { btn.textContent = 'Share result'; }, 2500); };
+    var done = function () { btn.textContent = 'Link copied ✓'; setTimeout(function () { btn.textContent = 'Share link'; }, 2500); };
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text + ' ' + url).then(done, function () { prompt('Copy this link:', url); });
     } else {
       prompt('Copy this link:', url);
     }
+  }
+
+  /* The result as a picture (1080 x 1350, light): the verdict, the words, where they are, and the site's address. */
+  var PIC = { yes: '#2f7a4b', warn: '#8a5a00', no: '#b3261e', none: '#555555' };
+  function citeText(m) {
+    var y = typeof m.year === 'number' ? String(m.year) : '', t = String(m.title || '');
+    var hasYear = y !== '' && (t.slice(-y.length) === y || t.slice(-y.length - 1) === y + ')');
+    return (m.author && !/^various$/i.test(m.author) ? m.author + ', ' : '') + t + (hasYear || !y ? '' : ' (' + y + ')')
+      + (m.pages ? ', ' + m.pages : '');
+  }
+  function picture(d, title, cls) {
+    var c = document.createElement('canvas');
+    if (!c.getContext || !c.toBlob) return Promise.reject(new Error('no canvas'));
+    var fonts = document.fonts && document.fonts.load
+      ? Promise.all([document.fonts.load('600 40px Geist'), document.fonts.load('400 40px Geist')]).catch(function () {})
+      : Promise.resolve();
+    var icon = new Image();
+    var iconReady = new Promise(function (ok) { icon.onload = icon.onerror = function () { ok(); }; icon.src = 'img/icon-512.png'; });
+    return Promise.all([fonts, iconReady]).then(function () {
+      var W = 1080, H = 1350, M = 88, F = 'Geist, system-ui, -apple-system, sans-serif';
+      c.width = W; c.height = H;
+      var g = c.getContext('2d');
+      var kind = /qc-(yes|warn|no|none)/.exec(cls);
+      var col = PIC[kind ? kind[1] : 'none'];
+      g.fillStyle = '#ffffff'; g.fillRect(0, 0, W, H);
+      g.fillStyle = col; g.fillRect(0, 0, W, 18);
+      function lines(text, font, width) {
+        g.font = font;
+        var out2 = [], line = '';
+        String(text).split(/\s+/).forEach(function (w) {
+          if (!w) return;
+          var t = line ? line + ' ' + w : w;
+          if (line && g.measureText(t).width > width) { out2.push(line); line = w; } else { line = t; }
+        });
+        if (line) out2.push(line);
+        return out2;
+      }
+      function draw(ls, x, y, lh) { ls.forEach(function (l, i) { g.fillText(l, x, y + i * lh); }); return y + ls.length * lh; }
+      g.textBaseline = 'alphabetic';
+
+      // The verdict, with its mark.
+      var y = M + 40;
+      var mark = (MARK[kind ? kind[1] : 'none'] || '?');
+      g.fillStyle = col; g.beginPath(); g.arc(M + 30, y - 16, 30, 0, Math.PI * 2); g.fill();
+      g.fillStyle = '#ffffff'; g.font = '700 34px ' + F; g.textAlign = 'center'; g.fillText(mark, M + 30, y - 4);
+      g.textAlign = 'left'; g.fillStyle = col;
+      y = draw(lines(title, '700 46px ' + F, W - M * 2 - 80), M + 80, y, 58) + 46;
+
+      // The words: as submitted when they are word for word; else the source's wording; else the words submitted.
+      var p = d.primary, b = d.bible && d.bible.ref && !(d.bible.near && /^(exact|scan_letters)$/.test(d.verdict) && d.author) ? d.bible : null;
+      var words = '', label = '', cite = '';
+      if (b) { words = String(b.text || ''); cite = String(b.ref) + ', ' + String(b.translation || ''); if (b.near) label = 'The verse'; }
+      else if (p && !p.licensed) { words = p.exact ? d.quote : String(p.text || ''); cite = citeText(p); label = d.verdict === 'other_author' ? 'Earliest work in the library with these words' : p.exact ? '' : 'Wording in the source'; }
+      else if (p) { words = d.quote; cite = citeText(p) + '. Used by permission; see the official copy.'; }
+      else { words = d.quote; cite = d.author ? 'As credited to ' + d.author : ''; }
+      words = words.trim().replace(/^[“”"]+|[“”"]+$/g, '');
+      if (words && !/[.!?;:,…)]$/.test(words)) words += '…';
+      var footTop = H - M - 92, top = y, bottom = footTop - 40;
+      var citeFont = '400 30px ' + F, citeLines = cite ? lines(cite, citeFont, W - M * 2) : [];
+      var labelH = label ? 50 : 0, citeH = citeLines.length ? 30 + citeLines.length * 42 : 0;
+      var room = bottom - top - labelH - citeH, size = 72, ls, lh;
+      for (; size >= 30; size -= 2) {
+        lh = Math.round(size * 1.32);
+        ls = lines('“' + words + '”', '500 ' + size + 'px ' + F, W - M * 2);
+        if (ls.length * lh <= room) break;
+      }
+      var max = Math.max(1, Math.floor(room / lh));
+      if (ls.length > max) { ls = ls.slice(0, max); ls[max - 1] = ls[max - 1].replace(/\s*\S*$/, '') + '…”'; }
+      // The block sits a little above the middle of the space left.
+      var blockH = labelH + ls.length * lh + citeH;
+      y = top + Math.max(0, (bottom - top - blockH) * 0.4);
+      if (label) { g.fillStyle = '#555555'; g.font = '600 26px ' + F; g.fillText(label.toUpperCase(), M, y + 26); y += labelH; }
+      g.font = '500 ' + size + 'px ' + F;
+      g.fillStyle = p || b ? '#1a1a1a' : '#555555';
+      y = draw(ls, M, y + size, lh) - lh + size * 0.35;
+      if (citeLines.length) { g.font = citeFont; g.fillStyle = '#555555'; draw(citeLines, M, y + 30 + 30, 42); }
+
+      // The site.
+      g.fillStyle = '#e3e3e3'; g.fillRect(M, footTop, W - M * 2, 2);
+      if (icon.naturalWidth) g.drawImage(icon, M, footTop + 34, 64, 64);
+      var tx = icon.naturalWidth ? M + 88 : M;
+      g.fillStyle = '#1a1a1a'; g.font = '700 32px ' + F; g.fillText('Christian Open Library', tx, footTop + 62);
+      g.fillStyle = '#555555'; g.font = '400 26px ' + F;
+      g.fillText('Checked against 7,100 books · christianopenlibrary.org/quote', tx, footTop + 98);
+      return new Promise(function (ok) { c.toBlob(ok, 'image/png'); });
+    }).then(function (blob) {
+      if (!blob) throw new Error('no image');
+      try { return new File([blob], 'quote-check.png', { type: 'image/png' }); } catch (e) { blob.name = 'quote-check.png'; return blob; }
+    });
+  }
+  function sharePicture(file, btn) {
+    if (navigator.canShare && navigator.share && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file] }).catch(function () {});
+      return;
+    }
+    var a = el('a');
+    a.href = URL.createObjectURL(file);
+    a.download = 'quote-check.png';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    btn.textContent = 'Image saved ✓';
+    setTimeout(function () { btn.textContent = 'Share image'; }, 2500);
   }
 
   /* One box: the quotation as people copy it, with the credit if there is one:
