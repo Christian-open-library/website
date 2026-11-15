@@ -429,7 +429,6 @@ ul.works li[data-u]:not(.open) { content-visibility: auto; contain-intrinsic-siz
 .qc-hint { margin: .5rem 0 0; font-size: .9rem; color: var(--muted); }
 .qc-who { flex: 1 1 auto; min-width: 0; }
 .qc-row .btn { flex: none; min-width: 8rem; min-height: 48px; cursor: pointer; }
-.qc-row #qc-paste { min-width: 0; }
 .qc-row .btn:disabled { opacity: .6; cursor: progress; }
 .qc-msg { margin: .6rem 0 0; color: var(--no); font-weight: 500; }
 .qc-try { display: flex; flex-wrap: wrap; gap: .4rem .5rem; align-items: center; margin: 0 0 1.4rem; font-size: .93rem; color: var(--muted); }

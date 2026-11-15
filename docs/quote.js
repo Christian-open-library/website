@@ -12,7 +12,6 @@
   var msg = document.getElementById('qc-msg');
   var out = document.getElementById('qc-result');
   var clearBtn = document.getElementById('qc-clear');
-  var pasteBtn = document.getElementById('qc-paste');
   var tries = document.querySelectorAll('.qc-try button');
   var busy = false;
   var waitTimer = null;
@@ -310,16 +309,6 @@
   });
   quoteBox.addEventListener('input', function () { fit(); if (!msg.hidden) say(''); });
   if (clearBtn) clearBtn.addEventListener('click', function () { setBox(''); say(''); quoteBox.focus(); });
-  /* "Paste" saves a long press on a phone. The browser asks first; if it says no, the box is ready for a normal paste. */
-  if (pasteBtn && navigator.clipboard && navigator.clipboard.readText) {
-    pasteBtn.hidden = false;
-    pasteBtn.addEventListener('click', function () {
-      navigator.clipboard.readText().then(function (t) {
-        t = (t || '').trim().slice(0, 1600);
-        if (t) { setBox(t); say(''); } else { quoteBox.focus(); }
-      }, function () { quoteBox.focus(); });
-    });
-  }
 
   /* A shared link: #q=...&a=... */
   function fromHash() {
