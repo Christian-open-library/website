@@ -115,7 +115,7 @@
       title = 'Found in the Bible: ' + String(b.ref);
       card.firstChild.lastChild.textContent = title;
       var inAuthor = who && p && d.author_works > 0 && d.verdict !== 'other_author' && d.verdict !== 'quoting';
-      if (inAuthor) add(card, add(el('p', 'qc-line'), who + ' quotes these words in ', el('cite', null, String(p.title)), (typeof p.year === 'number' ? ' (' + p.year + ')' : '') + (p.pages ? ', ' + p.pages : '') + '.'));
+      if (inAuthor) add(card, add(el('p', 'qc-line'), who + ' quotes these words in ', el('cite', null, String(p.title)), (typeof p.year === 'number' && String(p.title).slice(-4) !== String(p.year) ? ' (' + p.year + ')' : '') + (p.pages ? ', ' + p.pages : '') + '.'));
       add(card, add(el('figure', 'qc-quote'), add(el('blockquote', 'qc-words'), String(b.text || '')),
         add(el('figcaption', 'qc-cite'), String(b.ref) + ', ' + String(b.translation || ''))));
       var bn = el('ul', 'qc-notes'), also = Array.isArray(b.more) ? b.more.slice(0, 6).map(String) : [];
