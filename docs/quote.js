@@ -79,12 +79,12 @@
   }
 
   var HEAD = {
-    exact: ['yes', 'Found word for word'],
-    scan_letters: ['warn', 'Found, but check the scan'],
-    left_out: ['warn', 'Found, with words left out'],
-    reworded: ['warn', 'Found, but worded differently'],
-    quoting: ['warn', 'Found, but they were quoting someone'],
-    other_author: ['no', 'Found, but not by them'],
+    exact: ['yes', 'Verified word for word'],
+    scan_letters: ['warn', 'Found; compare the printed page'],
+    left_out: ['warn', 'Found, with words omitted'],
+    reworded: ['warn', 'Found with different wording'],
+    quoting: ['warn', 'Found as a quotation of someone else'],
+    other_author: ['no', 'Found, but not under this name'],
     not_found: ['none', 'Not found in the library']
   };
 
@@ -98,8 +98,8 @@
     var card = el('article', 'qc-card qc-' + head[0]);
     card.tabIndex = -1;
     var title = head[1];
-    if (d.verdict === 'other_author' && who) title = 'Found, but not by ' + who;
-    if (d.verdict === 'quoting' && who && p && p.credit) title = 'Found, but ' + who + ' was quoting ' + p.credit;
+    if (d.verdict === 'other_author' && who) title = 'Not found in the works of ' + who;
+    if (d.verdict === 'quoting' && who && p && p.credit) title = who + ' was quoting ' + p.credit;
     var mark = el('span', 'qc-mark', MARK[head[0]] || '?');
     mark.setAttribute('aria-hidden', 'true');
     add(card, add(el('h2', 'qc-verdict'), mark, el('span', null, title)));
@@ -107,24 +107,24 @@
     /* One short line under the verdict; the book itself is named under the words, like a citation. */
     var line = '', notes = [];
     if (!p) {
-      line = 'No book in the library has these words or anything close to them.';
-      notes.push(['That doesn’t prove they’re made up: the library has about 6,400 books, not everything ever written.']);
+      line = 'No work in the library has these words or a close match.';
+      notes.push(['This does not prove the quotation is false. The library holds about 6,400 works, not everything ever written.']);
       if (who) notes.push([d.author_works > 0
-        ? 'It has ' + plural(d.author_works, 'work') + ' by ' + who + ', not everything they wrote.'
-        : 'It has no works by ' + who + '.']);
+        ? 'The library holds ' + plural(d.author_works, 'work') + ' by ' + who + ', not the complete writings.'
+        : 'The library holds no works by ' + who + '.']);
     } else if (d.verdict === 'scan_letters') {
-      line = plural(p.misread, 'word') + ' in the book’s text ' + (p.misread === 1 ? 'differs' : 'differ') + ' by a letter. It was read by computer from a scan, so check the printed page.';
+      line = plural(p.misread, 'word') + ' in the book’s text ' + (p.misread === 1 ? 'differs' : 'differ') + ' by one letter. The text was read by computer from a scan; the printed page is the authority.';
     } else if (d.verdict === 'left_out') {
-      line = 'Every word you gave is there, in this order, but with other words between them.';
+      line = 'Every word submitted is in the passage, in this order, with other words between them.';
     } else if (d.verdict === 'reworded') {
-      line = p.same + ' of your ' + p.words + ' words are there, in the same order. Use the real wording.';
+      line = p.same + ' of the ' + p.words + ' words submitted match, in the same order. The wording in the source is below.';
     } else if (d.verdict === 'quoting') {
-      line = 'A line after these words credits them to ' + p.credit + '.';
+      line = 'The line that follows these words in the source credits them to ' + p.credit + '.';
     } else if (d.verdict === 'other_author') {
-      line = !who ? 'The earliest book in the library with these words:'
-        : d.author_works > 0 ? 'None of the library’s ' + plural(d.author_works, 'work') + ' by ' + who + ' has these words. The earliest book that does:'
-        : 'The library has no works by ' + who + ', so it can’t confirm the credit. The earliest book with these words:';
-      if (who && d.author_works > 0) notes.push(['That doesn’t prove ' + who + ' never said it.']);
+      line = !who ? 'Earliest work in the library with these words:'
+        : d.author_works > 0 ? 'None of the library’s ' + plural(d.author_works, 'work') + ' by ' + who + ' contains these words. Earliest work that does:'
+        : 'The library holds no works by ' + who + ', so it cannot confirm the attribution. Earliest work with these words:';
+      if (who && d.author_works > 0) notes.push(['This does not prove ' + who + ' never said it: the library does not hold the complete writings.']);
     }
     if (line) add(card, el('p', 'qc-line', line));
 
@@ -134,23 +134,23 @@
           p.source ? link(p.source, 'Read the official copy') : null));
     } else if (p) {
       var fig = el('figure', 'qc-quote');
-      if (!p.exact) add(fig, el('p', 'qc-label', 'The real wording'));
+      if (!p.exact) add(fig, el('p', 'qc-label', 'Wording in the source'));
       add(fig, add(el('blockquote', 'qc-words'), p.exact ? p.text : (p.marked ? marked(p.marked) : p.text)),
         add(el('figcaption', 'qc-cite'), where(p)));
       add(card, fig);
       if (!p.exact) {
-        add(card, el('p', 'qc-label', 'What you gave'),
+        add(card, el('p', 'qc-label', 'Wording submitted'),
           add(el('blockquote', 'qc-words qc-given'), p.given_marked ? marked(p.given_marked) : d.quote));
       }
       var links = el('p', 'qc-links');
-      if (p.scan) add(links, link(p.scan.url, p.scan.kind === 'page' ? 'See the printed page' : 'Find it on the scan'));
-      if (p.source) add(links, link(p.source, p.source_label === 'Official copy' ? 'Official copy' : 'The library’s source'));
+      if (p.scan) add(links, link(p.scan.url, p.scan.kind === 'page' ? 'View the printed page' : 'Find it in the scan'));
+      if (p.source) add(links, link(p.source, p.source_label === 'Official copy' ? 'Official copy' : 'Source of the library’s text'));
       if (links.firstChild) add(card, links);
-      if (p.ocr) notes.push(['This book’s text was read by computer from a scan, so some letters may be wrong. The printed page shows what’s really there.']);
+      if (p.ocr) notes.push(['This text was read by computer from a scan and may contain misread letters. Compare the printed page before quoting.']);
     }
-    if (d.common) notes.push(['These exact words are in many books, so they may be a Bible verse, a proverb or a common saying.']);
-    if (d.earlier) notes.push([(d.earlier.exact ? 'The same words are' : 'Similar words are') + ' in an earlier book: ', where(d.earlier), '.' + (who ? ' ' + who + ' may have been quoting it.' : '')]);
-    if (p && !p.credit && p.quoting) notes.push(['Just before these words the writer seems to be quoting someone. Read them in context.']);
+    if (d.common) notes.push(['These exact words are in many works. They may be a Bible verse, a proverb or a common saying.']);
+    if (d.earlier) notes.push([(d.earlier.exact ? 'The same words are' : 'Similar words are') + ' in an earlier work: ', where(d.earlier), '.' + (who ? ' ' + who + ' may have been quoting it.' : '')]);
+    if (p && !p.credit && p.quoting) notes.push(['The writer appears to be quoting someone at this point. Read the passage in context.']);
     (d.notes || []).forEach(function (n) { notes.push([n]); });
     if (p && p.about) notes.push([p.author + ': ' + p.about + '.']);
     if (p && p.church) notes.push([p.church]);
@@ -162,13 +162,13 @@
 
     if (p && !p.licensed && (p.before || p.after)) {
       var ctx = el('details', 'qc-fold');
-      add(ctx, el('summary', null, 'Read it in context'),
+      add(ctx, el('summary', null, 'Read the passage in context'),
         add(el('p'), p.before ? p.before + ' ' : '', el('mark', null, p.text), p.after ? ' ' + p.after : ''));
       add(card, ctx);
     }
     if (d.others && d.others.length) {
       var also = el('details', 'qc-fold');
-      add(also, el('summary', null, 'Also in ' + plural(d.others_total, 'other book')));
+      add(also, el('summary', null, 'Also in ' + plural(d.others_total, 'other work')));
       var ul = el('ul');
       d.others.forEach(function (m) {
         add(ul, add(el('li'), where(m), ' · ' + closeness(m), m.credit ? ' · credited there to ' + m.credit : ''));
@@ -179,10 +179,10 @@
     }
 
     var share = el('p', 'qc-share');
-    var btn = el('button', 'btn btn-secondary', 'Share this check');
+    var btn = el('button', 'btn btn-secondary', 'Share result');
     btn.type = 'button';
     btn.addEventListener('click', function () { shareIt(d, title, btn); });
-    var again = el('button', 'btn btn-secondary', 'Check another');
+    var again = el('button', 'btn btn-secondary', 'New check');
     again.type = 'button';
     again.addEventListener('click', function () {
       setBox('');
@@ -205,12 +205,12 @@
   function shareIt(d, title, btn) {
     var url = shareUrl(d.quote, d.author || '');
     var short = d.quote.length > 90 ? d.quote.slice(0, 87).replace(/\s+\S*$/, '') + '…' : d.quote;
-    var text = '“' + short + '”' + (d.author ? ' (' + d.author + ')' : '') + ': ' + title + '. Checked against 6,400 books:';
+    var text = '“' + short + '”' + (d.author ? ' (' + d.author + ')' : '') + ': ' + title + '. Checked against the text of 6,400 books:';
     if (navigator.share) {
-      navigator.share({ title: 'Did they really say it?', text: text, url: url }).catch(function () {});
+      navigator.share({ title: 'Check a quote', text: text, url: url }).catch(function () {});
       return;
     }
-    var done = function () { btn.textContent = 'Link copied ✓'; setTimeout(function () { btn.textContent = 'Share this check'; }, 2500); };
+    var done = function () { btn.textContent = 'Link copied ✓'; setTimeout(function () { btn.textContent = 'Share result'; }, 2500); };
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text + ' ' + url).then(done, function () { prompt('Copy this link:', url); });
     } else {
@@ -265,11 +265,11 @@
     Array.prototype.forEach.call(tries, function (b) { b.disabled = true; });
     quoteBox.blur();
     out.textContent = '';
-    var waitText = el('span', null, 'Checking 6,400 books…');
+    var waitText = el('span', null, 'Searching 6,400 books…');
     var wait = add(el('p', 'qc-wait'), el('span', 'qc-spin'), waitText);
     add(out, wait);
     show(wait, 'center');
-    var step = 0, later = ['Comparing the wording…', 'Still checking. Long quotations take a little longer…'];
+    var step = 0, later = ['Comparing the wording…', 'Still searching. Longer quotations take more time…'];
     clearInterval(waitTimer);
     waitTimer = setInterval(function () { if (step < later.length) waitText.textContent = later[step++]; }, 3500);
     if (history.replaceState) history.replaceState(null, '', '#q=' + encodeURIComponent(q) + (a ? '&a=' + encodeURIComponent(a) : ''));
@@ -298,7 +298,7 @@
       Array.prototype.forEach.call(tries, function (b) { b.disabled = false; });
       busy = false;
       go.disabled = false;
-      go.textContent = 'Check it';
+      go.textContent = 'Check quote';
     });
   }
 
