@@ -13,6 +13,7 @@
   var out = document.getElementById('qc-result');
   var clearBtn = document.getElementById('qc-clear');
   var tries = document.querySelectorAll('.qc-try button');
+  var cta = document.getElementById('qc-cta');
   var busy = false;
   var waitTimer = null;
   var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -24,7 +25,7 @@
   /* The box grows with the text, and the clear button shows only when there is something to clear. */
   function fit() {
     quoteBox.style.height = 'auto';
-    quoteBox.style.height = Math.min(quoteBox.scrollHeight + 2, 420) + 'px';
+    quoteBox.style.height = Math.min(quoteBox.scrollHeight, 420) + 'px';
     if (clearBtn) clearBtn.hidden = !quoteBox.value;
   }
   function setBox(text) { quoteBox.value = text; fit(); }
@@ -102,75 +103,78 @@
     var mark = el('span', 'qc-mark', MARK[head[0]] || '?');
     mark.setAttribute('aria-hidden', 'true');
     add(card, add(el('h2', 'qc-verdict'), mark, el('span', null, title)));
-    var asked = el('p', 'qc-asked');
-    add(asked, '“' + d.quote + '”', who ? ' — credited to ' + who : '');
-    add(card, asked);
 
-    var lines = [];
+    /* One short line under the verdict; the book itself is named under the words, like a citation. */
+    var line = '', notes = [];
     if (!p) {
-      lines.push(['No book in the library has these words or anything close to them. That doesn’t prove they’re made up: the library has about 6,400 books, not everything ever written.']);
-      if (who) lines.push([d.author_works > 0
-        ? 'The library has ' + plural(d.author_works, 'work') + ' by ' + who + ', not everything they wrote.'
-        : 'The library has no works by ' + who + '.']);
-    } else if (d.verdict === 'exact') {
-      lines.push(['These words are in ', where(p), '.']);
+      line = 'No book in the library has these words or anything close to them.';
+      notes.push(['That doesn’t prove they’re made up: the library has about 6,400 books, not everything ever written.']);
+      if (who) notes.push([d.author_works > 0
+        ? 'It has ' + plural(d.author_works, 'work') + ' by ' + who + ', not everything they wrote.'
+        : 'It has no works by ' + who + '.']);
     } else if (d.verdict === 'scan_letters') {
-      lines.push(['The words are in ', where(p), ', except that ' + plural(p.misread, 'word') + ' in the book’s text ' + (p.misread === 1 ? 'differs' : 'differ') + ' by a letter. The text was read by computer from a scan, so open the printed page to see which is right.']);
+      line = plural(p.misread, 'word') + ' in the book’s text ' + (p.misread === 1 ? 'differs' : 'differ') + ' by a letter. It was read by computer from a scan, so check the printed page.';
     } else if (d.verdict === 'left_out') {
-      lines.push(['Every word you gave is in ', where(p), ', in this order, but with other words between them. Read the full wording before you use it.']);
+      line = 'Every word you gave is there, in this order, but with other words between them.';
     } else if (d.verdict === 'reworded') {
-      lines.push(['The closest wording is in ', where(p), ': ' + p.same + ' of the ' + p.words + ' words you gave are there, in the same order. The quotation has drifted; use the real wording.']);
+      line = p.same + ' of your ' + p.words + ' words are there, in the same order. Use the real wording.';
     } else if (d.verdict === 'quoting') {
-      lines.push(['The words are in ', where(p), ', but a line after them credits them to ' + p.credit + '. They are ' + p.credit + '’s words, quoted by ' + who + '.']);
+      line = 'A line after these words credits them to ' + p.credit + '.';
     } else if (d.verdict === 'other_author') {
-      lines.push(['The earliest book in the library with these words is ', where(p), '.']);
-      if (who) lines.push([d.author_works > 0
-        ? 'None of the library’s ' + plural(d.author_works, 'work') + ' by ' + who + ' has them. That doesn’t prove ' + who + ' never said it, but the credit isn’t confirmed.'
-        : 'The library has no works by ' + who + ', so it can’t confirm the credit.']);
+      line = !who ? 'The earliest book in the library with these words:'
+        : d.author_works > 0 ? 'None of the library’s ' + plural(d.author_works, 'work') + ' by ' + who + ' has these words. The earliest book that does:'
+        : 'The library has no works by ' + who + ', so it can’t confirm the credit. The earliest book with these words:';
+      if (who && d.author_works > 0) notes.push(['That doesn’t prove ' + who + ' never said it.']);
     }
-    if (d.common) lines.push(['These exact words are in many books, so they may be a Bible verse, a proverb or a common saying. The earliest book the library has isn’t necessarily where they started.']);
-    if (d.earlier) lines.push([(d.earlier.exact ? 'The same words are' : 'Similar words are') + ' in an earlier book: ', where(d.earlier), '.' + (who ? ' ' + who + ' may have been quoting it.' : '')]);
-    if (p && !p.credit && p.quoting) lines.push(['Just before these words the writer seems to be quoting someone. Read the sentences around them.']);
-    (d.notes || []).forEach(function (n) { lines.push([n]); });
-    lines.forEach(function (parts) { add(card, add.apply(null, [el('p', 'qc-line')].concat(parts))); });
+    if (line) add(card, el('p', 'qc-line', line));
 
-    if (p) {
-      if (p.licensed) {
-        add(card, add(el('p', 'qc-line qc-permission'), 'This is a present-day church document the library uses by permission of its owner, so this page shows where it is, not the text. ',
+    if (p && p.licensed) {
+      add(card, add(el('p', 'qc-line'), 'It is in ', where(p), '.'),
+        add(el('p', 'qc-line qc-permission'), 'This is a present-day church document the library uses by permission of its owner, so this page shows where it is, not the text. ',
           p.source ? link(p.source, 'Read the official copy') : null));
-      } else {
-        if (p.exact) {
-          add(card, el('p', 'qc-label', 'The library’s wording'), add(el('blockquote', 'qc-words'), p.text));
-        } else {
-          add(card, el('p', 'qc-label', 'The real wording'), add(el('blockquote', 'qc-words'), p.marked ? marked(p.marked) : p.text),
-            el('p', 'qc-label', 'The wording you gave'), add(el('blockquote', 'qc-words qc-given'), p.given_marked ? marked(p.given_marked) : d.quote));
-          add(card, el('p', 'qc-small', 'Words that differ are in bold. Spelling, capitals and punctuation aren’t compared.'));
-        }
-        if (p.before || p.after) {
-          var ctx = el('details', 'qc-context');
-          add(ctx, el('summary', null, 'Read it in context'),
-            add(el('p'), p.before ? p.before + ' ' : '', el('mark', null, p.text), p.after ? ' ' + p.after : ''));
-          add(card, ctx);
-        }
-        var links = el('p', 'qc-links');
-        if (p.scan) add(links, link(p.scan.url, p.scan.kind === 'page' ? 'See the printed page' : 'Find it on the scan'));
-        if (p.source) add(links, link(p.source, p.source_label === 'Official copy' ? 'Official copy' : 'Where the library’s copy came from'));
-        if (links.firstChild) add(card, links);
-        if (p.ocr) add(card, el('p', 'qc-small', 'This book’s text was read by computer from a scan, so some letters may be wrong. The printed page shows what’s really there.'));
+    } else if (p) {
+      var fig = el('figure', 'qc-quote');
+      if (!p.exact) add(fig, el('p', 'qc-label', 'The real wording'));
+      add(fig, add(el('blockquote', 'qc-words'), p.exact ? p.text : (p.marked ? marked(p.marked) : p.text)),
+        add(el('figcaption', 'qc-cite'), where(p)));
+      add(card, fig);
+      if (!p.exact) {
+        add(card, el('p', 'qc-label', 'What you gave'),
+          add(el('blockquote', 'qc-words qc-given'), p.given_marked ? marked(p.given_marked) : d.quote));
       }
-      if (p.about) add(card, el('p', 'qc-small', p.author + ': ' + p.about + '.'));
-      if (p.church) add(card, el('p', 'qc-small', p.church));
+      var links = el('p', 'qc-links');
+      if (p.scan) add(links, link(p.scan.url, p.scan.kind === 'page' ? 'See the printed page' : 'Find it on the scan'));
+      if (p.source) add(links, link(p.source, p.source_label === 'Official copy' ? 'Official copy' : 'The library’s source'));
+      if (links.firstChild) add(card, links);
+      if (p.ocr) notes.push(['This book’s text was read by computer from a scan, so some letters may be wrong. The printed page shows what’s really there.']);
+    }
+    if (d.common) notes.push(['These exact words are in many books, so they may be a Bible verse, a proverb or a common saying.']);
+    if (d.earlier) notes.push([(d.earlier.exact ? 'The same words are' : 'Similar words are') + ' in an earlier book: ', where(d.earlier), '.' + (who ? ' ' + who + ' may have been quoting it.' : '')]);
+    if (p && !p.credit && p.quoting) notes.push(['Just before these words the writer seems to be quoting someone. Read them in context.']);
+    (d.notes || []).forEach(function (n) { notes.push([n]); });
+    if (p && p.about) notes.push([p.author + ': ' + p.about + '.']);
+    if (p && p.church) notes.push([p.church]);
+    if (notes.length) {
+      var nl = el('ul', 'qc-notes');
+      notes.forEach(function (parts) { add(nl, add.apply(null, [el('li')].concat(parts))); });
+      add(card, nl);
     }
 
+    if (p && !p.licensed && (p.before || p.after)) {
+      var ctx = el('details', 'qc-fold');
+      add(ctx, el('summary', null, 'Read it in context'),
+        add(el('p'), p.before ? p.before + ' ' : '', el('mark', null, p.text), p.after ? ' ' + p.after : ''));
+      add(card, ctx);
+    }
     if (d.others && d.others.length) {
-      var also = el('details', 'qc-others');
-      add(also, el('summary', null, 'Also in ' + plural(d.others_total, 'other book') + ', earliest first'));
+      var also = el('details', 'qc-fold');
+      add(also, el('summary', null, 'Also in ' + plural(d.others_total, 'other book')));
       var ul = el('ul');
       d.others.forEach(function (m) {
         add(ul, add(el('li'), where(m), ' · ' + closeness(m), m.credit ? ' · credited there to ' + m.credit : ''));
       });
       add(also, ul);
-      if (d.others_total > d.others.length) add(also, el('p', 'qc-small', 'And ' + (d.others_total - d.others.length) + ' more.'));
+      if (d.others_total > d.others.length) add(also, el('p', 'qc-small', 'And ' + (d.others_total - d.others.length) + ' more. Earliest first.'));
       add(card, also);
     }
 
@@ -184,12 +188,13 @@
       setBox('');
       say('');
       if (history.replaceState) history.replaceState(null, '', location.pathname + location.search);
-      show(form, 'center');
+      window.scrollTo({ top: 0, behavior: calm ? 'auto' : 'smooth' });
       quoteBox.focus({ preventScroll: true });
     });
     add(share, btn, again);
     add(card, share);
     add(out, card);
+    if (cta) cta.hidden = false;
     show(card, 'start');
     card.focus({ preventScroll: true });
   }

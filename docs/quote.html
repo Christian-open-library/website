@@ -21,7 +21,7 @@
 <meta property="og:image:alt" content="Christian Open Library: an open book on a dark tile, with the site's name.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=5d76947c">
+<link rel="stylesheet" href="style.css?v=674145d7">
 </head>
 <body class="page-quote">
 <a class="skip" href="#main">Skip to the page</a>
@@ -59,7 +59,7 @@
 <div class="page-head">
   <div class="wrap">
 <h1>Did they really say it?</h1>
-<p class="lead">Paste a quotation credited to Spurgeon, Luther, Augustine or another older Christian writer. The library checks its 6,400 books and shows you the real wording, where it is, and the printed page. Free, no sign-in.</p>
+<p class="lead">Paste a quotation credited to Spurgeon, Luther, Augustine or another older Christian writer. The library checks it against its 6,400 books.</p>
   </div>
 </div>
 <div class="wrap prose">
@@ -67,48 +67,53 @@
   <label for="qc-quote" class="sr">The quotation, with the name if you have it</label>
   <div class="qc-box">
     <textarea id="qc-quote" rows="3" maxlength="1600" placeholder="&ldquo;Be killing sin, or it will be killing you.&rdquo; &mdash; John Owen" spellcheck="false" autocapitalize="sentences" enterkeyhint="go"></textarea>
-    <button id="qc-clear" class="qc-clear" type="button" aria-label="Clear the box" hidden>&times;</button>
+    <div class="qc-bar">
+      <button id="qc-clear" class="qc-clear" type="button" hidden>Clear</button>
+      <button id="qc-go" class="btn btn-primary" type="submit">Check it</button>
+    </div>
   </div>
-  <div class="qc-row">
-    <button id="qc-go" class="btn btn-primary" type="submit">Check it</button>
-  </div>
-  <p class="qc-hint">Paste the quote as you found it, with the name if it has one.</p>
   <p id="qc-msg" class="qc-msg" role="alert" hidden></p>
 </form>
 <div class="qc-try">
-  <span>Try one:</span>
-  <button type="button" data-q="In essentials unity, in non-essentials liberty, in all things charity" data-a="Augustine">&ldquo;In essentials unity&hellip;&rdquo; (Augustine?)</button>
-  <button type="button" data-q="Preach the gospel at all times; when necessary, use words" data-a="Francis of Assisi">&ldquo;Preach the gospel at all times&hellip;&rdquo; (Francis?)</button>
-  <button type="button" data-q="You have made us for yourself, and our hearts are restless until they rest in you" data-a="Augustine">&ldquo;Our hearts are restless&hellip;&rdquo; (Augustine)</button>
+  <span>Try:</span>
+  <button type="button" data-q="In essentials unity, in non-essentials liberty, in all things charity" data-a="Augustine">In essentials unity&hellip;</button>
+  <button type="button" data-q="Preach the gospel at all times; when necessary, use words" data-a="Francis of Assisi">Preach the gospel at all times&hellip;</button>
+  <button type="button" data-q="You have made us for yourself, and our hearts are restless until they rest in you" data-a="Augustine">Our hearts are restless&hellip;</button>
 </div>
+<p class="qc-note">Free, no sign-in. What you check isn't kept.</p>
 
 <div id="qc-result" class="qc-result" aria-live="polite"></div>
 
-<div id="qc-cta" class="qc-cta">
-  <h2>Ask the whole library from your AI app</h2>
-  <p>This page checks quotations. The connector does much more: ask Claude, ChatGPT, Gemini or Grok a question, and it searches all 6,400 books and quotes the passage with its source. It checks quotations there too. It's free.</p>
-  <p class="actions"><a class="btn btn-primary" href="setup.html">Set it up</a> <a class="btn btn-secondary" href="index.html">See what's in it</a></p>
+<div id="qc-cta" class="qc-cta" hidden>
+  <p><strong>Ask the whole library from your AI app.</strong> Claude, ChatGPT, Gemini or Grok searches all 6,400 books and quotes the passage with its source. Free.</p>
+  <p class="actions"><a class="btn btn-primary" href="setup.html">Set it up</a></p>
 </div>
 
-<h2>What the answers mean</h2>
-<ul class="points">
-  <li><strong>Found word for word.</strong> The words are in the book named, as you gave them. Spelling, capitals and punctuation aren't compared.</li>
-  <li><strong>Found, but worded differently.</strong> The quotation has drifted as it was passed around. Use the real wording.</li>
-  <li><strong>Found, but not by them.</strong> The words are in the library, but not in anything it has by the person they're credited to. It names the earliest book it has with them.</li>
-  <li><strong>Not found.</strong> No book in the library has the words or anything close to them.</li>
-</ul>
-
-<h2>What it can't tell you</h2>
-<ul class="points">
-  <li><strong>&ldquo;Not found&rdquo; doesn't mean fake.</strong> The library holds about 6,400 works, not everything ever written. Most books from after 1930, such as C.&nbsp;S. Lewis's, are still under copyright and aren't in it.</li>
-  <li><strong>The earliest book it has isn't always the source.</strong> A saying can be older than any book the library holds.</li>
-  <li><strong>Scanned books have misread letters.</strong> Where the text was read from a scan, open the printed page before you use the words.</li>
-</ul>
-<p>More on this: <a href="check.html">how to check a quotation</a>.</p>
-
-<h2>Privacy</h2>
-<p>The words you check go to the library's server and to Voyage AI, which helps find reworded quotations. Cloudflare carries them. Neither the server nor Voyage keeps them. A share link carries the quotation inside the link itself, after the <code>#</code>, so this website never receives it. Your IP address is used only to count checks for the daily limit, as a scrambled code that changes every day and is deleted the next day. <a href="privacy.html#checker">Details</a>.</p>
-<script src="quote.js?v=80d443dc" defer></script>
+<div class="qc-more">
+<details>
+  <summary>What the answers mean</summary>
+  <ul class="points">
+    <li><strong>Found word for word.</strong> The words are in the book named, as you gave them. Spelling, capitals and punctuation aren't compared.</li>
+    <li><strong>Found, but worded differently.</strong> The quotation has drifted as it was passed around. Use the real wording.</li>
+    <li><strong>Found, but not by them.</strong> The words are in the library, but not in anything it has by the person they're credited to. It names the earliest book it has with them.</li>
+    <li><strong>Not found.</strong> No book in the library has the words or anything close to them.</li>
+  </ul>
+</details>
+<details>
+  <summary>What it can't tell you</summary>
+  <ul class="points">
+    <li><strong>&ldquo;Not found&rdquo; doesn't mean fake.</strong> The library holds about 6,400 works, not everything ever written. Most books from after 1930, such as C.&nbsp;S. Lewis's, are still under copyright and aren't in it.</li>
+    <li><strong>The earliest book it has isn't always the source.</strong> A saying can be older than any book the library holds.</li>
+    <li><strong>Scanned books have misread letters.</strong> Where the text was read from a scan, open the printed page before you use the words.</li>
+  </ul>
+  <p>More on this: <a href="check.html">how to check a quotation</a>.</p>
+</details>
+<details>
+  <summary>Privacy</summary>
+  <p>The words you check go to the library's server and to Voyage AI, which helps find reworded quotations. Cloudflare carries them. Neither the server nor Voyage keeps them. A share link carries the quotation inside the link itself, after the <code>#</code>, so this website never receives it. Your IP address is used only to count checks for the daily limit, as a scrambled code that changes every day and is deleted the next day. <a href="privacy.html#checker">Details</a>.</p>
+</details>
+</div>
+<script src="quote.js?v=bd52d0cc" defer></script>
 </div>
 </main>
 <footer class="site">
