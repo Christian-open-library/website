@@ -426,12 +426,6 @@ ul.works li[data-u]:not(.open) { content-visibility: auto; contain-intrinsic-siz
 .qc-clear { margin-right: auto; min-height: 44px; padding: 0 .6rem; border: 0; background: none; font: inherit; font-size: .93rem; color: var(--muted); cursor: pointer; }
 .qc-clear:hover { color: var(--ink); }
 .qc-msg { margin: .7rem .2rem 0; color: var(--no); font-weight: 500; scroll-margin: 6rem 0; }
-.qc-try { display: flex; flex-wrap: nowrap; gap: .45rem; align-items: center; margin: 0 -1.5rem; padding: 0 1.5rem; overflow-x: auto; scrollbar-width: none; font-size: .9rem; color: var(--muted); }
-.qc-try::-webkit-scrollbar { display: none; }
-.qc-try span { flex: none; }
-.qc-try button { flex: none; min-height: 36px; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line-2); border-radius: 6px; padding: .3rem .85rem; white-space: nowrap; cursor: pointer; }
-.qc-try button:hover { background: var(--tile-hover); }
-.qc-try button:disabled { opacity: .55; cursor: default; }
 .qc-note { margin: 1.1rem 0 2rem; font-size: .88rem; color: var(--muted); }
 
 .qc-card.qc-wait { position: relative; border-top-color: var(--line); padding-bottom: 1.4rem; animation: qc-fade .3s ease-out; scroll-margin: 6rem 0; }
@@ -494,5 +488,4 @@ ul.works li[data-u]:not(.open) { content-visibility: auto; contain-intrinsic-siz
 .qc-more details > :last-child { margin-bottom: 1.1rem; }
 @media (max-width: 40rem) {
   .qc-card { padding: 1.1rem 1rem 1rem; }
-  .qc-try { margin: 0 -1rem; padding: 0 1rem; }
 }

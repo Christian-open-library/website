@@ -12,7 +12,6 @@
   var msg = document.getElementById('qc-msg');
   var out = document.getElementById('qc-result');
   var clearBtn = document.getElementById('qc-clear');
-  var tries = document.querySelectorAll('.qc-try button');
   var cta = document.getElementById('qc-cta');
   var busy = false;
   var waitTimer = null;
@@ -331,7 +330,6 @@
     busy = true;
     go.disabled = true;
     go.textContent = 'Checking…';
-    Array.prototype.forEach.call(tries, function (b) { b.disabled = true; });
     quoteBox.blur();
     out.textContent = '';
     /* A quiet placeholder in the shape of the answer, with a thin line moving along its top edge. */
@@ -370,7 +368,6 @@
     }).then(function () {
       clearTimeout(waitTimer);
       clearTimeout(giveUp);
-      Array.prototype.forEach.call(tries, function (b) { b.disabled = false; });
       busy = false;
       go.disabled = false;
       go.textContent = 'Check quote';
@@ -381,12 +378,6 @@
   function noHash() { if (location.hash && history.replaceState) history.replaceState(null, '', location.pathname + location.search); }
   quoteBox.addEventListener('keydown', function (e) {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); check(); }
-  });
-  Array.prototype.forEach.call(tries, function (b) {
-    b.addEventListener('click', function () {
-      setBox(joined(b.getAttribute('data-q'), b.getAttribute('data-a') || ''));
-      check();
-    });
   });
   quoteBox.addEventListener('input', function () { fit(); if (!msg.hidden) say(''); });
   if (clearBtn) clearBtn.addEventListener('click', function () { setBox(''); say(''); noHash(); quoteBox.focus(); });
