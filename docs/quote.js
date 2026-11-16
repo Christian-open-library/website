@@ -264,6 +264,13 @@
     return ul;
   }
 
+  /* The writer credited is still in copyright (most books after 1930 are), so the library can't hold the books. */
+  function inCopyright(c) {
+    var n = String(c.name), k = Number(c.works) || 0;
+    return k > 0 ? 'Most of ' + n + '’s books are still in copyright. ' + (k === 1 ? 'The one' : 'The ' + k) + ' in the library '
+      + (k === 1 ? 'doesn’t' : 'don’t') + ' have these words.'
+      : n + '’s books are still in copyright, so the library doesn’t have them.';
+  }
   function render(d) {
     d.quote = String(d.quote || '');
     d.author = d.author ? String(d.author) : '';
@@ -284,7 +291,8 @@
     if (d.verdict === 'other_author' && !who) { kind = 'yes'; title = 'Found in the library'; }
     if (d.verdict === 'quoting' && who && p && p.credit) title = who + ' was quoting ' + p.credit;
 
-    var line = null, words = null, cite = null, after2 = null, links = el('p', 'qc-links');
+    var line = null, picLine = null, words = null, cite = null, after2 = null, links = el('p', 'qc-links');
+    var copy = d.in_copyright && typeof d.in_copyright === 'object' && d.in_copyright.name ? d.in_copyright : null;
     var more = detailsFold('Details'), notes = [];
 
     /* Words of the Bible: the verse comes first, then the books that quote it. A verse that is only close gives
@@ -325,8 +333,8 @@
       }
     } else {
       if (!p) {
-        line = 'No book in the library has these words. That does not prove them false: the library holds about 7,100 works, not everything ever written.';
-        if (who) notes.push([d.author_works > 0 ? 'The library holds ' + plural(d.author_works, 'work') + ' by ' + who + ', not the complete writings.'
+        line = copy ? inCopyright(copy) : 'No book in the library has these words. That does not prove them false: the library holds about 7,100 works, not everything ever written.';
+        if (who && !copy) notes.push([d.author_works > 0 ? 'The library holds ' + plural(d.author_works, 'work') + ' by ' + who + ', not the complete writings.'
           : 'The library holds no works by ' + who + '.']);
       } else if (named) {
         line = (d.author_works > 0 ? 'None of the library’s ' + plural(d.author_works, 'work') + ' by ' + who + ' has these words.'
@@ -391,9 +399,14 @@
     title = src ? 'From ' + src : 'Not in the library';
     if (!b && p && !p.licensed) {
       line = null;
-      if (who && (d.verdict === 'other_author' || named)) {
+      if (who && copy && d.verdict === 'other_author') {
+        line = inCopyright(copy);
+        picLine = copy.name + '’s books are still in copyright.';
+      } else if (who && (d.verdict === 'other_author' || named)) {
         line = (d.author_works > 0 ? 'Not in the library’s ' + plural(d.author_works, 'work') + ' by ' + who + '.' : 'The library has no works by ' + who + '.')
           + (named ? ' ' + src + ' gives these words as ' + who + '’s.' : '');
+        /* The share picture says it short: that is the line people repost. */
+        if (d.author_works > 0 && !named) picLine = 'Not in ' + who + '’s works.';
       } else if (d.verdict === 'quoting' && p.credit) {
         line = src + ' is quoting ' + p.credit + ' here.';
       }
@@ -407,7 +420,11 @@
     var card = el('article', 'qc-card qc-' + kind + (calm ? '' : ' qc-reveal'));
     card.tabIndex = -1;
     add(card, el('span', 'qc-top'), add(el('h2', 'qc-verdict'), markSvg(kind), el('span', 'qc-title', title)));
-    if (line) add(card, add(el('p', 'qc-line'), line));
+    if (line) {
+      var lineP = add(el('p', 'qc-line'), line);
+      if (picLine) lineP.setAttribute('data-pic', picLine);
+      add(card, lineP);
+    }
     if (words) add(card, add(el('figure', 'qc-quote'), words, cite));
     if (after2) add(card, after2);
     if (links.firstChild) add(card, links);
@@ -430,7 +447,7 @@
       + 'The checker said: ' + title + '\n'
       + (url.length <= 1500 ? 'Link to the answer: ' + url + '\n' : '')
       + '\nWhat is wrong with the answer (and where the right source is, if you know):\n\n';
-    var a = el('a', null, 'Think this answer is wrong? Tell me');
+    var a = el('a', null, 'Think this answer is wrong? Tell us');
     a.href = 'mailto:' + CONTACT + '?subject=' + encodeURIComponent('Quote checker: “' + short + '”')
       + '&body=' + encodeURIComponent(body);
     return add(el('p', 'qc-report'), a);
@@ -584,7 +601,7 @@
     if (bq && bq.classList.contains('qc-hang') === false && toks.length) { toks.unshift(['“', '']); toks.push(['”', '']); }
     var cite = citeEl ? citeEl.textContent : '';
     if (!bq) { toks = []; d.quote.split(/(\s+)/).forEach(function (s) { if (s) toks.push([s, '']); }); toks.unshift(['“', '']); toks.push(['”', '']); cite = d.author ? 'As credited to ' + d.author : ''; }
-    var lineEl = card.querySelector('.qc-line');
+    var lineEl = card.querySelector('.qc-line:not(.qc-after)');
     return Promise.all([fonts, iconReady]).then(function () {
       /* The picture is as tall as what it holds: laid out first, then drawn. */
       var W = 1080, M = 88, F = 'Geist, system-ui, -apple-system, sans-serif';
@@ -620,7 +637,7 @@
       }
       var tx = MARK[kind] && window.Path2D ? M + 74 : M;
       var titleLines = lines(title, '650 46px ' + F, W - tx - M);
-      var noteLines = lineEl && !bq ? lines(lineEl.textContent, '400 32px ' + F, W - M * 2) : [];
+      var noteLines = lineEl ? lines(bq && lineEl.getAttribute('data-pic') || lineEl.textContent, '400 32px ' + F, W - M * 2) : [];
       var citeFont = '400 30px ' + F, citeLines = cite ? lines(cite, citeFont, W - M * 2) : [];
       var size, lh, rows, MAXROWS = 9;
       for (size = 60; size >= 34; size -= 2) {
