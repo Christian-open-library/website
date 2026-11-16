@@ -78,6 +78,8 @@ LAYOUT = """<!doctype html>
   </div>
 </footer>
 <script src="site.js?v={js_v}" defer></script>
+<script src="lookup-preview.js?v={lkp_v}" defer></script>
+<script src="lookup.js?v={lk_v}" defer></script>
 </body>
 </html>
 """
@@ -121,7 +123,7 @@ def build():
             head_extra = '<meta name="robots" content="noindex">'
         html = LAYOUT.format(title=full, desc=desc, name=name, url=url, head_extra=head_extra, og_v=asset_version("img/og.png"), nav="\n".join(items),
                              footnav="\n".join(foot), main=main,
-                             css_v=asset_version("style.css"), js_v=asset_version("site.js")).replace('src="browse.js"', 'src="browse.js?v=' + asset_version("browse.js") + '"')
+                             css_v=asset_version("style.css"), js_v=asset_version("site.js"), lk_v=asset_version("lookup.js"), lkp_v=asset_version("lookup-preview.js")).replace('src="browse.js"', 'src="browse.js?v=' + asset_version("browse.js") + '"')
         if name == "404":
             # Served at any missing address, however deep, so links must start from the site root.
             html = re.sub(r'(href|src)="(?![a-z]+:|/|#)', r'\1="/', html)
