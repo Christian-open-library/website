@@ -169,21 +169,22 @@
     return out2;
   }
   /* Before a passage: quotation marks, stray marks from a scan, a chapter heading ("CHAPTER XXVII 38."). */
-  var LEAD = /^(?:[\s“”"‘'^]|\d+\.\s+|(?:CHAPTER|CHAP\.|BOOK|SECTION)\s+[IVXLC\d]+\.?\s+(?:\d+\.\s+)?)+/;
+  var LEAD = /^(?:[\s“”"‘'^*_|]|\d+\.\s+|(?:CHAPTER|CHAP\.|BOOK|SECTION)\s+[IVXLC\d]+\.?\s+(?:\d+\.\s+)?)+/;
   function trimQuotes(s) { return String(s).trim().replace(LEAD, '').replace(/[“”"’]+$/, '').trim(); }
   /* The sentence around the words: back to the start of the sentence, on to its end, 18 words at most. */
   function before(s) {
-    s = String(s || '').replace(/(?:CHAPTER|CHAP\.|BOOK|SECTION)\s+[IVXLC\d]+\.?/g, ' ').replace(/\^/g, '');
+    // Italics marks of the text (*, _) and a scan's stray bars are not words.
+    s = String(s || '').replace(/(?:CHAPTER|CHAP\.|BOOK|SECTION)\s+[IVXLC\d]+\.?/g, ' ').replace(/[\^*_|]+/g, ' ');
     // The words open a quotation or a sentence: what comes before belongs to something else.
     s = s.replace(/[\s“"‘]+$/, '');
-    if (/[.!?:]["”’)]?$/.test(s)) return '';
+    if (/[.!?:;]["”’)]?$/.test(s)) return '';
     var m = s.match(/(?:^|[.!?;:]["”’]?\s+)([^.!?;:]*)$/);
     var t = m ? m[1] : s, w = t.split(/\s+/).filter(Boolean);
     if (!m && w.length <= 18) t = '…' + t;
     return w.length > 18 ? '…' + w.slice(-18).join(' ') + ' ' : t ? t + ' ' : '';
   }
   function after(s) {
-    s = String(s || '');
+    s = String(s || '').replace(/[*_|]+/g, '');
     var m = s.match(/^[^.!?;]*[.!?;]/), t = m ? m[0] : s, w = t.split(/\s+/).filter(Boolean);
     t = w.length > 18 ? w.slice(0, 18).join(' ') + '…' : t;
     return /^[\p{L}\p{N}]/u.test(t) ? ' ' + t : t;
