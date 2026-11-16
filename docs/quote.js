@@ -376,8 +376,27 @@
     if (links.firstChild) add(card, links);
     var rest2 = el('div', 'qc-rest');
     if (more.children.length > 1) add(rest2, more);
+    add(rest2, report(d, title));
     add(card, rest2);
     finish(card, rest2, d, title, kind);
+  }
+
+  /* "Think this answer is wrong?": an email to the library, filled in with what was checked and what the checker said, in the
+     visitor's own mail app. Nothing is sent from this page, and nothing is sent until they send it. The share link goes in when
+     it is short enough for every mail app to take. */
+  var CONTACT = 'hello@christianopenlibrary.org';
+  function report(d, title) {
+    var url = shareUrl(d.quote, d.author || '');
+    var short = d.quote.length > 60 ? d.quote.slice(0, 57).replace(/\s+\S*$/, '') + '…' : d.quote;
+    var body = 'The quotation: ' + d.quote + '\n'
+      + (d.author ? 'Credited to: ' + d.author + '\n' : '')
+      + 'The checker said: ' + title + '\n'
+      + (url.length <= 1500 ? 'Link to the answer: ' + url + '\n' : '')
+      + '\nWhat is wrong with the answer (and where the right source is, if you know):\n\n';
+    var a = el('a', null, 'Think this answer is wrong? Tell me');
+    a.href = 'mailto:' + CONTACT + '?subject=' + encodeURIComponent('Quote checker: “' + short + '”')
+      + '&body=' + encodeURIComponent(body);
+    return add(el('p', 'qc-report'), a);
   }
 
   var ICON = {
