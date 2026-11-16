@@ -102,7 +102,7 @@ ul.facts svg { width: 17px; height: 17px; flex: none; }
 .btn-secondary:hover { border-color: var(--muted); }
 
 /* Content */
-.prose { padding-top: .5rem; padding-bottom: 3.5rem; }
+.prose { padding-top: .5rem; padding-bottom: 2rem; }
 .prose h2 { font-size: 1.3rem; line-height: 1.3; font-weight: 650; margin: 2.25rem 0 .8rem; }
 .prose h3 { font-size: 1.05rem; font-weight: 600; margin: 1.5rem 0 .6rem; }
 .prose p, .prose ul, .prose ol { margin: 0 0 .9rem; }
@@ -411,12 +411,12 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
 
 .give { display: grid; grid-template-columns: 1fr minmax(0, 22rem); gap: 1.5rem; align-items: center; margin: .4rem 0 1rem; }
 .give .actions { margin: .2rem 0 .7rem; }
-.more { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 1.5rem; margin: .3rem 0 1.2rem; }
+.more { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 1.5rem; margin: .3rem 0 .2rem; }
 .more li { margin: 0; padding: .7rem 0 .8rem; border-top: 1px solid var(--line-2); }
 .more a { display: block; font-weight: 650; text-decoration: none; }
 .more a::after { content: " \2192"; }
 .more span { display: block; margin-top: .15rem; font-size: .9rem; line-height: 1.4; color: var(--muted); }
-.credits { margin-top: 1rem; border-top: 1px solid var(--line); padding-top: .8rem; }
+.credits { margin-top: .4rem; border-top: 1px solid var(--line); padding-top: .8rem; }
 .credits summary { cursor: pointer; font-weight: 600; color: var(--ink); }
 .credits .small { margin-top: .6rem; }
 @media (max-width: 46rem) {
@@ -435,7 +435,7 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
 /* Browse: the browser skips drawing rows that are off screen (the list has thousands). Sizes are the usual row heights. */
 ul.works li[data-u]:not(.open) { content-visibility: auto; contain-intrinsic-size: auto 1.3rem; }
 @media (max-width: 40rem) { ul.works li[data-u]:not(.open) { contain-intrinsic-size: auto 2.5rem; } }
-.prose details.credits { margin-bottom: 1rem; }
+.prose details.credits { margin-bottom: 0; }
 
 /* Reuse rules (download.html#reuse): Yes / No / Never blocks */
 :root { --yes: #2f7a4b; --yes-soft: #eef6f0; --no: #b3261e; --no-soft: #fcefee;
