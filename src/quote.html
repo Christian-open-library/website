@@ -1,20 +1,19 @@
 <!-- title: Check a quote | desc: Verify a quotation attributed to Spurgeon, Luther, Augustine or another older Christian writer against the text of 7,100 books. Each result cites the book, the year and the printed page. -->
 <h1>Check a quote</h1>
-<p class="lead">Searches the text of 7,100 books.</p>
+<p class="lead qc-lead"><span>Searches the text of 7,100 books.</span> <span>Searches aren&rsquo;t logged.</span></p>
 <!-- body -->
 <form id="qc-form" class="qc" novalidate>
   <label for="qc-quote" class="sr">The quotation, with the name if you have it</label>
   <div class="qc-box">
+    <button id="qc-clear" class="qc-clear" type="button" aria-label="Clear" title="Clear" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
     <textarea id="qc-quote" rows="3" maxlength="1600" placeholder="&ldquo;Be killing sin, or it will be killing you.&rdquo; &mdash; John Owen" spellcheck="false" autocapitalize="sentences" enterkeyhint="go"></textarea>
     <div class="qc-bar">
-      <button id="qc-clear" class="qc-clear" type="button" hidden>Clear</button>
       <button id="qc-go" class="btn btn-primary" type="submit">Check quote</button>
     </div>
     <div id="qc-result" class="qc-result" aria-live="polite"></div>
   </div>
   <p id="qc-msg" class="qc-msg" role="alert" hidden></p>
 </form>
-<p class="qc-note">Searches aren't logged.</p>
 
 <div id="qc-cta" class="qc-cta" hidden>
   <p><strong>Give your AI app the books themselves.</strong> Connect the library to Claude, ChatGPT, Gemini or Grok. It then searches all 7,100 works and quotes the passage with its source, not from memory. Free.</p>

@@ -378,30 +378,44 @@
     finish(card, rest2, d, title, kind);
   }
 
+  var ICON = {
+    share: 'M12 3.5v11M8 7.2l4-3.7 4 3.7M7.5 10.5H6a1.5 1.5 0 0 0-1.5 1.5v7A1.5 1.5 0 0 0 6 20.5h12a1.5 1.5 0 0 0 1.5-1.5v-7a1.5 1.5 0 0 0-1.5-1.5h-1.5',
+    image: 'M5 4.5h14A1.5 1.5 0 0 1 20.5 6v12a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 18V6A1.5 1.5 0 0 1 5 4.5zM3.5 16l4.6-4.6a1.2 1.2 0 0 1 1.7 0l6.7 6.7M14 13.5l1.6-1.6a1.2 1.2 0 0 1 1.7 0l3.2 3.2M15.5 9a1.5 1.5 0 1 0 0-.01',
+    done: 'M5 12.5l4.5 4.5L19 7.5'
+  };
+  function iconBtn(d, label) {
+    var b = el('button', 'qc-icon');
+    b.type = 'button';
+    b.setAttribute('aria-label', label);
+    b.title = label;
+    b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + d + '"/></svg>';
+    return b;
+  }
+  /* A tick on the button and a word beside it for a moment ("Link copied"). */
+  function said(b, text) {
+    var path = b.querySelector('path'), was = path.getAttribute('d'), note = b.parentNode.querySelector('.qc-said');
+    path.setAttribute('d', ICON.done);
+    b.classList.add('qc-ok');
+    if (note) { note.textContent = text; note.classList.add('qc-on'); }
+    setTimeout(function () { path.setAttribute('d', was); b.classList.remove('qc-ok'); if (note) note.classList.remove('qc-on'); }, 2200);
+  }
+
   /* The buttons under a result; then the result takes the place of the "searching" card. */
   function finish(card, rest, d, title, kind) {
-    var share = el('p', 'qc-share');
-    var btn = el('button', 'btn btn-secondary', 'Share link');
-    btn.type = 'button';
+    /* Two small buttons beside the verdict: share the link, share the picture. A new check is the box's ×. */
+    var acts = el('div', 'qc-acts');
+    var btn = iconBtn(ICON.share, 'Share link');
     btn.addEventListener('click', function () { shareIt(d, title, btn); });
-    var again = el('button', 'btn btn-secondary', 'New check');
-    again.type = 'button';
-    again.addEventListener('click', function () {
-      fold(true);
-      say('');
-      noHash();
-      window.scrollTo({ top: 0, behavior: calm ? 'auto' : 'smooth' });
-      quoteBox.focus({ preventScroll: true });
-    });
-    var pic = el('button', 'btn btn-secondary', 'Share image');
-    pic.type = 'button';
+    var pic = iconBtn(ICON.image, 'Share image');
     pic.disabled = true;
     var file = null;
     /* Drawn now, so the click can hand it to the share sheet at once (Safari shares only straight from a tap). */
     picture(d, title, kind, card).then(function (f) { file = f; pic.disabled = !f; }, function () { pic.hidden = true; });
     pic.addEventListener('click', function () { if (file) sharePicture(file, pic); });
-    add(share, btn, pic, again);
-    add(rest, share);
+    add(acts, el('span', 'qc-said'), btn, pic);
+    var h2 = card.querySelector('.qc-verdict'), head = el('div', 'qc-head');
+    card.insertBefore(head, h2);
+    add(head, h2, acts);
     morph(function () {
       out.textContent = '';
       add(out, card);
@@ -443,7 +457,7 @@
       navigator.share({ title: 'Check a quote', text: text, url: url }).catch(function () {});
       return;
     }
-    var done = function () { btn.textContent = 'Link copied ✓'; setTimeout(function () { btn.textContent = 'Share link'; }, 2500); };
+    var done = function () { said(btn, 'Link copied'); };
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text + ' ' + url).then(done, function () { prompt('Copy this link:', url); });
     } else {
@@ -612,8 +626,7 @@
     document.body.appendChild(a);
     a.click();
     setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
-    btn.textContent = 'Image saved ✓';
-    setTimeout(function () { btn.textContent = 'Share image'; }, 2500);
+    said(btn, 'Image saved');
   }
 
   /* One box: the quotation as people copy it, with the credit if there is one:
