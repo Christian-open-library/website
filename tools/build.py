@@ -10,10 +10,10 @@ import hashlib, re, pathlib
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC, OUT = ROOT / "src", ROOT / "docs"
 
-NAV = [("index", "Home"), ("setup", "Set it up"), ("browse", "Browse"), ("quote", "Check a quote"), ("download", "Download"),
+NAV = [("index", "Home"), ("setup", "Set it up"), ("browse", "Browse"), ("download", "Download"),
        ("privacy", "Privacy"), ("accuracy", "Accuracy"), ("corrections", "Corrections"), ("support", "Give")]
 # The menu at the top shows only these; the footer lists every page.
-TOP = ("index", "setup", "browse", "quote", "download", "support")
+TOP = ("index", "setup", "browse", "download", "support")
 
 LAYOUT = """<!doctype html>
 <html lang="en">
@@ -121,7 +121,7 @@ def build():
             head_extra = '<meta name="robots" content="noindex">'
         html = LAYOUT.format(title=full, desc=desc, name=name, url=url, head_extra=head_extra, og_v=asset_version("img/og.png"), nav="\n".join(items),
                              footnav="\n".join(foot), main=main,
-                             css_v=asset_version("style.css"), js_v=asset_version("site.js")).replace('src="browse.js"', 'src="browse.js?v=' + asset_version("browse.js") + '"').replace('src="quote.js"', 'src="quote.js?v=' + asset_version("quote.js") + '"')
+                             css_v=asset_version("style.css"), js_v=asset_version("site.js")).replace('src="browse.js"', 'src="browse.js?v=' + asset_version("browse.js") + '"')
         if name == "404":
             # Served at any missing address, however deep, so links must start from the site root.
             html = re.sub(r'(href|src)="(?![a-z]+:|/|#)', r'\1="/', html)
