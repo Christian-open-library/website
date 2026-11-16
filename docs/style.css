@@ -478,12 +478,12 @@ ul.works li[data-u]:not(.open) { content-visibility: auto; contain-intrinsic-siz
 .qc-icon.qc-ok { color: var(--yes); }
 .qc-said { position: absolute; right: 100%; top: 50%; margin-right: .2rem; transform: translateY(-50%); white-space: nowrap; font-size: .82rem; font-weight: 500; color: var(--muted); opacity: 0; transition: opacity .2s; pointer-events: none; background: var(--bg); padding: 0 .3rem; }
 .qc-said.qc-on { opacity: 1; }
-/* The line under the heading: what it searches, then that searches aren't logged, in turn. */
+/* The line under the heading says what it searches; while a search runs, that searches aren't logged. */
 .qc-lead { display: grid; }
-.qc-lead > span { grid-area: 1 / 1; animation: qc-swap 9s ease-in-out infinite; }
-.qc-lead > span + span { animation-delay: -4.5s; }
-@keyframes qc-swap { 0%, 44% { opacity: 1; } 50%, 94% { opacity: 0; } 100% { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .qc-lead { display: block; } .qc-lead > span { animation: none; } }
+.qc-lead > span { grid-area: 1 / 1; transition: opacity .45s ease; }
+.qc-lead > span + span, .qc-lead.qc-alt > span:first-child { opacity: 0; }
+.qc-lead.qc-alt > span + span { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .qc-lead > span { transition: none; } }
 .qc-mark { flex: none; width: 1.3rem; height: 1.3rem; margin: .02rem 0 0 -.15rem; fill: none; stroke: currentColor; stroke-width: 2.1; stroke-linecap: round; stroke-linejoin: round; }
 .qc-mark path { stroke-dasharray: 1; stroke-dashoffset: 0; }
 .prose .qc-line { margin: -.3rem 0 1rem; color: var(--text); font-size: .95rem; }

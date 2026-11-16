@@ -32,9 +32,11 @@
     a.onfinish = a.oncancel = function () { box.classList.remove('qc-morph'); };
   }
   var KINDS = ['qc-yes', 'qc-warn', 'qc-no', 'qc-none', 'qc-busy', 'qc-done', 'qc-landed'];
+  var lead = document.querySelector('.qc-lead');
   function boxState(cls) {
     KINDS.forEach(function (k) { box.classList.remove(k); });
     (cls || []).forEach(function (k) { box.classList.add(k); });
+    if (lead) lead.classList.toggle('qc-alt', box.classList.contains('qc-busy'));
   }
   /* Back to an empty answer, the box ready for words (the words are kept unless told otherwise). */
   function fold(clear) {
