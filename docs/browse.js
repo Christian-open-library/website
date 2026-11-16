@@ -524,9 +524,9 @@
     var filtered = words.length || t || pd || authorFilter;
     resetBtn.hidden = !filtered;
     var total = units.length;
-    if (!filtered) count.textContent = num(total) + ' works';
-    else if (!matches.length) count.textContent = 'No works match.';
-    else count.textContent = num(matches.length) + ' of ' + num(total) + ' works' + (sortSel.value === 'best' && matches.length > 1 ? ', best matches first' : '');
+    if (!filtered) count.textContent = num(total) + ' titles';
+    else if (!matches.length) count.textContent = 'No titles match.';
+    else count.textContent = num(matches.length) + ' of ' + num(total) + ' titles' + (sortSel.value === 'best' && matches.length > 1 ? ', best matches first' : '');
     $('empty').hidden = matches.length > 0;
     $('empty-q').textContent = 'Search the Christian Open Library for ' + (input.value.trim() || 'this') + '.';
     showMore();
