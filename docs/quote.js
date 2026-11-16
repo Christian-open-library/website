@@ -449,7 +449,7 @@
     }
   }
 
-  /* The result as a picture (1080 x 1350, light), drawn like the card: the verdict and its mark, the words with
+  /* The result as a picture (1080 wide, as tall as it needs, light), drawn like the card: the verdict and its mark, the words with
      the same marking, where they are, and the site's address. */
   var PIC = { yes: '#2f7a4b', warn: '#8a5a00', no: '#b3261e', none: '#555555' };
   var SERIF = '"Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif';
@@ -468,23 +468,47 @@
     var icon = new Image();
     var iconReady = new Promise(function (ok) { icon.onload = icon.onerror = function () { ok(); }; icon.src = 'img/icon-512.png'; });
     // The words as the card shows them (without the sentence around them), each with its marking.
-    var toks = [], bq = card.querySelector('.qc-quote .qc-words'), citeEl = card.querySelector('.qc-quote .qc-cite');
+    var toks = [], cut = false, bq = card.querySelector('.qc-quote .qc-words'), citeEl = card.querySelector('.qc-quote .qc-cite');
     if (bq) Array.prototype.forEach.call(bq.childNodes, function (n) {
       var k = n.nodeType === 1 ? (n.classList.contains('qc-hit') ? 'hit' : n.classList.contains('qc-diff') ? 'diff' : n.classList.contains('qc-ctx') ? 'ctx' : '') : '';
-      if (k === 'ctx') return;
-      String(n.textContent).split(/(\s+)/).forEach(function (s) { if (s) toks.push([s, k]); });
+      // The sentence around the words is left out; its punctuation stays.
+      // Where the sentence is cut, its punctuation on either side goes too.
+      if (k === 'ctx' && /[\p{L}\p{N}]/u.test(n.textContent)) {
+        while (toks.length && !/[\p{L}\p{N}]/u.test(toks[toks.length - 1][0])) toks.pop();
+        cut = true;
+        return;
+      }
+      String(n.textContent).split(/(\s+)/).forEach(function (s) {
+        if (!s) return;
+        var word = /[\p{L}\p{N}]/u.test(s);
+        if (cut && !word) return;
+        if (cut && word && toks.length) toks.push([' ', '']);
+        cut = false;
+        toks.push([s, k === 'ctx' ? '' : k]);
+      });
     });
+    // No space at either end, none doubled, none before a stop or comma, and no stop or comma first.
+    toks = toks.reduce(function (acc, t) {
+      var sp = /^\s+$/.test(t[0]), prev = acc[acc.length - 1];
+      if (sp && (!prev || /^\s+$/.test(prev[0]))) return acc;
+      if (!sp && /^[^\p{L}\p{N}“‘…]+$/u.test(t[0]) && /^[,.;:!?’”)]/.test(t[0])) {
+        if (prev && /^\s+$/.test(prev[0])) acc.pop();
+        if (!acc.length) return acc;
+      }
+      acc.push(sp ? [' ', t[1]] : t);
+      return acc;
+    }, []);
+    while (toks.length && /^\s+$/.test(toks[toks.length - 1][0])) toks.pop();
     if (bq && bq.classList.contains('qc-hang') === false && toks.length) { toks.unshift(['“', '']); toks.push(['”', '']); }
     var cite = citeEl ? citeEl.textContent : '';
     if (!bq) { toks = []; d.quote.split(/(\s+)/).forEach(function (s) { if (s) toks.push([s, '']); }); toks.unshift(['“', '']); toks.push(['”', '']); cite = d.author ? 'As credited to ' + d.author : ''; }
     var lineEl = card.querySelector('.qc-line');
     return Promise.all([fonts, iconReady]).then(function () {
-      var W = 1080, H = 1350, M = 88, F = 'Geist, system-ui, -apple-system, sans-serif';
-      c.width = W; c.height = H;
+      /* The picture is as tall as what it holds: laid out first, then drawn. */
+      var W = 1080, M = 88, F = 'Geist, system-ui, -apple-system, sans-serif';
+      c.width = W; c.height = 10;
       var g = c.getContext('2d');
       var col = PIC[kind] || PIC.none;
-      g.fillStyle = '#ffffff'; g.fillRect(0, 0, W, H);
-      g.fillStyle = col; g.fillRect(0, 0, W, 14);
       function lines(text, font, width) {
         g.font = font;
         var out2 = [], line = '';
@@ -497,25 +521,6 @@
         return out2;
       }
       function draw(ls, x, y, lh) { ls.forEach(function (l, i) { g.fillText(l, x, y + i * lh); }); return y + ls.length * lh; }
-      g.textBaseline = 'alphabetic';
-
-      // The verdict, with its mark drawn as a stroke.
-      var y = M + 44, tx = M;
-      if (MARK[kind] && window.Path2D) {
-        g.save(); g.translate(M - 6, y - 46); g.scale(2.5, 2.5);
-        g.strokeStyle = col; g.lineWidth = 2.1; g.lineCap = 'round'; g.lineJoin = 'round';
-        MARK[kind].forEach(function (dd) { g.stroke(new Path2D(dd)); });
-        g.restore(); tx = M + 74;
-      }
-      g.fillStyle = col;
-      y = draw(lines(title, '650 46px ' + F, W - tx - M), tx, y, 58);
-      if (lineEl && !bq) { g.fillStyle = '#2e2e2e'; y = draw(lines(lineEl.textContent, '400 32px ' + F, W - M * 2), M, y + 40, 46); }
-
-      // The words: as large as fits, a line at a time, with the highlighter behind the words found.
-      var footTop = H - M - 92, top = y + 50, bottom = footTop - 50;
-      var citeFont = '400 30px ' + F, citeLines = cite ? lines(cite, citeFont, W - M * 2) : [];
-      var citeH = citeLines.length ? 34 + citeLines.length * 42 : 0;
-      var room = bottom - top - citeH, size, lh, rows;
       function layout(sz) {
         g.font = '400 ' + sz + 'px ' + SERIF;
         var rs = [[]], x = 0, max = W - M * 2;
@@ -531,15 +536,39 @@
         });
         return rs;
       }
-      for (size = 66; size >= 28; size -= 2) {
+      var tx = MARK[kind] && window.Path2D ? M + 74 : M;
+      var titleLines = lines(title, '650 46px ' + F, W - tx - M);
+      var noteLines = lineEl && !bq ? lines(lineEl.textContent, '400 32px ' + F, W - M * 2) : [];
+      var citeFont = '400 30px ' + F, citeLines = cite ? lines(cite, citeFont, W - M * 2) : [];
+      var size, lh, rows, MAXROWS = 9;
+      for (size = 60; size >= 34; size -= 2) {
         lh = Math.round(size * 1.42);
         rows = layout(size);
-        if (rows.length * lh <= room) break;
+        if (rows.length <= MAXROWS) break;
       }
-      var maxRows = Math.max(1, Math.floor(room / lh));
-      if (rows.length > maxRows) { rows = rows.slice(0, maxRows); rows[maxRows - 1].push(['…”', '', 0]); }
-      var blockH = rows.length * lh + citeH;
-      y = top + Math.max(0, (bottom - top - blockH) * 0.4) + size;
+      if (rows.length > MAXROWS) { rows = rows.slice(0, MAXROWS); rows[MAXROWS - 1].push(['…”', '', 0]); }
+      var headY = M + 34, wordsTop = headY + (titleLines.length - 1) * 58 + (noteLines.length ? 40 + noteLines.length * 46 : 0) + 64;
+      var citeY = wordsTop + rows.length * lh + 26, footTop = citeY + (citeLines.length ? citeLines.length * 42 + 40 : 0) + 24;
+      var H = footTop + 98 + 66;
+      c.height = H;
+      g = c.getContext('2d');
+      g.textBaseline = 'alphabetic';
+      g.fillStyle = '#ffffff'; g.fillRect(0, 0, W, H);
+      g.fillStyle = col; g.fillRect(0, 0, W, 12);
+
+      // The verdict, with its mark drawn as a stroke.
+      if (tx !== M) {
+        g.save(); g.translate(M - 6, headY - 46); g.scale(2.5, 2.5);
+        g.strokeStyle = col; g.lineWidth = 2.1; g.lineCap = 'round'; g.lineJoin = 'round';
+        MARK[kind].forEach(function (dd) { g.stroke(new Path2D(dd)); });
+        g.restore();
+      }
+      g.fillStyle = col; g.font = '650 46px ' + F;
+      var y = draw(titleLines, tx, headY, 58);
+      if (noteLines.length) { g.fillStyle = '#2e2e2e'; g.font = '400 32px ' + F; draw(noteLines, M, y - 58 + 40 + 46, 46); }
+
+      // The words, with the highlighter behind the words found.
+      y = wordsTop + size;
       g.font = '400 ' + size + 'px ' + SERIF;
       rows.forEach(function (r) {
         var x = M;
@@ -555,7 +584,7 @@
         r.forEach(function (t) { g.fillText(t[0], x, y); x += t[2] || g.measureText(t[0]).width; });
         y += lh;
       });
-      if (citeLines.length) { g.font = citeFont; g.fillStyle = '#555555'; draw(citeLines, M, y - lh + size * 0.35 + 34 + 30, 42); }
+      if (citeLines.length) { g.font = citeFont; g.fillStyle = '#555555'; draw(citeLines, M, citeY + 30, 42); }
 
       // The site.
       g.fillStyle = '#e3e3e3'; g.fillRect(M, footTop, W - M * 2, 2);
