@@ -251,8 +251,9 @@
   function grouped() { return sortSel.value === 'author' || sortSel.value === 'title'; }
   function showMore() {
     var frag = document.createDocumentFragment();
-    // In author or title order the whole list is drawn at once, so the A to Z bar never waits on loading.
-    var end = grouped() ? items.length : Math.min(shown + PAGE, items.length);
+    // A page at a time in every order: thousands of rows on the page make every scroll slow on phones. The A to Z
+    // bar draws as far as its letter when it is used (jump), and more is drawn as the list nears its end.
+    var end = Math.min(shown + PAGE, items.length);
     for (var k = shown; k < end; k++) {
       var it = items[k];
       frag.appendChild(typeof it === 'string' ? header(it) : row(it));
@@ -548,11 +549,16 @@
   }
 
   // After a search or a filter, the first rows settle into place, one after another.
-  var settled = null;
+  var settled = null, calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   function settle(sig) {
     if (sig === settled) return;   // same rows as before (another letter typed): nothing moves
     settled = sig;
-    [list, cards].forEach(function (el) { el.classList.remove('settle'); void el.offsetWidth; el.classList.add('settle'); });
+    if (calm || !list.animate) return;
+    var rows = Array.prototype.slice.call(list.children, 0, 10).concat(Array.prototype.slice.call(cards.children));
+    rows.forEach(function (el, k) {
+      el.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }],
+        { duration: 300, delay: Math.min(k, 8) * 18, easing: 'cubic-bezier(.22, .9, .25, 1)', fill: 'backwards' });
+    });
   }
   function pinnedHeight() { return parseFloat(getComputedStyle(bar).top) + bar.offsetHeight; }
   function setPinned() { document.documentElement.style.setProperty('--pinned', pinnedHeight() + 'px'); }
