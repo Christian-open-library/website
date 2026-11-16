@@ -663,20 +663,15 @@
     go.disabled = true;
     go.textContent = 'Checking…';
     quoteBox.blur();
-    /* A quiet placeholder in the shape of the answer, with a thin line moving along its top edge. */
-    var wait = el('div', 'qc-card qc-wait');
+    /* While it searches, a light runs round the edge of the box; nothing else changes until the answer comes. */
+    var wait = el('span', 'qc-wait sr', 'Searching 7,100 books');
     wait.setAttribute('role', 'status');
-    var waitText = el('p', 'qc-wait-label', 'Searching 7,100 books');
-    add(wait, add(el('span', 'qc-wait-track'), el('span', 'qc-wait-bar')), waitText,
-      el('span', 'qc-bone qc-bone-1'), el('span', 'qc-bone qc-bone-2'), el('span', 'qc-bone qc-bone-3'));
-    morph(function () {
-      out.textContent = '';
-      add(out, wait);
-      boxState(['qc-busy']);
-    });
+    out.textContent = '';
+    add(out, wait);
+    boxState(['qc-busy']);
     show(box, 'start');
     clearTimeout(waitTimer);
-    waitTimer = setTimeout(function () { waitText.textContent = 'Still searching. Long quotations take a little longer.'; }, 9000);
+    waitTimer = setTimeout(function () { go.textContent = 'Still checking…'; wait.textContent = 'Still searching. Long quotations take a little longer.'; }, 9000);
     var stop = window.AbortController ? new AbortController() : null;
     var giveUp = setTimeout(function () { if (stop) stop.abort(); }, 30000);
     fetch(ENDPOINT, {

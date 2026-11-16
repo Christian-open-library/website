@@ -418,6 +418,16 @@ ul.works li[data-u]:not(.open) { content-visibility: auto; contain-intrinsic-siz
 .qc { margin: .4rem 0 .9rem; }
 .qc-box { --c: var(--ink); position: relative; border: 1.5px solid var(--line-2); border-radius: 10px; background: var(--bg); transition: border-color .2s; scroll-margin-top: 4.6rem; }
 .qc-box.qc-morph { overflow: hidden; }
+/* Searching: a light runs round the edge of the box. */
+@property --qc-a { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.qc-box::before { content: ""; position: absolute; inset: -1.5px; z-index: 1; padding: 2.5px; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .25s;
+  background: conic-gradient(from var(--qc-a), transparent 0deg 170deg, color-mix(in srgb, var(--ink) 20%, transparent) 260deg, var(--ink) 352deg, transparent 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+.qc-box.qc-busy::before { opacity: 1; animation: qc-orbit 1.15s linear infinite; }
+@keyframes qc-orbit { to { --qc-a: 360deg; } }
+.qc-busy textarea { color: var(--muted); transition: color .2s; }
+.qc-box.qc-busy { border-color: var(--line); }
+@media (prefers-reduced-motion: reduce) { .qc-box.qc-busy::before { animation: none; background: var(--ink); } }
 /* While searching and once answered, the box holds the answer under the words; the bar with the button goes. */
 .qc-done .qc-bar { display: none; }
 .qc-box.qc-done { border-color: color-mix(in srgb, var(--c) 45%, var(--line-2)); }
