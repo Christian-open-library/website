@@ -158,9 +158,11 @@
         '<p><span class="lk-who">' + esc(h.author) + '</span>' + (h.dates ? ' <span class="lk-dates">' + esc(h.dates) + '</span>' : '') +
         '<br><span class="lk-work">' + where.join(' · ') + '</span></p>' +
         '<div class="lk-acts"><span class="lk-ways"></span><a class="lk-icon lk-open-src" href="' + esc(h.link) + '" target="_blank" rel="noopener" title="' + (h.scan ? 'Open the scan' : 'Open the source') + '" aria-label="' + (h.scan ? 'Open the scan' : 'Open the source') + '">' + OPEN + '</a>' +
+        '<button type="button" class="lk-icon lk-copy" title="Copy the quote and link" aria-label="Copy the quote and a link">' + LINK + '</button>' +
         '<button type="button" class="lk-icon lk-share" title="Share" aria-label="Share this passage" aria-expanded="false">' + SHARE + '</button></div>' +
       '</div>';
     a.querySelector('.lk-share').addEventListener('click', function () { share(a, this, h); });
+    a.querySelector('.lk-copy').addEventListener('click', function () { copyIt(this, h); });
     return a;
   }
 
@@ -182,6 +184,15 @@
     var where = h.title + ' (' + (h.year || '') + (h.page ? ', ' + h.page : '') + ')';
     return { quote: '“' + words + '”', cite: h.author + ', ' + where };
   }
+  function linkTo(h) { return location.href.split('#')[0] + '#q=' + encodeURIComponent(lastQ) + '&p=' + encodeURIComponent(h.ref || ''); }
+  function copyIt(btn, h) {
+    var t = shareText(h);
+    if (!navigator.clipboard) return;
+    navigator.clipboard.writeText(t.quote + '\n' + t.cite + '\n' + linkTo(h)).then(function () {
+      btn.innerHTML = DONE; btn.classList.add('lk-ok'); buzz();
+      setTimeout(function () { btn.innerHTML = LINK; btn.classList.remove('lk-ok'); }, 1800);
+    }, function () {});
+  }
   function share(card, btn, h) {
     var url = location.href.split('#')[0] + '#q=' + encodeURIComponent(lastQ) + '&p=' + encodeURIComponent(h.ref || '');
     var t = shareText(h), text = t.quote + '\n' + t.cite;
@@ -193,16 +204,7 @@
     ways.innerHTML =
       '<a class="lk-icon" target="_blank" rel="noopener" title="Post on X" aria-label="Post on X" href="https://x.com/intent/post?text=' + encodeURIComponent(post) + '&url=' + encodeURIComponent(url) + '">' + XLOGO + '</a>' +
       '<a class="lk-icon" target="_blank" rel="noopener" title="Share on Facebook" aria-label="Share on Facebook" href="https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url) + '">' + FB + '</a>' +
-      '<a class="lk-icon" title="Email" aria-label="Email" href="mailto:?subject=' + encodeURIComponent(h.author + ', ' + h.title) + '&body=' + encodeURIComponent(text + '\n\n' + url) + '">' + MAIL + '</a>' +
-      '<button type="button" class="lk-icon" title="Copy" aria-label="Copy the words and a link">' + LINK + '</button>';
-    var copy = ways.querySelector('button');
-    copy.addEventListener('click', function () {
-      if (!navigator.clipboard) return;
-      navigator.clipboard.writeText(text + '\n' + url).then(function () {
-        copy.innerHTML = DONE; copy.classList.add('lk-ok'); buzz();
-        setTimeout(function () { copy.innerHTML = LINK; copy.classList.remove('lk-ok'); }, 1800);
-      }, function () {});
-    });
+      '<a class="lk-icon" title="Email" aria-label="Email" href="mailto:?subject=' + encodeURIComponent(h.author + ', ' + h.title) + '&body=' + encodeURIComponent(text + '\n\n' + url) + '">' + MAIL + '</a>';
     card.classList.add('lk-sharing');
     btn.innerHTML = CLOSE;
     btn.setAttribute('aria-expanded', 'true');
