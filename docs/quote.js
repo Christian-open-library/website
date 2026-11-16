@@ -82,24 +82,15 @@
   /* The mark beside the verdict, drawn as a pen stroke: a tick, a wave, a cross. */
   var MARK = { yes: ['M4.5 12.8l4.6 4.7L19.6 6.6'], warn: ['M3.5 13.6c2.7-4.4 5.6-4.4 8.5-1.6s5.8 2.8 8.5-1.6'],
     no: ['M6.5 6.5l11 11', 'M17.5 6.5l-11 11'] };
-  /* Preview only, removed at launch: c (the default) marks the words inside the sentence around them; ?look=a
-     shows the words alone with the highlighter; ?look=b underlines them in pencil. */
-  var LOOK = (/[?&]look=([abc])\b/.exec(location.search) || [0, 'c'])[1];
-
-  function markSvg(kind) {
-    var NS = 'http://www.w3.org/2000/svg', s = document.createElementNS(NS, 'svg');
-    s.setAttribute('viewBox', '0 0 24 24');
-    s.setAttribute('class', 'qc-mark');
-    s.setAttribute('aria-hidden', 'true');
-    (MARK[kind] || []).forEach(function (d, i) {
-      var p = document.createElementNS(NS, 'path');
-      p.setAttribute('d', d);
-      p.setAttribute('pathLength', '1');
-      p.style.setProperty('--i', i);
-      s.appendChild(p);
-    });
-    return MARK[kind] ? s : null;
-  }
+  /* The result's banner: one word, stamped on. */
+  var STAMP = { exact: 'Verified', scan_letters: 'Found', left_out: 'Trimmed', reworded: 'Reworded', quoting: 'Borrowed',
+    other_author: 'Wrong name', named: 'Secondhand', not_found: 'No match', bible: 'Scripture', near: 'Close' };
+  /* Names the reel spins through while the books are searched; it stops on the writer found. */
+  var REEL = ['Spurgeon', 'John Owen', 'Augustine', 'Calvin', 'Luther', 'Jonathan Edwards', 'Richard Baxter', 'John Bunyan',
+    'Matthew Henry', 'Thomas Watson', 'John Wesley', 'Whitefield', 'Chrysostom', 'Athanasius', 'Thomas Brooks',
+    'Rutherford', 'M’Cheyne', 'D. L. Moody', 'Charles Hodge', 'J. C. Ryle', 'John Flavel', 'Charnock', 'Thomas Boston',
+    'Anselm', 'Tertullian', 'Irenaeus', 'Ambrose', 'Jerome', 'Thomas à Kempis', 'John Newton', 'Isaac Watts',
+    'Andrew Murray', 'George Müller', 'Hudson Taylor', 'Thomas Goodwin', 'William Gurnall', 'Bernard of Clairvaux'];
 
   /* The passage as pieces: [text, kind], kind 'hit' for the words submitted, 'diff' for a word of the source that
      differs from them, '' for the words around them. */
@@ -175,7 +166,7 @@
     if (post) all[all.length - 1][1] = 'ctx';
     var total = 0, at = 0, diffs = 0;
     all.forEach(function (p) { if (p[1] === 'hit') total += p[0].length; });
-    var SWEEP = Math.min(560, 160 + total * 4), START = 280;
+    var SWEEP = Math.min(560, 160 + total * 4), START = 700;
     for (var i = 0; i < all.length; i++) {
       var p = all[i], kind = p[1];
       if (kind === 'hit') {
@@ -257,7 +248,7 @@
       var near = b.near === true, verse = trimQuotes(b.text);
       kind = near ? 'warn' : 'yes';
       title = near ? 'Close to a Bible verse' : 'Found in the Bible';
-      words = passage(piecesOf(verse, hits(verse, d.quote)), LOOK === 'c' ? { ctx: true, ends: true } : {});
+      words = passage(piecesOf(verse, hits(verse, d.quote)), {});
       cite = add(el('figcaption', 'qc-cite'), String(b.ref) + ', ' + String(b.translation || ''));
       var inAuthor = !near && who && p && d.author_works > 0 && d.verdict !== 'other_author' && d.verdict !== 'quoting';
       if (inAuthor) after2 = add(el('p', 'qc-line qc-after'), who + ' quotes it in ', el('cite', null, String(p.title)),
@@ -303,8 +294,7 @@
         line = add(el('span'), 'It is in ', where(p), '. This present-day church document is used by permission of its owner, so this page shows where it is, not the text.');
         if (p.source) add(links, link(p.source, 'Read the official copy'));
       } else if (p) {
-        var pcs = bookPieces(p, d.quote), ctx = LOOK === 'c' && (p.before || p.after);
-        words = passage(pcs, ctx ? { ctx: true, pre: before(p.before), post: after(p.after) } : { ends: !p.after || /^[\s"”’)]*[.!?;:]/.test(p.after) });
+        words = passage(bookPieces(p, d.quote), { ends: !p.after || /^[\s"”’)]*[.!?;:]/.test(p.after) });
         cite = add(el('figcaption', 'qc-cite'), where(p));
         if (p.scan) add(links, link(p.scan.url, p.scan.kind === 'page' ? 'View the printed page' : 'Find it in the scan'));
         else if (p.source) add(links, link(p.source, p.source_label === 'Official copy' ? 'Official copy' : 'See the source text'));
@@ -339,9 +329,66 @@
       add(more, nl);
     }
 
-    var card = el('article', 'qc-card qc-' + kind + ' qc-look-' + LOOK + (calm ? '' : ' qc-reveal'));
+    /* How much of the quotation is in the source, for the meter; the stamp; the name the reel stops on. */
+    var pct = 0, stamp = STAMP[named ? 'named' : d.verdict] || 'Checked', land = 'No match';
+    if (b) {
+      pct = b.near ? Math.round(100 * Number(b.same) / Math.max(1, Number(b.words))) : 100;
+      stamp = b.near ? STAMP.near : STAMP.bible;
+      land = String(b.ref);
+    } else if (p) {
+      pct = p.exact && !p.left_out ? 100 : Math.round(100 * Number(p.same) / Math.max(1, Number(p.words)));
+      land = p.author && !/^various$/i.test(p.author) ? String(p.author) : String(p.title).replace(/,.*$/, '');
+    }
+    if (d.verdict === 'other_author' && !who) stamp = 'Found';
+    /* The line under the stamp says what the stamp doesn't: who, or where. */
+    var by = p && p.author && !/^various$/i.test(p.author) ? String(p.author) : p ? String(p.title).replace(/,.*$/, '') : '';
+    if (b) title = b.near ? Number(b.same) + ' of ' + Number(b.words) + ' words in ' + String(b.ref) : String(b.ref) + ', ' + String(b.translation || '');
+    else if (d.verdict === 'exact') title = 'Word for word in ' + by;
+    else if (d.verdict === 'reworded') title = 'In ' + by + ', worded differently';
+    else if (d.verdict === 'left_out') title = 'In ' + by + ', with words left out';
+    else if (d.verdict === 'scan_letters') title = 'In ' + by + '; check the printed page';
+    else if (named) title = 'Only quoted by a later writer';
+    else if (d.verdict === 'not_found') title = 'Not in the library’s 7,100 books';
+    pct = Math.max(0, Math.min(100, pct || 0));
+    var win = kind === 'yes';
+
+    var card = el('article', 'qc-card qc-' + kind + (calm ? '' : ' qc-reveal') + (win ? ' qc-win' : ''));
     card.tabIndex = -1;
-    add(card, el('span', 'qc-top'), add(el('h2', 'qc-verdict'), markSvg(kind), el('span', 'qc-title', title)));
+    var NS = 'http://www.w3.org/2000/svg', ring = document.createElementNS(NS, 'svg');
+    ring.setAttribute('viewBox', '0 0 64 64');
+    ring.setAttribute('class', 'qc-ring');
+    ring.setAttribute('aria-hidden', 'true');
+    ['qc-ring-track', 'qc-ring-fill'].forEach(function (c) {
+      var ci = document.createElementNS(NS, 'circle');
+      ci.setAttribute('cx', '32'); ci.setAttribute('cy', '32'); ci.setAttribute('r', '27');
+      ci.setAttribute('pathLength', '100'); ci.setAttribute('class', c);
+      ring.appendChild(ci);
+    });
+    ring.lastChild.style.setProperty('--pct', pct);
+    if (!pct) ring.lastChild.classList.add('qc-zero');
+    var num = el('span', 'qc-pct', calm ? pct + '%' : '0%');
+    var meter = add(el('div', 'qc-meter'), ring, num);
+    meter.setAttribute('title', pct + '% of the words match');
+    var band = add(el('div', 'qc-band'), meter,
+      add(el('h2', 'qc-verdict'), add(el('span', 'qc-stamp'), stamp), el('span', 'qc-title', title)));
+    add(card, band);
+    if (win && !calm) {
+      var burst = el('span', 'qc-burst');
+      burst.setAttribute('aria-hidden', 'true');
+      for (var bi = 0; bi < 22; bi++) {
+        var bit = el('i');
+        var ang = (bi / 22) * Math.PI * 2 + Math.random() * .4, dist = 60 + Math.random() * 80;
+        bit.style.setProperty('--x', Math.round(Math.cos(ang) * dist) + 'px');
+        bit.style.setProperty('--y', Math.round(Math.sin(ang) * dist * .8) + 'px');
+        bit.style.setProperty('--r', Math.round(Math.random() * 540 - 270) + 'deg');
+        bit.style.setProperty('--w', (bi % 3 ? 9 : 5) + 'px');
+        if (bi % 3 === 0) bit.className = 'qc-gold';
+        add(burst, bit);
+      }
+      add(band, burst);
+    }
+    card.qcPct = pct;
+    card.qcLand = land;
     if (line) add(card, add(el('p', 'qc-line'), line));
     if (words) add(card, add(el('figure', 'qc-quote'), words, cite));
     if (after2) add(card, after2);
@@ -376,11 +423,78 @@
     pic.addEventListener('click', function () { if (file) sharePicture(file, pic); });
     add(share, btn, pic, again);
     add(rest, share);
-    out.textContent = '';
-    add(out, card);
-    if (cta) cta.hidden = false;
-    show(card, 'start');
-    card.focus({ preventScroll: true });
+    var mine = ++shown;
+    landReel(card.qcLand, function () {
+      if (mine !== shown) return;
+      out.textContent = '';
+      add(out, card);
+      if (cta) cta.hidden = false;
+      show(card, 'start');
+      card.focus({ preventScroll: true });
+      countUp(card.querySelector('.qc-pct'), card.qcPct);
+      if (!calm) setTimeout(buzz, 420);
+    });
+  }
+
+  var shown = 0;
+  /* The meter's number counts up with the ring. */
+  function countUp(node, to) {
+    if (!node) return;
+    if (calm || !window.requestAnimationFrame) { node.textContent = to + '%'; return; }
+    // Kept in step with the ring's own animation (0.18 s delay, 0.8 s long).
+    var fill = node.parentNode.querySelector('.qc-ring-fill');
+    var anim = fill && fill.getAnimations ? fill.getAnimations()[0] : null, t0 = null;
+    function step(t) {
+      if (t0 === null) t0 = t;
+      var ms = anim && anim.currentTime != null ? Number(anim.currentTime) : t - t0;
+      var k = Math.min(1, Math.max(0, (ms - 180) / 800));
+      node.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))) + '%';
+      if (k < 1 || (anim && anim.playState === 'paused')) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  /* A light tap: the vibration call where there is one; on iPhones, a switch control toggled out of sight (Safari
+     gives a switch a tap of the Taptic Engine). Nothing happens elsewhere. */
+  function buzz() {
+    try {
+      if (navigator.vibrate) { navigator.vibrate(14); return; }
+      var lb = document.createElement('label'), sw = document.createElement('input');
+      sw.type = 'checkbox';
+      sw.setAttribute('switch', '');
+      lb.setAttribute('aria-hidden', 'true');
+      lb.style.cssText = 'position:fixed;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none';
+      lb.appendChild(sw);
+      document.body.appendChild(lb);
+      lb.click();
+      setTimeout(function () { lb.remove(); }, 50);
+    } catch (e) { /* no tap */ }
+  }
+
+  /* The reel in the "searching" card: names run past; when the answer comes it slows and stops on the writer. */
+  var reel = null;
+  function makeReel() {
+    var win = el('div', 'qc-reel'), col = el('div', 'qc-reel-col');
+    var names = REEL.slice().sort(function () { return Math.random() - .5; });
+    names.concat(names.slice(0, 6)).forEach(function (n) { add(col, el('span', null, n)); });
+    col.style.setProperty('--loop', '-' + (names.length * 100 / (names.length + 6)).toFixed(3) + '%');
+    add(win, col);
+    reel = { win: win, col: col };
+    return win;
+  }
+  function landReel(name, done) {
+    var r = reel;
+    reel = null;
+    if (!r || calm || !r.win.isConnected) { done(); return; }
+    var col = r.col, picks = REEL.slice().sort(function () { return Math.random() - .5; }).slice(0, 9);
+    col.textContent = '';
+    picks.concat([name]).forEach(function (n, i) { add(col, el('span', i === picks.length ? 'qc-reel-hit' : null, n)); });
+    col.classList.add('qc-reel-stop');
+    col.style.transform = 'translateY(0)';
+    void col.offsetHeight;
+    col.style.transform = 'translateY(-' + (picks.length * 100 / (picks.length + 1)) + '%)';
+    r.win.parentNode.classList.add('qc-landing');
+    setTimeout(function () { r.win.classList.add('qc-reel-done'); }, 560);
+    setTimeout(done, 860);
   }
 
   function shareUrl(q, a) {
@@ -437,7 +551,6 @@
       var g = c.getContext('2d');
       var col = PIC[kind] || PIC.none;
       g.fillStyle = '#ffffff'; g.fillRect(0, 0, W, H);
-      g.fillStyle = col; g.fillRect(0, 0, W, 14);
       function lines(text, font, width) {
         g.font = font;
         var out2 = [], line = '';
@@ -452,17 +565,28 @@
       function draw(ls, x, y, lh) { ls.forEach(function (l, i) { g.fillText(l, x, y + i * lh); }); return y + ls.length * lh; }
       g.textBaseline = 'alphabetic';
 
-      // The verdict, with its mark drawn as a stroke.
-      var y = M + 44, tx = M;
-      if (MARK[kind] && window.Path2D) {
-        g.save(); g.translate(M - 6, y - 46); g.scale(2.5, 2.5);
-        g.strokeStyle = col; g.lineWidth = 2.1; g.lineCap = 'round'; g.lineJoin = 'round';
-        MARK[kind].forEach(function (dd) { g.stroke(new Path2D(dd)); });
-        g.restore(); tx = M + 74;
-      }
-      g.fillStyle = col;
-      y = draw(lines(title, '650 46px ' + F, W - tx - M), tx, y, 58);
-      if (lineEl && !bq) { g.fillStyle = '#2e2e2e'; y = draw(lines(lineEl.textContent, '400 32px ' + F, W - M * 2), M, y + 40, 46); }
+      // The banner: the meter, the stamped word, the line under it.
+      var pct = Number(card.qcPct) || 0, stampText = (card.querySelector('.qc-stamp') || {}).textContent || '';
+      var subText = (card.querySelector('.qc-title') || {}).textContent || title;
+      var subLines = lines(subText, '500 34px ' + F, W - M - 300);
+      var bandH = Math.max(300, 200 + subLines.length * 46);
+      g.fillStyle = col; g.fillRect(0, 0, W, bandH);
+      var cx = M + 82, cy = bandH / 2, R = 72;
+      g.lineWidth = 16; g.strokeStyle = 'rgba(255,255,255,.25)';
+      g.beginPath(); g.arc(cx, cy, R, 0, Math.PI * 2); g.stroke();
+      if (pct > 0) { g.strokeStyle = '#ffffff'; g.lineCap = 'round'; g.beginPath(); g.arc(cx, cy, R, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * pct / 100); g.stroke(); }
+      g.fillStyle = '#ffffff'; g.font = '700 40px ' + F; g.textAlign = 'center'; g.fillText(pct + '%', cx, cy + 14); g.textAlign = 'left';
+      var sx = M + 200, sy = cy - 22 - (subLines.length - 1) * 23;
+      g.font = '800 62px ' + F;
+      var label = stampText.toUpperCase(), sw = g.measureText(label).width + 44;
+      g.save(); g.translate(sx, sy); g.rotate(-3 * Math.PI / 180);
+      g.lineWidth = 6; g.strokeStyle = '#ffffff'; g.lineJoin = 'round';
+      g.strokeRect(0, -66, sw, 84); g.fillText(label, 22, 0);
+      g.restore();
+      g.font = '500 34px ' + F; g.fillStyle = 'rgba(255,255,255,.93)';
+      draw(subLines, sx, sy + 70, 46);
+      var y = bandH;
+      if (lineEl && !bq) { g.fillStyle = '#2e2e2e'; y = draw(lines(lineEl.textContent, '400 32px ' + F, W - M * 2), M, y + 90, 46); }
 
       // The words: as large as fits, a line at a time, with the highlighter behind the words found.
       var footTop = H - M - 92, top = y + 50, bottom = footTop - 50;
@@ -592,7 +716,7 @@
     var wait = el('div', 'qc-card qc-wait');
     wait.setAttribute('role', 'status');
     var waitText = el('p', 'qc-wait-label', 'Searching 7,100 books');
-    add(wait, add(el('span', 'qc-wait-track'), el('span', 'qc-wait-bar')), waitText,
+    add(wait, add(el('div', 'qc-band qc-band-wait'), add(el('span', 'qc-wait-track'), el('span', 'qc-wait-bar')), waitText, makeReel()),
       el('span', 'qc-bone qc-bone-1'), el('span', 'qc-bone qc-bone-2'), el('span', 'qc-bone qc-bone-3'));
     add(out, wait);
     show(wait, 'start');
@@ -613,11 +737,13 @@
       if (res.ok && res.d && res.d.verdict) {
         render(res.d);
       } else {
+        reel = null;
         out.textContent = '';
         say((res.d && res.d.error) || 'The checker didn’t answer. Please try again in a moment.');
         show(msg, 'center');
       }
     }).catch(function () {
+      reel = null;
       out.textContent = '';
       say('The checker couldn’t be reached. Check your connection and try again.');
       show(msg, 'center');
@@ -630,7 +756,7 @@
     });
   }
 
-  form.addEventListener('submit', function (e) { e.preventDefault(); check(); });
+  form.addEventListener('submit', function (e) { e.preventDefault(); if (!busy) buzz(); check(); });
   function noHash() { if (location.hash && history.replaceState) history.replaceState(null, '', location.pathname + location.search); }
   quoteBox.addEventListener('keydown', function (e) {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); check(); }
