@@ -128,14 +128,8 @@
   function setBusy(on) { busy = on; form.classList.toggle('lk-busy', on); }
 
   // The library's server answers (POST /search). Plain text, so the browser sends it without asking first; the
-  // server answers this website only. Sample answers instead with ?preview in the address (lookup-preview.js).
-  if (/[?&]preview\b/.test(location.search) && !window.LK_PREVIEW) {
-    var pv = document.createElement('script');
-    pv.src = 'lookup-preview.js';
-    document.head.appendChild(pv);
-  }
+  // server answers this website only.
   function search(q) {
-    if (window.LK_PREVIEW) return new Promise(function (ok) { setTimeout(function () { ok(window.LK_PREVIEW(q)); }, 700); });
     // Give up after 30 seconds if the server stalls.
     var stop = window.AbortController ? new AbortController() : null;
     var timer = stop ? setTimeout(function () { stop.abort(); }, 30000) : 0;
@@ -169,7 +163,7 @@
   function passage(h) {
     var text = esc(h.text).replace(/\[\[/g, '<mark>').replace(/\]\]/g, '</mark>').replace(/\*(.+?)\*/g, '<i>$1</i>');
     var where = ['<cite>' + esc(h.title) + '</cite>'];
-    if (h.year) where.push(h.year);
+    if (h.year) where.push(esc(h.year));
     if (h.page) where.push(esc(h.page));
     var a = el('article', 'lk-hit');
     a.innerHTML =
@@ -239,7 +233,7 @@
       body.innerHTML = '';
       if (d.note) body.appendChild(el('p', 'lk-note', esc(d.note)));
       if (!d.hits || !d.hits.length) {
-        body.appendChild(el('p', 'lk-msg', d.message || 'Nothing in the books for that. Try other words.'));
+        body.appendChild(el('p', 'lk-msg', d.message ? esc(d.message) : 'Nothing in the books for that. Try other words.'));
         if (d.try) {
           var ul = el('ul', 'lk-try');
           d.try.forEach(function (t) {
