@@ -136,9 +136,14 @@
   }
   function search(q) {
     if (window.LK_PREVIEW) return new Promise(function (ok) { setTimeout(function () { ok(window.LK_PREVIEW(q)); }, 700); });
+    // Give up after 30 seconds if the server stalls.
+    var stop = window.AbortController ? new AbortController() : null;
+    var timer = stop ? setTimeout(function () { stop.abort(); }, 30000) : 0;
     return fetch('https://mcp.christianopenlibrary.org/search', {
-      method: 'POST', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify({ q: q })
+      method: 'POST', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify({ q: q }),
+      signal: stop ? stop.signal : undefined
     }).then(function (r) {
+      clearTimeout(timer);
       return r.json().catch(function () { return {}; }).then(function (d) {
         if (r.ok) return d;
         var e = new Error(String(r.status));
@@ -172,7 +177,7 @@
       '<div class="lk-cite">' +
         '<p><span class="lk-who">' + esc(h.author) + '</span>' + (h.dates ? ' <span class="lk-dates">' + esc(h.dates) + '</span>' : '') +
         '<br><span class="lk-work">' + where.join(' · ') + '</span></p>' +
-        '<div class="lk-acts"><span class="lk-ways"></span><a class="lk-icon lk-open-src" href="' + esc(h.link) + '" target="_blank" rel="noopener" title="' + (h.scan ? 'Open the scan' : 'Open the source') + '" aria-label="' + (h.scan ? 'Open the scan' : 'Open the source') + '">' + OPEN + '</a>' +
+        '<div class="lk-acts"><span class="lk-ways"></span>' + (!/^https?:\/\//i.test(String(h.link || '')) ? '' : '<a class="lk-icon lk-open-src" href="' + esc(h.link) + '" target="_blank" rel="noopener" title="' + (h.scan ? 'Open the scan' : 'Open the source') + '" aria-label="' + (h.scan ? 'Open the scan' : 'Open the source') + '">' + OPEN + '</a>') +
         '<button type="button" class="lk-icon lk-copy" title="Copy the quote and link" aria-label="Copy the quote and a link">' + LINK + '</button>' +
         '<button type="button" class="lk-icon lk-share" title="Share" aria-label="Share this passage" aria-expanded="false">' + SHARE + '</button></div>' +
       '</div>';
@@ -317,6 +322,14 @@
   }
 
   // A shared link opens the search it was made from.
+  // Inside another site's frame, or in a window another page opened, it waits for a click: otherwise a page could
+  // make its visitors run searches against their own daily limit.
   var m = location.hash.match(/^#q=([^&]+)/);
-  if (m) { var q0 = decodeURIComponent(m[1]); open(q0); run(q0); }
+  if (m) {
+    var q0 = '';
+    try { q0 = decodeURIComponent(m[1]).slice(0, 500); } catch (e) { q0 = ''; }
+    var sent = false;
+    try { sent = window.top !== window.self || !!window.opener; } catch (e) { sent = true; }
+    if (q0) { open(q0); if (!sent) run(q0); }
+  }
 })();
