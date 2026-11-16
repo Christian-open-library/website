@@ -22,6 +22,7 @@ LAYOUT = """<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
 <meta name="description" content="{desc}">
+{head_extra}
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
@@ -115,11 +116,22 @@ def build():
             main = (f'<div class="page-head">\n  <div class="wrap">\n{head.strip()}\n  </div>\n</div>\n'
                     f'<div class="wrap prose">\n{body.strip()}\n</div>')
         url = "https://christianopenlibrary.org/" + ("" if name == "index" else f"{name}.html")
-        html = LAYOUT.format(title=full, desc=desc, name=name, url=url, og_v=asset_version("img/og.png"), nav="\n".join(items),
+        # GitHub Pages serves each page at /name, /name.html (and / as /index.html): name the one to index.
+        head_extra = f'<link rel="canonical" href="{url}">'
+        if name == "404":
+            head_extra = '<meta name="robots" content="noindex">'
+        html = LAYOUT.format(title=full, desc=desc, name=name, url=url, head_extra=head_extra, og_v=asset_version("img/og.png"), nav="\n".join(items),
                              footnav="\n".join(foot), main=main,
                              css_v=asset_version("style.css"), js_v=asset_version("site.js")).replace('src="browse.js"', 'src="browse.js?v=' + asset_version("browse.js") + '"').replace('src="quote.js"', 'src="quote.js?v=' + asset_version("quote.js") + '"')
+        if name == "404":
+            # Served at any missing address, however deep, so links must start from the site root.
+            html = re.sub(r'(href|src)="(?![a-z]+:|/|#)', r'\1="/', html)
         (OUT / f"{name}.html").write_text(html, encoding="utf-8")
         print("wrote", f"docs/{name}.html")
+    urls = "".join(f"  <url><loc>https://christianopenlibrary.org/{'' if k == 'index' else k + '.html'}</loc></url>\n" for k, _ in NAV)
+    (OUT / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls + "</urlset>\n", encoding="utf-8")
+    print("wrote docs/sitemap.xml")
 
 if __name__ == "__main__":
     build()
