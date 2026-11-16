@@ -285,15 +285,22 @@
       var near = b.near === true, verse = trimQuotes(b.text);
       kind = near ? 'warn' : 'yes';
       title = near ? 'Close to a Bible verse' : 'Found in the Bible';
-      words = passage(piecesOf(verse, hits(verse, d.quote)), LOOK === 'c' ? { ctx: true, ends: true } : {});
-      cite = add(el('figcaption', 'qc-cite'), String(b.ref) + ', ' + String(b.translation || ''));
+      if (near) {
+        /* The words as submitted, the ones not in the verse underlined, so the card shows what makes it only close;
+           the verse follows. */
+        words = passage(piecesOf(d.quote, hits(d.quote, verse)).map(function (x) { return x[1] === '' ? [x[0], 'diff'] : x; }), { ends: true });
+        cite = add(el('figcaption', 'qc-cite'), 'Closest verse: ' + String(b.ref) + ', ' + String(b.translation || ''));
+        after2 = add(el('p', 'qc-line qc-after'), String(b.ref) + ' reads: “' + verse + '”');
+      } else {
+        words = passage(piecesOf(verse, hits(verse, d.quote)), LOOK === 'c' ? { ctx: true, ends: true } : {});
+        cite = add(el('figcaption', 'qc-cite'), String(b.ref) + ', ' + String(b.translation || ''));
+        if (b.left_out === true) notes.push(['Every word submitted is in the verse, in this order, with other words of the verse between them.']);
+      }
       var inAuthor = !near && who && p && d.author_works > 0 && d.verdict !== 'other_author' && d.verdict !== 'quoting';
       if (inAuthor) after2 = add(el('p', 'qc-line qc-after'), who + ' quotes it in ', el('cite', null, String(p.title)),
         (typeof p.year === 'number' && String(p.title).slice(-4) !== String(p.year) ? ' (' + p.year + ')' : '') + (p.pages ? ', ' + p.pages : '') + '.');
       if (near) {
-        sub(more, 'Wording submitted');
-        add(more, el('p', 'qc-given', d.quote));
-        notes.push([Number(b.same) + ' of the ' + Number(b.words) + ' words submitted are in this verse, in the same order. Compared with the library’s seven translations, this one is the closest; the wording submitted may be from another, or quoted from memory.']);
+        notes.push([Number(b.same) + ' of the ' + Number(b.words) + ' words submitted are in this verse, in the same order; the others are underlined. Compared with the library’s seven translations, this one is the closest; the wording submitted may be from another, or quoted from memory.']);
         if (p && d.verdict === 'exact' && !p.licensed) notes.push(['The wording submitted is word for word in ', where(p), '.']);
       }
       var also = Array.isArray(b.more) ? b.more.slice(0, 6).map(String) : [], rest = (Number(b.total) || 1) - 1 - also.length;
@@ -519,7 +526,8 @@
         if (!s) return;
         var word = /[\p{L}\p{N}]/u.test(s);
         if (cut && !word) return;
-        if (cut && word && toks.length) toks.push([' ', '']);
+        // Words left out inside the quotation are marked, as in print.
+        if (cut && word && toks.length) toks.push([' ', ''], ['…', ''], [' ', '']);
         cut = false;
         toks.push([s, k === 'ctx' ? '' : k]);
       });
