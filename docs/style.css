@@ -428,8 +428,9 @@ ul.works li[data-u]:not(.open) { content-visibility: auto; contain-intrinsic-siz
 .qc-msg { margin: .7rem .2rem 0; color: var(--no); font-weight: 500; scroll-margin: 6rem 0; }
 .qc-note { margin: 1.1rem 0 2rem; font-size: .88rem; color: var(--muted); }
 
-.qc-card.qc-wait { position: relative; border-top-color: var(--line); padding-bottom: 1.4rem; animation: qc-fade .3s ease-out; scroll-margin: 6rem 0; }
-.qc-wait-track { position: absolute; top: -4px; left: -1px; right: -1px; height: 4px; overflow: hidden; border-radius: 8px 8px 0 0; }
+/* The "searching" card, in the shape of the answer, a thin line moving along its top edge. */
+.qc-card.qc-wait { position: relative; padding-bottom: 1.4rem; animation: qc-fade .3s ease-out; }
+.qc-wait-track { position: absolute; top: -1px; left: -1px; right: -1px; height: 3px; overflow: hidden; border-radius: 8px 8px 0 0; }
 .qc-wait-bar { display: block; width: 35%; height: 100%; background: var(--ink); animation: qc-slide 1.5s cubic-bezier(.45, .05, .55, .95) infinite; }
 .prose .qc-wait-label { margin: 0 0 1.05rem; color: var(--muted); font-size: .92rem; font-weight: 500; }
 .qc-bone { display: block; height: .75rem; margin: 0 0 .7rem; border-radius: 4px; background: var(--line); animation: skel 1.6s ease-in-out infinite; }
@@ -438,51 +439,76 @@ ul.works li[data-u]:not(.open) { content-visibility: auto; contain-intrinsic-siz
 .qc-bone-3 { width: 44%; margin: 1.1rem 0 0; animation-delay: .3s; }
 @keyframes qc-slide { from { transform: translateX(-100%); } to { transform: translateX(290%); } }
 @keyframes qc-fade { from { opacity: 0; } }
-@keyframes qc-in { from { opacity: 0; transform: translateY(6px); } }
-@media (prefers-reduced-motion: reduce) { .qc-wait-bar { animation-duration: 3s; } .qc-bone { animation: none; } .qc-card { animation: none !important; } }
 
-.qc-card { --c: var(--muted); --soft: var(--tile); margin: 0 0 1.2rem; padding: 1.3rem 1.3rem 1.1rem; border: 1px solid var(--line); border-top: 4px solid var(--c); border-radius: 8px; background: var(--bg); outline: 0; scroll-margin-top: 4.6rem; animation: qc-in .25s ease-out; }
-.qc-yes { --c: var(--yes); --soft: var(--yes-soft); }
-.qc-warn { --c: var(--warn); --soft: var(--warn-soft); }
-.qc-no { --c: var(--no); --soft: var(--no-soft); }
-.prose .qc-card h2.qc-verdict { display: flex; align-items: flex-start; gap: .6rem; margin: 0 0 .7rem; color: var(--c); font-size: 1.35rem; line-height: 1.25; }
+/* The answer: the verdict, the words set like a printed quotation, where they are from; the rest folded away. */
+.qc-card { --c: var(--muted); --hl: #f7e3a3; position: relative; margin: 0 0 1.2rem; padding: 1.35rem 1.35rem 1.1rem; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); outline: 0; scroll-margin-top: 4.6rem; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .qc-card { --hl: rgba(226, 188, 98, .3); } }
+.qc-yes { --c: var(--yes); }
+.qc-warn { --c: var(--warn); }
+.qc-no { --c: var(--no); }
+.qc-top { position: absolute; top: -1px; left: -1px; right: -1px; height: 3px; border-radius: 8px 8px 0 0; background: var(--c); transform-origin: left center; }
+.prose .qc-card h2.qc-verdict { display: flex; align-items: flex-start; gap: .45rem; margin: 0 0 1rem; color: var(--c); font-size: 1.3rem; font-weight: 650; line-height: 1.3; letter-spacing: -.01em; }
 .prose .qc-card h2.qc-verdict::after { content: none; }
-.qc-mark { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 1.65rem; height: 1.65rem; margin-top: .02rem; border-radius: 50%; background: var(--c); color: var(--bg); font-size: 1rem; font-weight: 700; line-height: 1; }
-.qc-line { margin: 0 0 1rem; }
-.qc-line cite, .qc-cite cite, .qc-notes cite, .qc-fold cite { font-style: italic; }
+.qc-mark { flex: none; width: 1.45rem; height: 1.45rem; margin: .02rem 0 0 -.15rem; fill: none; stroke: currentColor; stroke-width: 2.1; stroke-linecap: round; stroke-linejoin: round; }
+.qc-mark path { stroke-dasharray: 1; stroke-dashoffset: 0; }
+.prose .qc-line { margin: -.3rem 0 1rem; color: var(--text); }
+.qc-line cite, .qc-cite cite, .qc-details cite { font-style: italic; }
 .qc-quote { margin: 0 0 1rem; }
-.qc-label { margin: 0 0 .3rem; font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
-.qc-words { margin: 0; padding: .9rem 1.1rem; background: var(--soft); border-left: 3px solid var(--c); border-radius: 0 6px 6px 0; color: var(--ink); font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-size: 1.18rem; line-height: 1.5; overflow-wrap: anywhere; }
-.qc-given { margin-bottom: 1rem; background: var(--tile); border-left-color: var(--line-2); color: var(--text); font-size: 1.05rem; }
-.qc-words strong { font-weight: 700; color: var(--c); }
-.qc-cite { margin: .55rem .15rem 0; font-size: .95rem; color: var(--text); }
-.qc-cite::before { content: "\2014\00a0"; color: var(--muted); }
-.qc-links { display: flex; flex-wrap: wrap; gap: .3rem 1.3rem; margin: 0 0 1rem; font-weight: 600; }
-.qc-links a, .qc-permission a { color: var(--ink); font-weight: 600; }
-.qc-links a { padding: .25rem 0; }
-.prose ul.qc-notes { list-style: none; margin: 0 0 1rem; padding: 0; font-size: .9rem; line-height: 1.5; color: var(--muted); }
-.qc-notes li { margin: 0 0 .45rem; }
-.qc-small { margin: .5rem 0; font-size: .9rem; color: var(--muted); }
-.qc-fold { border-top: 1px solid var(--line); }
-.qc-fold summary { padding: .75rem 0; cursor: pointer; font-weight: 600; color: var(--ink); }
-.qc-fold p { margin: 0 0 .9rem; line-height: 1.55; overflow-wrap: anywhere; }
-.qc-fold p { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-size: 1.05rem; }
-.qc-fold mark { background: var(--soft); color: var(--ink); padding: 0 .1em; }
-.prose .qc-fold ul { margin: 0 0 .9rem; padding-left: 1.2rem; font-size: .93rem; }
-.qc-fold li { margin: .3rem 0; }
-.qc-share { display: flex; flex-wrap: wrap; gap: .6rem; margin: 0; padding-top: 1rem; border-top: 1px solid var(--line); }
+.qc-words { margin: 0; padding: 0; color: var(--ink); font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-size: 1.32rem; line-height: 1.55; overflow-wrap: anywhere; }
+.qc-hang { text-indent: -.42em; }
+.qc-ctx { color: var(--muted); }
+/* The highlighter: drawn behind the words found, as if marked on the page. */
+.qc-hit { background: linear-gradient(var(--hl), var(--hl)) no-repeat 0 62% / 100% 72%; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.qc-diff { background: linear-gradient(var(--warn), var(--warn)) no-repeat 0 100% / 100% 2px; padding-bottom: 1px; }
+.qc-look-b .qc-hit { background: linear-gradient(var(--c), var(--c)) no-repeat 0 100% / 100% 1.5px; padding-bottom: 2px; }
+.qc-cite { margin: .7rem 0 0; font-size: .95rem; line-height: 1.5; color: var(--muted); }
+.prose .qc-after { margin: -.3rem 0 1rem; font-size: .95rem; color: var(--muted); }
+.prose .qc-links { margin: 0 0 1rem; }
+.qc-links a { display: inline-block; padding: .2rem 0; color: var(--ink); font-weight: 600; }
+.prose .qc-small { margin: .5rem 0; font-size: .9rem; color: var(--muted); }
+
+.qc-details { border-top: 1px solid var(--line); }
+.qc-details > summary { display: flex; align-items: center; justify-content: space-between; padding: .8rem 0; list-style: none; cursor: pointer; font-weight: 600; color: var(--ink); }
+.qc-details > summary::-webkit-details-marker { display: none; }
+.qc-details > summary::after { content: ""; width: .45rem; height: .45rem; margin-right: .3rem; border-right: 1.5px solid var(--muted); border-bottom: 1.5px solid var(--muted); transform: translateY(-.15rem) rotate(45deg); transition: transform .15s; }
+.qc-details[open] > summary::after { transform: translateY(.1rem) rotate(-135deg); }
+.prose .qc-details h3.qc-sub { margin: .4rem 0 .4rem; font-size: .95rem; font-weight: 600; color: var(--ink); letter-spacing: 0; }
+.qc-details > .qc-words, .prose .qc-given, .prose .qc-context { margin: 0 0 1.1rem; font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-size: 1.08rem; line-height: 1.55; color: var(--text); overflow-wrap: anywhere; }
+.qc-details > .qc-words .qc-diff { color: var(--ink); }
+.qc-context mark { background: var(--hl); color: var(--ink); padding: 0 .05em; }
+.prose ul.qc-works { margin: 0 0 1rem; padding-left: 1.1rem; font-size: .93rem; line-height: 1.5; }
+.qc-works li { margin: .35rem 0; }
+.prose ul.qc-notes { list-style: none; margin: 0 0 1rem; padding: 0; font-size: .92rem; line-height: 1.5; color: var(--muted); }
+.qc-notes li { margin: 0 0 .5rem; }
+.prose .qc-share { display: flex; flex-wrap: wrap; gap: .6rem; margin: 0; padding-top: 1rem; border-top: 1px solid var(--line); }
 .qc-share .btn { flex: 1 1 8rem; padding-left: .5rem; padding-right: .5rem; border-radius: 6px; cursor: pointer; }
 
-.qc-cta { margin: 0 0 2rem; padding: 1.1rem 1.3rem; background: var(--tile); border-radius: 8px; }
-.qc-cta p { margin: 0 0 .8rem; }
+/* The reveal, under a second: the line along the top fills in the verdict's colour, the mark is drawn, the words
+   appear and the highlighter passes over them, the words that differ are underlined one after another. */
+.qc-reveal { animation: qc-settle .5s cubic-bezier(.2, .7, .2, 1) both; }
+.qc-reveal .qc-top { animation: qc-grow .42s cubic-bezier(.3, .7, .2, 1) both; }
+.qc-reveal .qc-mark path { animation: qc-draw .34s cubic-bezier(.5, 0, .3, 1) both; animation-delay: calc(140ms + var(--i, 0) * 140ms); }
+.qc-reveal .qc-title { animation: qc-rise .32s cubic-bezier(.2, .7, .2, 1) .08s both; }
+.qc-reveal .qc-line { animation: qc-rise .32s cubic-bezier(.2, .7, .2, 1) .14s both; }
+.qc-reveal .qc-quote > .qc-words { animation: qc-fade .28s ease-out .16s both; }
+.qc-reveal .qc-quote .qc-hit { animation: qc-hl var(--t, .2s) linear var(--d, .3s) both; }
+.qc-reveal .qc-quote .qc-diff { animation: qc-ul .18s ease-out both; animation-delay: calc(var(--end, .6s) + var(--n, 0) * var(--gap, 80ms)); }
+.qc-reveal .qc-cite, .qc-reveal .qc-after { animation: qc-rise .32s cubic-bezier(.2, .7, .2, 1) .3s both; }
+.qc-reveal .qc-links, .qc-reveal .qc-rest { animation: qc-fade .3s ease-out .42s both; }
+@keyframes qc-settle { from { transform: scale(1.015); } }
+@keyframes qc-grow { from { transform: scaleX(0); } }
+@keyframes qc-draw { from { stroke-dashoffset: 1; } }
+@keyframes qc-rise { from { opacity: 0; transform: translateY(5px); } }
+@keyframes qc-hl { from { background-size: 0% 72%; } }
+@keyframes qc-ul { from { background-size: 0% 2px; } }
+.qc-look-b.qc-reveal .qc-quote .qc-hit { animation-name: qc-pencil; }
+@keyframes qc-pencil { from { background-size: 0% 1.5px; } }
+@media (prefers-reduced-motion: reduce) { .qc-wait-bar { animation-duration: 3s; } .qc-bone { animation: none; } .qc-card, .qc-card * { animation: none !important; } }
+
+/* After an answer: the app link, plain. */
+.qc-cta { margin: 0 0 2rem; padding: 1rem 0 0; border-top: 1px solid var(--line); }
+.prose .qc-cta p { margin: 0 0 .8rem; }
 .qc-cta .actions { margin: 0; }
-.qc-why { margin: 2.2rem 0 0; }
-.prose .qc-why ol { list-style: none; margin: 0; padding: 0; counter-reset: why; display: grid; gap: 1.1rem; }
-.qc-why li { counter-increment: why; position: relative; padding-left: 2.3rem; line-height: 1.55; }
-.qc-why li::before { content: counter(why); position: absolute; left: 0; top: .1rem; width: 1.55rem; height: 1.55rem; border: 1.5px solid var(--ink); border-radius: 50%; font-size: .85rem; font-weight: 600; color: var(--ink); display: flex; align-items: center; justify-content: center; }
-.qc-why li strong { display: block; color: var(--ink); }
-@media (min-width: 48rem) { .prose .qc-why ol { grid-template-columns: repeat(3, 1fr); gap: 1.6rem; } .qc-why li { padding: 2.2rem 0 0; } }
-.prose .qc-why h2::after { content: none; }
 .page-quote .prose { padding-bottom: 1.5rem; }
 .qc-more { margin: 2.6rem 0 0; }
 .qc-more details + details { border-top: 1px solid var(--line); }
@@ -492,5 +518,6 @@ ul.works li[data-u]:not(.open) { content-visibility: auto; contain-intrinsic-siz
 .qc-more details[open] summary::after { transform: translateY(.1rem) rotate(-135deg); }
 .qc-more details > :last-child { margin-bottom: 1.1rem; }
 @media (max-width: 40rem) {
-  .qc-card { padding: 1.1rem 1rem 1rem; }
+  .qc-card { padding: 1.15rem 1.05rem 1rem; }
+  .qc-words { font-size: 1.24rem; }
 }
