@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>How well it finds things · Christian Open Library</title>
-<meta name="description" content="Test results for the Christian Open Library connector, misses included.">
+<title>Accuracy · Christian Open Library</title>
+<meta name="description" content="How to check what the Christian Open Library gives you, what it promises, and how well it finds things, misses included.">
 <link rel="canonical" href="https://christianopenlibrary.org/accuracy.html">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#ffffff">
@@ -13,8 +13,8 @@
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Christian Open Library">
-<meta property="og:title" content="How well it finds things · Christian Open Library">
-<meta property="og:description" content="Test results for the Christian Open Library connector, misses included.">
+<meta property="og:title" content="Accuracy · Christian Open Library">
+<meta property="og:description" content="How to check what the Christian Open Library gives you, what it promises, and how well it finds things, misses included.">
 <meta property="og:url" content="https://christianopenlibrary.org/accuracy.html">
 <meta property="og:image" content="https://christianopenlibrary.org/img/og.png?v=724669e1">
 <meta property="og:image:width" content="1200">
@@ -22,7 +22,7 @@
 <meta property="og:image:alt" content="Christian Open Library: an open book on a dark tile, with the site's name.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=4cf4c1c9">
+<link rel="stylesheet" href="style.css?v=e7f38a2b">
 </head>
 <body class="page-accuracy">
 <a class="skip" href="#main">Skip to the page</a>
@@ -35,7 +35,6 @@
         <li><a href="setup.html">Set it up</a></li>
         <li><a href="browse.html">Browse</a></li>
         <li><a href="quote.html">Check a quote</a></li>
-        <li><a href="check.html">Can I trust it?</a></li>
         <li><a href="download.html">Download</a></li>
         <li class="nav-give"><a href="support.html">Give</a></li>
       </ul>
@@ -48,7 +47,6 @@
         <li><a href="setup.html">Set it up</a></li>
         <li><a href="browse.html">Browse</a></li>
         <li><a href="quote.html">Check a quote</a></li>
-        <li><a href="check.html">Can I trust it?</a></li>
         <li><a href="download.html">Download</a></li>
         <li class="nav-give"><a href="support.html">Give</a></li>
         </ul>
@@ -59,13 +57,38 @@
 <main id="main">
 <div class="page-head">
   <div class="wrap">
-<h1>How well it finds things</h1>
-<p class="lead">Tested on a fixed set of questions with known answers. Misses included.</p>
-<p class="meta">Tested 12 November 2026 on the live connector.</p>
+<h1>Accuracy</h1>
+<p class="lead">Every quotation comes with a link to its source: check it before you use it. Here is how, what the library promises, and how well it finds things.</p>
   </div>
 </div>
 <div class="wrap prose">
-<h2>Finding the right book</h2>
+<h2 id="check">How to check a quotation</h2>
+<ol class="steps">
+  <li>Find the link that comes with the quotation. Your AI app is told to put one after every quotation.</li>
+  <li>Open it. A <strong>Scan page</strong> or <strong>Find on scan</strong> link opens the scanned book at the passage, with the words highlighted, so you can read them on the printed page. Other links go to where the library's copy came from.</li>
+  <li>No link? Ask your AI app: <em>"Give me the source link for that quotation."</em> If it can't, don't use the quotation.</li>
+  <li>Not sure who said it? Ask: <em>"Check this quote: ..."</em>, or paste it into the <a href="quote.html">quotation checker</a> on this website. The library's quote checker says whether the words are in the library word for word, worded differently, written by someone else, or not found. It says so when a scanned book differs from your wording by a single letter (check the scan), and when the words are there only with others left out in between.</li>
+</ol>
+
+<h2>What the library promises</h2>
+<ul class="points">
+  <li><strong>Quotations are word for word from the library's copy</strong>, with the author and title, and the year and page where the source gives them.</li>
+  <li><strong>Every quotation can be traced.</strong> Each result has a reference and a link to where the library's copy came from. Results from scanned books link to the scan itself, open at the passage with the words highlighted.</li>
+  <li><strong>It says when it has nothing.</strong> When the library doesn't have a book, or has nothing close, the connector says so and tells the AI not to fill the gap from memory. Each result is marked as an exact, close, partial or loose match.</li>
+  <li><strong>Scans are marked.</strong> Every passage from a scanned book is marked as uncorrected OCR: the computer's reading of the page, which may have wrong letters.</li>
+  <li><strong>Every book names its source</strong> and its license. Only public-domain and openly licensed works are included, and church documents shared by their owners' permission.</li>
+  <li><strong>Texts aren't modernized.</strong> The library doesn't modernize, correct or abridge what it copies. Some sources had already edited their editions; each file names its source, so you can see which edition you're reading.</li>
+</ul>
+
+<h2>What it can't promise</h2>
+<ul class="points">
+  <li><strong>The copies aren't perfect.</strong> Scanned books have misread letters, and some texts have no year or page numbers.</li>
+  <li><strong>Most church documents are historical.</strong> Most denominational records are editions from before 1931. A church's current rules may differ, and some bodies have since merged or divided.</li>
+  <li><strong>Your AI app writes the answer.</strong> The connector finds and quotes. Your app (Claude, ChatGPT, Gemini or Grok) reads the passages and writes the answer, and it can summarize badly or quote from memory.</li>
+</ul>
+
+<h2 id="tests">Finding the right book</h2>
+<p class="note">Tested 12 November 2026 on the live connector.</p>
 <p>Each of 75 questions has a known right answer: a work the passage must come from. The test asks the live connector each question and checks whether a passage from that work is among the first 3 and the first 8 results.</p>
 <div class="tablewrap" role="region" aria-label="Results by kind of question" tabindex="0">
 <table class="stack">
@@ -122,6 +145,13 @@
 
 <h2>The questions are public</h2>
 <p>The 75 questions, the 20 searches the library can't answer (<code>unanswerable.jsonl</code>) and the test itself are in the connector's code: <a href="https://github.com/Christian-open-library/Connector/tree/main/tests/eval"><code>tests/eval</code></a>. When someone reports a missed book or a bad quotation, it becomes a new question in the set.</p>
+
+<h2>Where to look further</h2>
+<ul class="points">
+  <li><a href="corrections.html">Corrections log</a>: every error found and fixed.</li>
+  <li><a href="privacy.html">What happens to your question</a>: who sees it. The connector keeps no copy of your conversations and doesn't log what you search for.</li>
+  <li>The <a href="https://github.com/Christian-open-library/Connector">connector's code</a> and its <a href="https://github.com/Christian-open-library/Connector/blob/main/docs/security-review.md">security review</a> are public. The review was carried out with Claude, Anthropic's AI. No outside firm has audited it.</li>
+</ul>
 </div>
 </main>
 <footer class="site">
@@ -133,7 +163,6 @@
         <li><a href="setup.html">Set it up</a></li>
         <li><a href="browse.html">Browse</a></li>
         <li><a href="quote.html">Check a quote</a></li>
-        <li><a href="check.html">Can I trust it?</a></li>
         <li><a href="download.html">Download</a></li>
         <li><a href="privacy.html">Privacy</a></li>
         <li><a href="accuracy.html">Accuracy</a></li>
