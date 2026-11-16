@@ -1,4 +1,4 @@
-// Search the books: one box on every page. On a computer it floats at the bottom right and grows into a panel;
+// Search the library: one box on every page. On a computer it floats at the bottom right and grows into a panel;
 // on a phone it is a round button that opens into a full-screen sheet. On the home page it starts as the big box
 // under the heading and drops into the corner when that scrolls away. Everything else on the site works without it.
 (function () {
@@ -15,7 +15,7 @@
   var MAIL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4zM4.5 6.5L12 12.5l7.5-6"/></svg>';
   var DONE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
   var CLOSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>';
-  var HINT = 'A question, a topic or a line you remember';
+  var HINT = 'Search the library: a question, a topic or a line you remember';
 
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -34,19 +34,19 @@
   }
 
   // The pieces: a launcher, a shade over the page, and the panel the launcher grows into.
-  var launch = el('button', 'lk-launch', MAG + '<span class="lk-launch-text">Search the books</span><kbd>/</kbd>');
+  var launch = el('button', 'lk-launch', MAG + '<span class="lk-launch-text">Search the library</span><kbd>/</kbd>');
   launch.type = 'button';
-  launch.setAttribute('aria-label', 'Search the books');
+  launch.setAttribute('aria-label', 'Search the library');
   launch.setAttribute('aria-keyshortcuts', '/');
   var shade = el('div', 'lk-shade');
   var panel = el('div', 'lk-panel');
   panel.setAttribute('role', 'dialog');
   panel.setAttribute('aria-modal', 'true');
-  panel.setAttribute('aria-label', 'Search the books');
+  panel.setAttribute('aria-label', 'Search the library');
   panel.innerHTML =
     '<div class="lk-inner">' +
       '<form class="lk-form" role="search">' + MAG +
-        '<label for="lk-q" class="sr">Search the books</label>' +
+        '<label for="lk-q" class="sr">Search the library</label>' +
         '<input id="lk-q" type="search" autocomplete="off" spellcheck="false" enterkeyhint="search" maxlength="500" placeholder="' + HINT + '">' +
         '<button type="submit" class="lk-go" aria-label="Search"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>' +
         '<button type="button" class="lk-close" aria-label="Close"><kbd>esc</kbd>' + CLOSE + '</button>' +
@@ -67,7 +67,7 @@
   var hero = document.querySelector('form.lk-hero');
   var heroInput = hero && hero.querySelector('input');
   // Phones get a shorter hint, so it isn't cut off.
-  function hints() { var t = phone.matches ? 'Search 7,700 books' : HINT; input.placeholder = t; if (heroInput) heroInput.placeholder = t; }
+  function hints() { var t = phone.matches ? 'Search the library' : HINT; input.placeholder = t; if (heroInput) heroInput.placeholder = t; }
   hints();
   if (phone.addEventListener) phone.addEventListener('change', hints);
   var isOpen = false, busy = false, from = null, lastQ = '';
@@ -127,11 +127,25 @@
 
   function setBusy(on) { busy = on; form.classList.toggle('lk-busy', on); }
 
+  // The library's server answers (POST /search). Plain text, so the browser sends it without asking first; the
+  // server answers this website only. Sample answers instead with ?preview in the address (lookup-preview.js).
+  if (/[?&]preview\b/.test(location.search) && !window.LK_PREVIEW) {
+    var pv = document.createElement('script');
+    pv.src = 'lookup-preview.js';
+    document.head.appendChild(pv);
+  }
   function search(q) {
     if (window.LK_PREVIEW) return new Promise(function (ok) { setTimeout(function () { ok(window.LK_PREVIEW(q)); }, 700); });
     return fetch('https://mcp.christianopenlibrary.org/search', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ q: q })
-    }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
+      method: 'POST', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify({ q: q })
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (d) {
+        if (r.ok) return d;
+        var e = new Error(String(r.status));
+        e.say = typeof d.error === 'string' ? d.error : '';
+        throw e;
+      });
+    });
   }
 
   function run(q) {
@@ -139,9 +153,10 @@
     if (!q || busy) return;
     lastQ = q;
     setBusy(true);
-    search(q).then(function (d) { setBusy(false); render(d); buzz(); }, function () {
+    search(q).then(function (d) { setBusy(false); render(d); buzz(); }, function (e) {
       setBusy(false);
-      grow(function () { body.innerHTML = '<p class="lk-msg">The search didn&rsquo;t answer. Try again in a moment.</p>'; });
+      var say = e && e.say ? esc(e.say) : 'The search didn&rsquo;t answer. Try again in a moment.';
+      grow(function () { body.innerHTML = '<p class="lk-msg">' + say + '</p>'; });
     });
   }
 
