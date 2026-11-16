@@ -49,6 +49,7 @@
   }
   /* The box grows with the text, and the clear button shows only when there is something to clear. */
   function fit() {
+    quoteBox.rows = box && box.classList.contains('qc-done') ? 1 : 3;   // answered: no empty lines under the words
     quoteBox.style.height = 'auto';
     quoteBox.style.height = Math.min(quoteBox.scrollHeight, 420) + 'px';
     if (clearBtn) clearBtn.hidden = !quoteBox.value;
@@ -405,6 +406,7 @@
       out.textContent = '';
       add(out, card);
       boxState(['qc-done', 'qc-' + kind]);
+      fit();
     });
     if (!calm) { void box.offsetWidth; box.classList.add('qc-landed'); }
     if (cta) cta.hidden = false;
