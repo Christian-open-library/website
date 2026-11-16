@@ -22,7 +22,7 @@
 <meta property="og:image:alt" content="Christian Open Library: an open book on a dark tile, with the site's name.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=8d7880d7">
+<link rel="stylesheet" href="style.css?v=b3dd7532">
 </head>
 <body class="page-corrections">
 <a class="skip" href="#main">Skip to the page</a>
@@ -41,7 +41,7 @@
       </ul>
     </nav>
     <details class="nav-mobile">
-      <summary><span class="burger" aria-hidden="true"></span><span>Menu</span></summary>
+      <summary><span class="burger" aria-hidden="true"></span><span class="sr">Menu</span></summary>
       <nav aria-label="Main">
         <ul>
         <li><a href="index.html">Home</a></li>
@@ -74,6 +74,11 @@
   <li><strong>The quotation checker missed some reworded quotations.</strong> A quotation of common words with a word or two changed could be reported as not found even when the library has it. "Do all the good you can, by all the means you can, in all the ways you can", credited to John Wesley, was not found, though D. L. Moody, Spurgeon and F. B. Meyer have it with two words different. The checker now also looks for short pieces of a quotation close together, and finds it.</li>
   <li><strong>The quotation checker was slow on quotations of very common words, and missed a few more drifted ones.</strong> Hudson Taylor's "God's work done in God's way will never lack God's supply" took the longest of any check, because the words "God's", "will" and "way" are in a third or more of the library. The checker now finds the passages that hold those words close together without ranking the whole library first, which makes that step about four times faster, and it compares 60 passages found by meaning instead of 40. On a new test of 300 slightly changed quotations taken from the library, it finds the right book for 284 (was 281), and it still says "not found" for all 50 lines that are not in the library.</li>
   <li><strong>The quotation checker gave some wrong answers that sounded sure.</strong> Tested on 156 quotations as people really post them, checked by hand against the library, it gave 9 answers that were wrong but sounded certain. Words credited to "Augustine of Hippo" or "M'Cheyne" were reported as "not by" them while the passage shown was from their own books, because those forms of their names matched no author in the library. Lines by present-day writers were reported as found in old books that share only a stock phrase with them, such as "the ultimate goal of the Church". D. L. Moody was credited with a book by his son, Paul D. Moody. And words a later writer gives as someone else's ("Well says Baxter, ...") were reported as "not by" Baxter. Now such names match the library's author, initials keep two writers with one surname apart, a passage must hold most of a quotation and not just part of it, and words found only where a later writer credits them to the named author are reported as "found only as quoted". On the same test it now gives 3 such answers instead of 9, and finds as much as before. In place from 15 November.</li>
+</ul>
+
+<h3>Public pages</h3>
+<ul class="points">
+  <li><strong>The home page said there were no modern books.</strong> Present-day church documents are in the connector by permission of their church bodies. It now says so. The home and download pages also gave the size of the library as about 6,400 works in 15,300 files; it is about 7,100 works in 16,600 files.</li>
 </ul>
 
 <h2 class="log-date">14 November 2026</h2>
@@ -164,12 +169,11 @@
         <li><a href="support.html">Give</a></li>
       </ul>
     </nav>
-    <p>Write to <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a> with questions, corrections, or a book that is missing.</p>
-    <p>The library on GitHub: <a href="https://github.com/Christian-open-library">github.com/Christian-open-library</a> (<a href="https://github.com/Christian-open-library/.github/issues/new?template=request-library-access.yml">ask to join</a>).</p>
-    <p>Follow the library on X: <a href="https://x.com/openlibraryall">@openlibraryall</a>. Questions there get answered too.</p>
+    <p>Questions, corrections or a missing book: <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a>.</p>
+    <p>On <a href="https://github.com/Christian-open-library">GitHub</a> (<a href="https://github.com/Christian-open-library/.github/issues/new?template=request-library-access.yml">ask to join</a>) and on X as <a href="https://x.com/openlibraryall">@openlibraryall</a>.</p>
     <p class="foot-small">A personal project of Matt Miller. Not a ministry of any church, presbytery or denomination. No ads, trackers or cookies.</p>
   </div>
 </footer>
-<script src="site.js?v=0063a701" defer></script>
+<script src="site.js?v=065687c3" defer></script>
 </body>
 </html>

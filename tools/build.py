@@ -52,7 +52,7 @@ LAYOUT = """<!doctype html>
       </ul>
     </nav>
     <details class="nav-mobile">
-      <summary><span class="burger" aria-hidden="true"></span><span>Menu</span></summary>
+      <summary><span class="burger" aria-hidden="true"></span><span class="sr">Menu</span></summary>
       <nav aria-label="Main">
         <ul>
 {nav}
@@ -72,9 +72,8 @@ LAYOUT = """<!doctype html>
 {footnav}
       </ul>
     </nav>
-    <p>Write to <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a> with questions, corrections, or a book that is missing.</p>
-    <p>The library on GitHub: <a href="https://github.com/Christian-open-library">github.com/Christian-open-library</a> (<a href="https://github.com/Christian-open-library/.github/issues/new?template=request-library-access.yml">ask to join</a>).</p>
-    <p>Follow the library on X: <a href="https://x.com/openlibraryall">@openlibraryall</a>. Questions there get answered too.</p>
+    <p>Questions, corrections or a missing book: <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a>.</p>
+    <p>On <a href="https://github.com/Christian-open-library">GitHub</a> (<a href="https://github.com/Christian-open-library/.github/issues/new?template=request-library-access.yml">ask to join</a>) and on X as <a href="https://x.com/openlibraryall">@openlibraryall</a>.</p>
     <p class="foot-small">A personal project of Matt Miller. Not a ministry of any church, presbytery or denomination. No ads, trackers or cookies.</p>
   </div>
 </footer>

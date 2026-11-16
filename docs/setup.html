@@ -22,7 +22,7 @@
 <meta property="og:image:alt" content="Christian Open Library: an open book on a dark tile, with the site's name.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=8d7880d7">
+<link rel="stylesheet" href="style.css?v=b3dd7532">
 </head>
 <body class="page-setup">
 <a class="skip" href="#main">Skip to the page</a>
@@ -41,7 +41,7 @@
       </ul>
     </nav>
     <details class="nav-mobile">
-      <summary><span class="burger" aria-hidden="true"></span><span>Menu</span></summary>
+      <summary><span class="burger" aria-hidden="true"></span><span class="sr">Menu</span></summary>
       <nav aria-label="Main">
         <ul>
         <li><a href="index.html">Home</a></li>
@@ -60,12 +60,6 @@
 <div class="page-head">
   <div class="wrap">
 <h1>Set it up</h1>
-<ul class="facts">
-  <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>About 5 minutes</li>
-  <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3v5M15 3v5M7 8h10v3a5 5 0 0 1-10 0zM12 16v5"/></svg>Claude, ChatGPT, Gemini, Grok</li>
-  <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18v12H3zM3 7l9 6 9-6"/></svg>Google or email sign-in</li>
-</ul>
-<p class="lead">Four steps: copy the address, add it to your AI app, sign in with Google or your email, and let it search. You don't need a GitHub account.</p>
   </div>
 </div>
 <div class="wrap prose">
@@ -75,82 +69,77 @@
 </div>
 
 <h2>2. Add it to your AI app</h2>
-<ul class="jump">
-  <li><a href="#claude">Claude</a></li>
-  <li><a href="#chatgpt">ChatGPT</a></li>
-  <li><a href="#gemini">Gemini</a></li>
-  <li><a href="#grok">Grok</a></li>
-</ul>
-
-<h3 id="claude">Claude</h3>
+<div class="apps">
+<section class="app" id="claude" data-app="claude">
+<h3>Claude</h3>
 <ol class="steps">
   <li>Open <strong>Settings</strong> &rsaquo; <strong>Connectors</strong>.</li>
   <li>Choose <strong>Add custom connector</strong>.</li>
   <li>Paste the address and choose <strong>Connect</strong>.</li>
 </ol>
-
-<h3 id="chatgpt">ChatGPT <span class="tag">paid plans</span></h3>
+</section>
+<section class="app" id="chatgpt" data-app="chatgpt">
+<h3>ChatGPT</h3>
 <ol class="steps">
   <li>Open <strong>Settings</strong> &rsaquo; <strong>Apps &amp; Connectors</strong>.</li>
   <li>Turn on <strong>Developer mode</strong>, then choose <strong>Create</strong>.</li>
   <li>Paste the address, choose <strong>OAuth</strong> for sign-in, and save.</li>
 </ol>
-
-<h3 id="gemini">Gemini</h3>
+<p class="note">On paid plans only.</p>
+</section>
+<section class="app" id="gemini" data-app="gemini">
+<h3>Gemini</h3>
 <ol class="steps">
   <li>Open <strong>Settings</strong> &rsaquo; <strong>Connected Apps</strong>.</li>
   <li>Choose <strong>Add a custom app</strong>.</li>
   <li>Paste the address.</li>
 </ol>
-
-<h3 id="grok">Grok</h3>
+</section>
+<section class="app" id="grok" data-app="grok">
+<h3>Grok</h3>
 <ol class="steps">
   <li>Go to <strong>grok.com/connectors</strong>.</li>
   <li>Choose <strong>New Connector</strong>, then <strong>Custom</strong>.</li>
   <li>Paste the address and save.</li>
 </ol>
-
-<p class="note">Can't find these menus? Their names change from time to time. Look in your app's settings for "connectors" or "MCP".</p>
+</section>
+</div>
+<p class="note">Menu names change from time to time. If one is missing, look in your app's settings for "connectors" or "MCP".</p>
 
 <h2 id="signin">3. Sign in</h2>
-<ol class="steps">
-  <li>A sign-in page opens. Type your email address.</li>
-  <li>Type in the code that's emailed to you.</li>
-</ol>
-<p class="note">You can also choose <strong>Continue with Google</strong> or <strong>Continue with GitHub</strong> instead of the email code. Sign-in is handled by WorkOS: see <a href="privacy.html">what happens to your question</a>.</p>
+<p>A sign-in page opens. Type your email address, then the code emailed to you, or choose <strong>Continue with Google</strong> or <strong>GitHub</strong>.</p>
+<p class="note">Sign-in is handled by WorkOS: see <a href="privacy.html">what happens to your question</a>.</p>
 
 <h2 id="permissions">4. Let it search without asking</h2>
-<p>The first time your app uses the library, it may ask whether to allow it. The library only reads books: it can't change, send or delete anything. So it's safe to let it run without asking each time.</p>
+<p>The library only reads books. It can't change, send or delete anything, so it's safe to let it run.</p>
 <ul class="points">
-  <li><strong>Claude:</strong> when it asks, choose <strong>Always allow</strong>. To set this ahead of time, open <strong>Settings</strong> &rsaquo; <strong>Connectors</strong>, choose the library, and set its tools to <strong>Always allow</strong>. If Claude keeps asking anyway, set it there again.</li>
-  <li><strong>ChatGPT:</strong> the library's tools are marked read-only, so it usually won't ask. If it does, choose <strong>Confirm</strong>.</li>
-  <li><strong>Gemini</strong> or <strong>Grok:</strong> if it asks, choose to allow it.</li>
+  <li data-app="claude"><strong>Claude:</strong> When it asks, choose <strong>Always allow</strong>. Or set it ahead of time: <strong>Settings</strong> &rsaquo; <strong>Connectors</strong>, choose the library, and set its tools to <strong>Always allow</strong>. If Claude keeps asking, set it there again.</li>
+  <li data-app="chatgpt"><strong>ChatGPT:</strong> The library's tools are marked read-only, so it usually won't ask. If it does, choose <strong>Confirm</strong>.</li>
+  <li data-app="gemini"><strong>Gemini:</strong> If it asks, choose to allow it.</li>
+  <li data-app="grok"><strong>Grok:</strong> If it asks, choose to allow it.</li>
 </ul>
-<p class="note">Prefer to approve each search? Leave it on <strong>Needs approval</strong>. Don't choose <strong>Blocked</strong> or <strong>Never</strong>: then the library can't answer at all.</p>
+<p class="note">To approve each search yourself, leave it on <strong>Needs approval</strong>. <strong>Blocked</strong> or <strong>Never</strong> stops the library answering at all.</p>
 
-<h2>Then ask a question</h2>
-<p>Start a new conversation. If your app has a tools or connectors button near the message box, make sure the library is switched on. Then ask, for example:</p>
+<h2>Then ask</h2>
+<p>Start a new chat. If your app has a tools button by the message box, check the library is switched on. Naming it in your first question helps:</p>
 <ul class="questions">
   <li>Search the Christian Open Library: what did Calvin teach about the Lord's Supper?</li>
   <li>What did Spurgeon say about Psalm 23?</li>
   <li>Which historic writers cited Isaiah 53?</li>
 </ul>
-<p class="note">Naming the library in your first question helps your app know to use it.</p>
 
 <h2 id="terms">Using the connector</h2>
-<p>The connector is free for your own study, teaching, preaching and writing. Quote what it finds, and give the source.</p>
-<p>Don't use it behind another app, website, bot or AI service, share your account, or use it to copy texts out in bulk or for AI training. A few documents are here by their owners' permission: quote only what you need, credit the church body, and never copy one whole. The library doesn't take requests for other uses. <a href="download.html#reuse">All the rules</a>.</p>
+<p>It's free for your own study, teaching, preaching and writing. Quote what it finds, and give the source.</p>
+<p>Don't use it behind another app, website, bot or AI service, share your account, or use it to copy texts out in bulk or for AI training. Some documents are here by their owners' permission: quote only what you need, credit the church body, and never copy one whole. The library doesn't take requests for other uses. <a href="download.html#reuse">All the rules</a>.</p>
 <p class="note">Accounts used against these rules are closed.</p>
 
 <h2>Good to know</h2>
 <ul class="points">
   <li>Your AI app writes the answer. Check a quotation against its source before you print or use it. <a href="check.html">Can I trust it?</a>.</li>
-  <li>If you remember only the gist, try two or three phrasings, or one distinctive phrase.</li>
+  <li>Remember only the gist? Try two or three phrasings, or one distinctive phrase.</li>
   <li>Each person has a fair-use daily limit.</li>
   <li>Stuck? Write to <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a> and say which app you use.</li>
 </ul>
-
-<p class="note">The library is free, with no ads. If it's useful to you, <a href="support.html">see what it costs to run and how to give</a>.</p>
 </div>
 </main>
 <footer class="site">
@@ -170,12 +159,11 @@
         <li><a href="support.html">Give</a></li>
       </ul>
     </nav>
-    <p>Write to <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a> with questions, corrections, or a book that is missing.</p>
-    <p>The library on GitHub: <a href="https://github.com/Christian-open-library">github.com/Christian-open-library</a> (<a href="https://github.com/Christian-open-library/.github/issues/new?template=request-library-access.yml">ask to join</a>).</p>
-    <p>Follow the library on X: <a href="https://x.com/openlibraryall">@openlibraryall</a>. Questions there get answered too.</p>
+    <p>Questions, corrections or a missing book: <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a>.</p>
+    <p>On <a href="https://github.com/Christian-open-library">GitHub</a> (<a href="https://github.com/Christian-open-library/.github/issues/new?template=request-library-access.yml">ask to join</a>) and on X as <a href="https://x.com/openlibraryall">@openlibraryall</a>.</p>
     <p class="foot-small">A personal project of Matt Miller. Not a ministry of any church, presbytery or denomination. No ads, trackers or cookies.</p>
   </div>
 </footer>
-<script src="site.js?v=0063a701" defer></script>
+<script src="site.js?v=065687c3" defer></script>
 </body>
 </html>
