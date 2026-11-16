@@ -334,7 +334,7 @@
       }
     } else {
       if (!p) {
-        line = copy ? inCopyright(copy) : 'No book in the library has these words. That does not prove them false: the library holds about 7,100 works, not everything ever written.';
+        line = copy ? inCopyright(copy) : 'No book in the library has these words. That does not prove them false: the library holds about 7,700 works, not everything ever written.';
         if (who && !copy) notes.push([d.author_works > 0 ? 'The library holds ' + plural(d.author_works, 'work') + ' by ' + who + ', not the complete writings.'
           : 'The library holds no works by ' + who + '.']);
       } else if (named) {
@@ -528,7 +528,7 @@
   function shareIt(d, title, btn) {
     var url = shareUrl(d.quote, d.author || '');
     var short = d.quote.length > 90 ? d.quote.slice(0, 87).replace(/\s+\S*$/, '') + '…' : d.quote;
-    var text = '“' + short + '”' + (d.author ? ' (' + d.author + ')' : '') + ': ' + title + '. Checked against the text of 7,100 books:';
+    var text = '“' + short + '”' + (d.author ? ' (' + d.author + ')' : '') + ': ' + title + '. Checked against the text of 7,700 books:';
     if (navigator.share) {
       navigator.share({ title: 'Check a quote', text: text, url: url }).catch(function () {});
       return;
@@ -690,7 +690,7 @@
       var fx = icon.naturalWidth ? M + 88 : M;
       g.fillStyle = '#1a1a1a'; g.font = '700 32px ' + F; g.fillText('Christian Open Library', fx, footTop + 62);
       g.fillStyle = '#555555'; g.font = '400 26px ' + F;
-      g.fillText('Checked against 7,100 books · christianopenlibrary.org/quote', fx, footTop + 98);
+      g.fillText('Checked against 7,700 books · christianopenlibrary.org/quote', fx, footTop + 98);
       return new Promise(function (ok) { c.toBlob(ok, 'image/png'); });
     }).then(function (blob) {
       if (!blob) throw new Error('no image');
@@ -761,7 +761,7 @@
     go.textContent = 'Checking…';
     quoteBox.blur();
     /* While it searches, a light runs round the edge of the box; nothing else changes until the answer comes. */
-    var wait = el('span', 'qc-wait sr', 'Searching 7,100 books');
+    var wait = el('span', 'qc-wait sr', 'Searching 7,700 books');
     wait.setAttribute('role', 'status');
     out.textContent = '';
     add(out, wait);
