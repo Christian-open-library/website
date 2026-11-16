@@ -704,3 +704,22 @@ html.lk-lock, html.lk-lock body { overflow: hidden; }
 }
 @media (prefers-reduced-motion: reduce) { .lk-form.lk-busy::after { animation: none; background-size: 100% 100%; } .lk-text mark { transition: none; } .lk-launch { transition: none; } }
 @media print { .lk-launch, .lk-panel, .lk-shade, .lk-hero { display: none !important; } }
+
+/* Search arrow: dim until there is something to search, then it springs up. */
+.lk-go { transition: transform .4s cubic-bezier(.2, 1.5, .4, 1), opacity .2s; }
+.lk-hero:not(.lk-has) .lk-go { opacity: .25; transform: scale(.82); }
+.lk-form .lk-go { width: 2.4rem; height: 2.4rem; border-radius: 9px; }
+.lk-form:not(.lk-has) .lk-go { opacity: 0; transform: scale(.4) rotate(-45deg); pointer-events: none; }
+/* Sharing: the ways to share spring out beside the share icon. */
+.lk-acts { display: flex; flex: none; align-items: flex-start; }
+.lk-ways { display: none; }
+.lk-hit.lk-sharing .lk-ways { display: flex; }
+.lk-hit.lk-sharing .lk-open-src { display: none; }
+.lk-hit.lk-sharing .lk-share { color: var(--ink); }
+.lk-ways .lk-icon { animation: lk-out .42s cubic-bezier(.2, 1.35, .4, 1) backwards; }
+.lk-ways .lk-icon:nth-child(3) { animation-delay: .03s; } .lk-ways .lk-icon:nth-child(2) { animation-delay: .06s; } .lk-ways .lk-icon:nth-child(1) { animation-delay: .09s; }
+@keyframes lk-out { from { opacity: 0; transform: translateX(14px) scale(.5); } }
+.lk-icon svg.lk-fill { fill: currentColor; stroke: none; }
+.lk-share svg { transition: transform .3s cubic-bezier(.2, 1.4, .4, 1); }
+.lk-sharing .lk-share svg { transform: rotate(90deg); }
+@media (prefers-reduced-motion: reduce) { .lk-ways .lk-icon { animation: none; } .lk-go { transition: none; } }

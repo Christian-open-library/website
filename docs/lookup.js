@@ -9,6 +9,10 @@
   var MAG = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L20 20"/></svg>';
   var OPEN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
   var LINK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/></svg>';
+  var SHARE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14.5V3.5M7.5 8L12 3.5 16.5 8M8 11H6a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-2"/></svg>';
+  var XLOGO = '<svg viewBox="0 0 24 24" aria-hidden="true" class="lk-fill"><path d="M17.75 3h3.07l-6.7 7.66L22 21h-6.17l-4.83-6.32L5.47 21H2.4l7.17-8.2L2 3h6.33l4.37 5.77zm-1.08 16.18h1.7L7.4 4.73H5.58z"/></svg>';
+  var FB = '<svg viewBox="0 0 24 24" aria-hidden="true" class="lk-fill"><path d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.87.25-1.46 1.5-1.46h1.6V4.46a21 21 0 0 0-2.3-.16c-2.3 0-3.8 1.4-3.8 3.96v2.24H8v3h2.5V21z"/></svg>';
+  var MAIL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4zM4.5 6.5L12 12.5l7.5-6"/></svg>';
   var DONE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
   var CLOSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>';
   var HINT = 'A question, a topic or a line you remember';
@@ -44,6 +48,7 @@
       '<form class="lk-form" role="search">' + MAG +
         '<label for="lk-q" class="sr">Search the books</label>' +
         '<input id="lk-q" type="search" autocomplete="off" spellcheck="false" enterkeyhint="search" maxlength="500" placeholder="' + HINT + '">' +
+        '<button type="submit" class="lk-go" aria-label="Search"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>' +
         '<button type="button" class="lk-close" aria-label="Close"><kbd>esc</kbd>' + CLOSE + '</button>' +
       '</form>' +
       '<div class="lk-body" aria-live="polite"></div>' +
@@ -82,6 +87,7 @@
     document.documentElement.classList.add('lk-lock');
     document.body.classList.add('lk-open');
     if (q != null) input.value = q;
+    has(form, input);
     input.focus({ preventScroll: true });
     try { history.pushState({ lk: 1 }, ''); } catch (e) { /* the page keeps working without it */ }
     if (calm) return;
@@ -151,20 +157,60 @@
       '<div class="lk-cite">' +
         '<p><span class="lk-who">' + esc(h.author) + '</span>' + (h.dates ? ' <span class="lk-dates">' + esc(h.dates) + '</span>' : '') +
         '<br><span class="lk-work">' + where.join(' · ') + '</span></p>' +
-        '<a class="lk-icon" href="' + esc(h.link) + '" target="_blank" rel="noopener" title="' + (h.scan ? 'Open the scan' : 'Open the source') + '" aria-label="' + (h.scan ? 'Open the scan' : 'Open the source') + '">' + OPEN + '</a>' +
-        '<button type="button" class="lk-icon lk-share" title="Copy a link to this passage" aria-label="Copy a link to this passage">' + LINK + '</button>' +
+        '<div class="lk-acts"><span class="lk-ways"></span><a class="lk-icon lk-open-src" href="' + esc(h.link) + '" target="_blank" rel="noopener" title="' + (h.scan ? 'Open the scan' : 'Open the source') + '" aria-label="' + (h.scan ? 'Open the scan' : 'Open the source') + '">' + OPEN + '</a>' +
+        '<button type="button" class="lk-icon lk-share" title="Share" aria-label="Share this passage" aria-expanded="false">' + SHARE + '</button></div>' +
       '</div>';
-    a.querySelector('.lk-share').addEventListener('click', function () { share(this, h); });
+    a.querySelector('.lk-share').addEventListener('click', function () { share(a, this, h); });
     return a;
   }
 
-  function share(btn, h) {
-    var url = location.href.split('#')[0] + '#q=' + encodeURIComponent(lastQ) + '&p=' + encodeURIComponent(h.ref || '');
-    var was = btn.innerHTML;
-    var ok = function () { btn.innerHTML = DONE; btn.classList.add('lk-ok'); buzz(); setTimeout(function () { btn.innerHTML = was; btn.classList.remove('lk-ok'); }, 1800); };
-    if (navigator.share && phone.matches) { navigator.share({ title: h.author + ', ' + h.title, url: url }).catch(function () {}); return; }
-    if (navigator.clipboard) navigator.clipboard.writeText(url).then(ok, function () {});
+  // Share: on a phone, the phone's own share sheet (messages, mail, Facebook, X...). Elsewhere the share icon turns
+  // into a close mark and the ways to share spring out beside it. What is shared is the book's own words with the
+  // book named, and a link back to this search.
+  var sharing = null;
+  function unshare() {
+    if (!sharing) return;
+    sharing.card.classList.remove('lk-sharing');
+    sharing.btn.innerHTML = SHARE;
+    sharing.btn.setAttribute('aria-expanded', 'false');
+    sharing.btn.setAttribute('aria-label', 'Share this passage');
+    sharing = null;
   }
+  function shareText(h) {
+    var m = String(h.text).match(/\[\[(.+?)\]\]/);
+    var words = (m ? m[1] : h.text).replace(/\*/g, '').replace(/\s+/g, ' ').trim();
+    var where = h.title + ' (' + (h.year || '') + (h.page ? ', ' + h.page : '') + ')';
+    return { quote: '“' + words + '”', cite: h.author + ', ' + where };
+  }
+  function share(card, btn, h) {
+    var url = location.href.split('#')[0] + '#q=' + encodeURIComponent(lastQ) + '&p=' + encodeURIComponent(h.ref || '');
+    var t = shareText(h), text = t.quote + '\n' + t.cite;
+    if (navigator.share && phone.matches) { buzz(); navigator.share({ text: text, url: url }).catch(function () {}); return; }
+    if (sharing && sharing.card === card) { unshare(); return; }
+    unshare();
+    var ways = card.querySelector('.lk-ways');
+    var post = text.length > 230 ? t.quote.slice(0, 200).replace(/\s+\S*$/, '') + '…”\n' + t.cite : text;
+    ways.innerHTML =
+      '<a class="lk-icon" target="_blank" rel="noopener" title="Post on X" aria-label="Post on X" href="https://x.com/intent/post?text=' + encodeURIComponent(post) + '&url=' + encodeURIComponent(url) + '">' + XLOGO + '</a>' +
+      '<a class="lk-icon" target="_blank" rel="noopener" title="Share on Facebook" aria-label="Share on Facebook" href="https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url) + '">' + FB + '</a>' +
+      '<a class="lk-icon" title="Email" aria-label="Email" href="mailto:?subject=' + encodeURIComponent(h.author + ', ' + h.title) + '&body=' + encodeURIComponent(text + '\n\n' + url) + '">' + MAIL + '</a>' +
+      '<button type="button" class="lk-icon" title="Copy" aria-label="Copy the words and a link">' + LINK + '</button>';
+    var copy = ways.querySelector('button');
+    copy.addEventListener('click', function () {
+      if (!navigator.clipboard) return;
+      navigator.clipboard.writeText(text + '\n' + url).then(function () {
+        copy.innerHTML = DONE; copy.classList.add('lk-ok'); buzz();
+        setTimeout(function () { copy.innerHTML = LINK; copy.classList.remove('lk-ok'); }, 1800);
+      }, function () {});
+    });
+    card.classList.add('lk-sharing');
+    btn.innerHTML = CLOSE;
+    btn.setAttribute('aria-expanded', 'true');
+    btn.setAttribute('aria-label', 'Close sharing');
+    sharing = { card: card, btn: btn };
+    buzz();
+  }
+  document.addEventListener('click', function (e) { if (sharing && document.contains(e.target) && !sharing.card.contains(e.target)) unshare(); });
 
   function render(d) {
     grow(function () {
@@ -177,7 +223,7 @@
           d.try.forEach(function (t) {
             var li = el('li'), b = el('button', null, esc(t));
             b.type = 'button';
-            b.addEventListener('click', function () { input.value = t; run(t); });
+            b.addEventListener("click", function () { input.value = t; has(form, input); run(t); });
             li.appendChild(b); ul.appendChild(li);
           });
           body.appendChild(ul);
@@ -204,10 +250,15 @@
   launch.addEventListener('click', function () { buzz(); open(); });
   closeBtn.addEventListener('click', function () { close(); });
   shade.addEventListener('click', function () { close(); });
+  // As soon as there is something to search, the arrow springs up; it settles back if the box is cleared.
+  function has(f, i) { f.classList.toggle('lk-has', i.value.trim() !== ''); }
+  input.addEventListener('input', function () { has(form, input); });
+  if (heroInput) heroInput.addEventListener('input', function () { has(hero, heroInput); });
   form.addEventListener('submit', function (e) { e.preventDefault(); input.blur(); run(input.value); });
   input.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !phone.matches) { e.preventDefault(); run(input.value); } });
   window.addEventListener('popstate', function () { if (isOpen) close(true); });
   document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && sharing) { unshare(); return; }
     if (e.key === 'Escape' && isOpen) { e.preventDefault(); close(); return; }
     var typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement && document.activeElement.tagName) || (document.activeElement && document.activeElement.isContentEditable);
     if (!isOpen && ((e.key === '/' && !typing) || (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)))) { e.preventDefault(); open(); }
