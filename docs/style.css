@@ -537,6 +537,8 @@ ul.works li[data-u]:not(.open) { content-visibility: auto; contain-intrinsic-siz
 .prose .qc-links { margin: 0 0 1rem; }
 .qc-links a { display: inline-block; padding: .2rem 0; color: var(--ink); font-size: .95rem; font-weight: 600; }
 .prose .qc-small { margin: .5rem 0; font-size: .9rem; color: var(--muted); }
+.prose .qc-report { margin: 1rem 0 0; font-size: .95rem; }
+.qc-report a { color: var(--muted); }
 
 .qc-details { border-top: 1px solid var(--line); }
 .qc-details > summary { display: flex; align-items: center; justify-content: space-between; padding: .75rem 0; list-style: none; cursor: pointer; font-size: .95rem; font-weight: 600; color: var(--ink); }
