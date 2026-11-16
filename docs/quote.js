@@ -11,6 +11,7 @@
   var go = document.getElementById('qc-go');
   var msg = document.getElementById('qc-msg');
   var out = document.getElementById('qc-result');
+  var box = out.parentNode;
   var clearBtn = document.getElementById('qc-clear');
   var cta = document.getElementById('qc-cta');
   var busy = false;
@@ -18,6 +19,31 @@
   var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* Brings the answer (or the "checking" line) into view: on a phone it would otherwise be below the screen. */
+  /* The box the words are typed in is the box the answer appears in: each change of what it holds (searching,
+     the answer, back to empty) is made at once and the box's height is then eased from the old to the new. */
+  function morph(change) {
+    var h0 = box.offsetHeight;
+    change();
+    var h1 = box.offsetHeight;
+    if (calm || h0 === h1 || !box.animate) return;
+    box.classList.add('qc-morph');
+    var a = box.animate([{ height: h0 + 'px' }, { height: h1 + 'px' }],
+      { duration: Math.min(560, 260 + Math.abs(h1 - h0) * .35), easing: 'cubic-bezier(.22, .9, .25, 1)' });
+    a.onfinish = a.oncancel = function () { box.classList.remove('qc-morph'); };
+  }
+  var KINDS = ['qc-yes', 'qc-warn', 'qc-no', 'qc-none', 'qc-busy', 'qc-done', 'qc-landed'];
+  function boxState(cls) {
+    KINDS.forEach(function (k) { box.classList.remove(k); });
+    (cls || []).forEach(function (k) { box.classList.add(k); });
+  }
+  /* Back to an empty answer, the box ready for words (the words are kept unless told otherwise). */
+  function fold(clear) {
+    morph(function () {
+      if (clear) setBox(''); else fit();
+      out.textContent = '';
+      boxState([]);
+    });
+  }
   function show(node, block) {
     if (node && node.scrollIntoView) node.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: block });
   }
@@ -82,15 +108,23 @@
   /* The mark beside the verdict, drawn as a pen stroke: a tick, a wave, a cross. */
   var MARK = { yes: ['M4.5 12.8l4.6 4.7L19.6 6.6'], warn: ['M3.5 13.6c2.7-4.4 5.6-4.4 8.5-1.6s5.8 2.8 8.5-1.6'],
     no: ['M6.5 6.5l11 11', 'M17.5 6.5l-11 11'] };
-  /* The result's banner: one word, stamped on. */
-  var STAMP = { exact: 'Verified', scan_letters: 'Found', left_out: 'Trimmed', reworded: 'Reworded', quoting: 'Borrowed',
-    other_author: 'Wrong name', named: 'Secondhand', not_found: 'No match', bible: 'Scripture', near: 'Close' };
-  /* Names the reel spins through while the books are searched; it stops on the writer found. */
-  var REEL = ['Spurgeon', 'John Owen', 'Augustine', 'Calvin', 'Luther', 'Jonathan Edwards', 'Richard Baxter', 'John Bunyan',
-    'Matthew Henry', 'Thomas Watson', 'John Wesley', 'Whitefield', 'Chrysostom', 'Athanasius', 'Thomas Brooks',
-    'Rutherford', 'M’Cheyne', 'D. L. Moody', 'Charles Hodge', 'J. C. Ryle', 'John Flavel', 'Charnock', 'Thomas Boston',
-    'Anselm', 'Tertullian', 'Irenaeus', 'Ambrose', 'Jerome', 'Thomas à Kempis', 'John Newton', 'Isaac Watts',
-    'Andrew Murray', 'George Müller', 'Hudson Taylor', 'Thomas Goodwin', 'William Gurnall', 'Bernard of Clairvaux'];
+  /* The words are shown inside the sentence around them. */
+  var LOOK = 'c';
+
+  function markSvg(kind) {
+    var NS = 'http://www.w3.org/2000/svg', s = document.createElementNS(NS, 'svg');
+    s.setAttribute('viewBox', '0 0 24 24');
+    s.setAttribute('class', 'qc-mark');
+    s.setAttribute('aria-hidden', 'true');
+    (MARK[kind] || []).forEach(function (d, i) {
+      var p = document.createElementNS(NS, 'path');
+      p.setAttribute('d', d);
+      p.setAttribute('pathLength', '1');
+      p.style.setProperty('--i', i);
+      s.appendChild(p);
+    });
+    return MARK[kind] ? s : null;
+  }
 
   /* The passage as pieces: [text, kind], kind 'hit' for the words submitted, 'diff' for a word of the source that
      differs from them, '' for the words around them. */
@@ -166,7 +200,7 @@
     if (post) all[all.length - 1][1] = 'ctx';
     var total = 0, at = 0, diffs = 0;
     all.forEach(function (p) { if (p[1] === 'hit') total += p[0].length; });
-    var SWEEP = Math.min(560, 160 + total * 4), START = 700;
+    var SWEEP = Math.min(560, 160 + total * 4), START = 330;
     for (var i = 0; i < all.length; i++) {
       var p = all[i], kind = p[1];
       if (kind === 'hit') {
@@ -205,7 +239,7 @@
     return piecesOf(text, hits(text, quote));
   }
 
-  function fold(summary) {
+  function detailsFold(summary) {
     var f = el('details', 'qc-details');
     add(f, el('summary', null, summary));
     return f;
@@ -231,7 +265,7 @@
     if (d.verdict === 'quoting' && who && p && p.credit) title = who + ' was quoting ' + p.credit;
 
     var line = null, words = null, cite = null, after2 = null, links = el('p', 'qc-links');
-    var more = fold('Details'), notes = [];
+    var more = detailsFold('Details'), notes = [];
 
     /* Words of the Bible: the verse comes first, then the books that quote it. A verse that is only close gives
        way to a book by the writer named that has the words exactly, or at least as closely. */
@@ -248,7 +282,7 @@
       var near = b.near === true, verse = trimQuotes(b.text);
       kind = near ? 'warn' : 'yes';
       title = near ? 'Close to a Bible verse' : 'Found in the Bible';
-      words = passage(piecesOf(verse, hits(verse, d.quote)), {});
+      words = passage(piecesOf(verse, hits(verse, d.quote)), LOOK === 'c' ? { ctx: true, ends: true } : {});
       cite = add(el('figcaption', 'qc-cite'), String(b.ref) + ', ' + String(b.translation || ''));
       var inAuthor = !near && who && p && d.author_works > 0 && d.verdict !== 'other_author' && d.verdict !== 'quoting';
       if (inAuthor) after2 = add(el('p', 'qc-line qc-after'), who + ' quotes it in ', el('cite', null, String(p.title)),
@@ -294,7 +328,8 @@
         line = add(el('span'), 'It is in ', where(p), '. This present-day church document is used by permission of its owner, so this page shows where it is, not the text.');
         if (p.source) add(links, link(p.source, 'Read the official copy'));
       } else if (p) {
-        words = passage(bookPieces(p, d.quote), { ends: !p.after || /^[\s"”’)]*[.!?;:]/.test(p.after) });
+        var pcs = bookPieces(p, d.quote), ctx = LOOK === 'c' && (p.before || p.after);
+        words = passage(pcs, ctx ? { ctx: true, pre: before(p.before), post: after(p.after) } : { ends: !p.after || /^[\s"”’)]*[.!?;:]/.test(p.after) });
         cite = add(el('figcaption', 'qc-cite'), where(p));
         if (p.scan) add(links, link(p.scan.url, p.scan.kind === 'page' ? 'View the printed page' : 'Find it in the scan'));
         else if (p.source) add(links, link(p.source, p.source_label === 'Official copy' ? 'Official copy' : 'See the source text'));
@@ -329,66 +364,9 @@
       add(more, nl);
     }
 
-    /* How much of the quotation is in the source, for the meter; the stamp; the name the reel stops on. */
-    var pct = 0, stamp = STAMP[named ? 'named' : d.verdict] || 'Checked', land = 'No match';
-    if (b) {
-      pct = b.near ? Math.round(100 * Number(b.same) / Math.max(1, Number(b.words))) : 100;
-      stamp = b.near ? STAMP.near : STAMP.bible;
-      land = String(b.ref);
-    } else if (p) {
-      pct = p.exact && !p.left_out ? 100 : Math.round(100 * Number(p.same) / Math.max(1, Number(p.words)));
-      land = p.author && !/^various$/i.test(p.author) ? String(p.author) : String(p.title).replace(/,.*$/, '');
-    }
-    if (d.verdict === 'other_author' && !who) stamp = 'Found';
-    /* The line under the stamp says what the stamp doesn't: who, or where. */
-    var by = p && p.author && !/^various$/i.test(p.author) ? String(p.author) : p ? String(p.title).replace(/,.*$/, '') : '';
-    if (b) title = b.near ? Number(b.same) + ' of ' + Number(b.words) + ' words in ' + String(b.ref) : String(b.ref) + ', ' + String(b.translation || '');
-    else if (d.verdict === 'exact') title = 'Word for word in ' + by;
-    else if (d.verdict === 'reworded') title = 'In ' + by + ', worded differently';
-    else if (d.verdict === 'left_out') title = 'In ' + by + ', with words left out';
-    else if (d.verdict === 'scan_letters') title = 'In ' + by + '; check the printed page';
-    else if (named) title = 'Only quoted by a later writer';
-    else if (d.verdict === 'not_found') title = 'Not in the library’s 7,100 books';
-    pct = Math.max(0, Math.min(100, pct || 0));
-    var win = kind === 'yes';
-
-    var card = el('article', 'qc-card qc-' + kind + (calm ? '' : ' qc-reveal') + (win ? ' qc-win' : ''));
+    var card = el('article', 'qc-card qc-' + kind + (calm ? '' : ' qc-reveal'));
     card.tabIndex = -1;
-    var NS = 'http://www.w3.org/2000/svg', ring = document.createElementNS(NS, 'svg');
-    ring.setAttribute('viewBox', '0 0 64 64');
-    ring.setAttribute('class', 'qc-ring');
-    ring.setAttribute('aria-hidden', 'true');
-    ['qc-ring-track', 'qc-ring-fill'].forEach(function (c) {
-      var ci = document.createElementNS(NS, 'circle');
-      ci.setAttribute('cx', '32'); ci.setAttribute('cy', '32'); ci.setAttribute('r', '27');
-      ci.setAttribute('pathLength', '100'); ci.setAttribute('class', c);
-      ring.appendChild(ci);
-    });
-    ring.lastChild.style.setProperty('--pct', pct);
-    if (!pct) ring.lastChild.classList.add('qc-zero');
-    var num = el('span', 'qc-pct', calm ? pct + '%' : '0%');
-    var meter = add(el('div', 'qc-meter'), ring, num);
-    meter.setAttribute('title', pct + '% of the words match');
-    var band = add(el('div', 'qc-band'), meter,
-      add(el('h2', 'qc-verdict'), add(el('span', 'qc-stamp'), stamp), el('span', 'qc-title', title)));
-    add(card, band);
-    if (win && !calm) {
-      var burst = el('span', 'qc-burst');
-      burst.setAttribute('aria-hidden', 'true');
-      for (var bi = 0; bi < 22; bi++) {
-        var bit = el('i');
-        var ang = (bi / 22) * Math.PI * 2 + Math.random() * .4, dist = 60 + Math.random() * 80;
-        bit.style.setProperty('--x', Math.round(Math.cos(ang) * dist) + 'px');
-        bit.style.setProperty('--y', Math.round(Math.sin(ang) * dist * .8) + 'px');
-        bit.style.setProperty('--r', Math.round(Math.random() * 540 - 270) + 'deg');
-        bit.style.setProperty('--w', (bi % 3 ? 9 : 5) + 'px');
-        if (bi % 3 === 0) bit.className = 'qc-gold';
-        add(burst, bit);
-      }
-      add(band, burst);
-    }
-    card.qcPct = pct;
-    card.qcLand = land;
+    add(card, el('span', 'qc-top'), add(el('h2', 'qc-verdict'), markSvg(kind), el('span', 'qc-title', title)));
     if (line) add(card, add(el('p', 'qc-line'), line));
     if (words) add(card, add(el('figure', 'qc-quote'), words, cite));
     if (after2) add(card, after2);
@@ -408,7 +386,7 @@
     var again = el('button', 'btn btn-secondary', 'New check');
     again.type = 'button';
     again.addEventListener('click', function () {
-      setBox('');
+      fold(true);
       say('');
       noHash();
       window.scrollTo({ top: 0, behavior: calm ? 'auto' : 'smooth' });
@@ -423,41 +401,23 @@
     pic.addEventListener('click', function () { if (file) sharePicture(file, pic); });
     add(share, btn, pic, again);
     add(rest, share);
-    var mine = ++shown;
-    landReel(card.qcLand, function () {
-      if (mine !== shown) return;
+    morph(function () {
       out.textContent = '';
       add(out, card);
-      if (cta) cta.hidden = false;
-      show(card, 'start');
-      card.focus({ preventScroll: true });
-      countUp(card.querySelector('.qc-pct'), card.qcPct);
-      if (!calm) setTimeout(buzz, 420);
+      boxState(['qc-done', 'qc-' + kind]);
     });
+    if (!calm) { void box.offsetWidth; box.classList.add('qc-landed'); }
+    if (cta) cta.hidden = false;
+    show(box, 'start');
+    card.focus({ preventScroll: true });
+    if (!calm) buzz();
   }
 
-  var shown = 0;
-  /* The meter's number counts up with the ring. */
-  function countUp(node, to) {
-    if (!node) return;
-    if (calm || !window.requestAnimationFrame) { node.textContent = to + '%'; return; }
-    // Kept in step with the ring's own animation (0.18 s delay, 0.8 s long).
-    var fill = node.parentNode.querySelector('.qc-ring-fill');
-    var anim = fill && fill.getAnimations ? fill.getAnimations()[0] : null, t0 = null;
-    function step(t) {
-      if (t0 === null) t0 = t;
-      var ms = anim && anim.currentTime != null ? Number(anim.currentTime) : t - t0;
-      var k = Math.min(1, Math.max(0, (ms - 180) / 800));
-      node.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))) + '%';
-      if (k < 1 || (anim && anim.playState === 'paused')) requestAnimationFrame(step);
-    }
-    requestAnimationFrame(step);
-  }
-  /* A light tap: the vibration call where there is one; on iPhones, a switch control toggled out of sight (Safari
-     gives a switch a tap of the Taptic Engine). Nothing happens elsewhere. */
+  /* A light tap as the answer lands: the vibration call where there is one; on iPhones, a switch control toggled
+     out of sight (Safari answers a switch with a tap of the Taptic Engine). Nothing happens elsewhere. */
   function buzz() {
     try {
-      if (navigator.vibrate) { navigator.vibrate(14); return; }
+      if (navigator.vibrate) { navigator.vibrate(12); return; }
       var lb = document.createElement('label'), sw = document.createElement('input');
       sw.type = 'checkbox';
       sw.setAttribute('switch', '');
@@ -468,33 +428,6 @@
       lb.click();
       setTimeout(function () { lb.remove(); }, 50);
     } catch (e) { /* no tap */ }
-  }
-
-  /* The reel in the "searching" card: names run past; when the answer comes it slows and stops on the writer. */
-  var reel = null;
-  function makeReel() {
-    var win = el('div', 'qc-reel'), col = el('div', 'qc-reel-col');
-    var names = REEL.slice().sort(function () { return Math.random() - .5; });
-    names.concat(names.slice(0, 6)).forEach(function (n) { add(col, el('span', null, n)); });
-    col.style.setProperty('--loop', '-' + (names.length * 100 / (names.length + 6)).toFixed(3) + '%');
-    add(win, col);
-    reel = { win: win, col: col };
-    return win;
-  }
-  function landReel(name, done) {
-    var r = reel;
-    reel = null;
-    if (!r || calm || !r.win.isConnected) { done(); return; }
-    var col = r.col, picks = REEL.slice().sort(function () { return Math.random() - .5; }).slice(0, 9);
-    col.textContent = '';
-    picks.concat([name]).forEach(function (n, i) { add(col, el('span', i === picks.length ? 'qc-reel-hit' : null, n)); });
-    col.classList.add('qc-reel-stop');
-    col.style.transform = 'translateY(0)';
-    void col.offsetHeight;
-    col.style.transform = 'translateY(-' + (picks.length * 100 / (picks.length + 1)) + '%)';
-    r.win.parentNode.classList.add('qc-landing');
-    setTimeout(function () { r.win.classList.add('qc-reel-done'); }, 560);
-    setTimeout(done, 860);
   }
 
   function shareUrl(q, a) {
@@ -551,6 +484,7 @@
       var g = c.getContext('2d');
       var col = PIC[kind] || PIC.none;
       g.fillStyle = '#ffffff'; g.fillRect(0, 0, W, H);
+      g.fillStyle = col; g.fillRect(0, 0, W, 14);
       function lines(text, font, width) {
         g.font = font;
         var out2 = [], line = '';
@@ -565,28 +499,17 @@
       function draw(ls, x, y, lh) { ls.forEach(function (l, i) { g.fillText(l, x, y + i * lh); }); return y + ls.length * lh; }
       g.textBaseline = 'alphabetic';
 
-      // The banner: the meter, the stamped word, the line under it.
-      var pct = Number(card.qcPct) || 0, stampText = (card.querySelector('.qc-stamp') || {}).textContent || '';
-      var subText = (card.querySelector('.qc-title') || {}).textContent || title;
-      var subLines = lines(subText, '500 34px ' + F, W - M - 300);
-      var bandH = Math.max(300, 200 + subLines.length * 46);
-      g.fillStyle = col; g.fillRect(0, 0, W, bandH);
-      var cx = M + 82, cy = bandH / 2, R = 72;
-      g.lineWidth = 16; g.strokeStyle = 'rgba(255,255,255,.25)';
-      g.beginPath(); g.arc(cx, cy, R, 0, Math.PI * 2); g.stroke();
-      if (pct > 0) { g.strokeStyle = '#ffffff'; g.lineCap = 'round'; g.beginPath(); g.arc(cx, cy, R, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * pct / 100); g.stroke(); }
-      g.fillStyle = '#ffffff'; g.font = '700 40px ' + F; g.textAlign = 'center'; g.fillText(pct + '%', cx, cy + 14); g.textAlign = 'left';
-      var sx = M + 200, sy = cy - 22 - (subLines.length - 1) * 23;
-      g.font = '800 62px ' + F;
-      var label = stampText.toUpperCase(), sw = g.measureText(label).width + 44;
-      g.save(); g.translate(sx, sy); g.rotate(-3 * Math.PI / 180);
-      g.lineWidth = 6; g.strokeStyle = '#ffffff'; g.lineJoin = 'round';
-      g.strokeRect(0, -66, sw, 84); g.fillText(label, 22, 0);
-      g.restore();
-      g.font = '500 34px ' + F; g.fillStyle = 'rgba(255,255,255,.93)';
-      draw(subLines, sx, sy + 70, 46);
-      var y = bandH;
-      if (lineEl && !bq) { g.fillStyle = '#2e2e2e'; y = draw(lines(lineEl.textContent, '400 32px ' + F, W - M * 2), M, y + 90, 46); }
+      // The verdict, with its mark drawn as a stroke.
+      var y = M + 44, tx = M;
+      if (MARK[kind] && window.Path2D) {
+        g.save(); g.translate(M - 6, y - 46); g.scale(2.5, 2.5);
+        g.strokeStyle = col; g.lineWidth = 2.1; g.lineCap = 'round'; g.lineJoin = 'round';
+        MARK[kind].forEach(function (dd) { g.stroke(new Path2D(dd)); });
+        g.restore(); tx = M + 74;
+      }
+      g.fillStyle = col;
+      y = draw(lines(title, '650 46px ' + F, W - tx - M), tx, y, 58);
+      if (lineEl && !bq) { g.fillStyle = '#2e2e2e'; y = draw(lines(lineEl.textContent, '400 32px ' + F, W - M * 2), M, y + 40, 46); }
 
       // The words: as large as fits, a line at a time, with the highlighter behind the words found.
       var footTop = H - M - 92, top = y + 50, bottom = footTop - 50;
@@ -711,15 +634,18 @@
     go.disabled = true;
     go.textContent = 'Checking…';
     quoteBox.blur();
-    out.textContent = '';
     /* A quiet placeholder in the shape of the answer, with a thin line moving along its top edge. */
     var wait = el('div', 'qc-card qc-wait');
     wait.setAttribute('role', 'status');
     var waitText = el('p', 'qc-wait-label', 'Searching 7,100 books');
-    add(wait, add(el('div', 'qc-band qc-band-wait'), add(el('span', 'qc-wait-track'), el('span', 'qc-wait-bar')), waitText, makeReel()),
+    add(wait, add(el('span', 'qc-wait-track'), el('span', 'qc-wait-bar')), waitText,
       el('span', 'qc-bone qc-bone-1'), el('span', 'qc-bone qc-bone-2'), el('span', 'qc-bone qc-bone-3'));
-    add(out, wait);
-    show(wait, 'start');
+    morph(function () {
+      out.textContent = '';
+      add(out, wait);
+      boxState(['qc-busy']);
+    });
+    show(box, 'start');
     clearTimeout(waitTimer);
     waitTimer = setTimeout(function () { waitText.textContent = 'Still searching. Long quotations take a little longer.'; }, 9000);
     var stop = window.AbortController ? new AbortController() : null;
@@ -737,14 +663,12 @@
       if (res.ok && res.d && res.d.verdict) {
         render(res.d);
       } else {
-        reel = null;
-        out.textContent = '';
+        fold(false);
         say((res.d && res.d.error) || 'The checker didn’t answer. Please try again in a moment.');
         show(msg, 'center');
       }
     }).catch(function () {
-      reel = null;
-      out.textContent = '';
+      fold(false);
       say('The checker couldn’t be reached. Check your connection and try again.');
       show(msg, 'center');
     }).then(function () {
@@ -756,13 +680,17 @@
     });
   }
 
-  form.addEventListener('submit', function (e) { e.preventDefault(); if (!busy) buzz(); check(); });
+  form.addEventListener('submit', function (e) { e.preventDefault(); if (!busy && !calm) buzz(); check(); });
   function noHash() { if (location.hash && history.replaceState) history.replaceState(null, '', location.pathname + location.search); }
   quoteBox.addEventListener('keydown', function (e) {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); check(); }
   });
-  quoteBox.addEventListener('input', function () { fit(); if (!msg.hidden) say(''); });
-  if (clearBtn) clearBtn.addEventListener('click', function () { setBox(''); say(''); noHash(); quoteBox.focus(); });
+  /* Changing the words folds the answer away: it was the answer to other words. */
+  quoteBox.addEventListener('input', function () {
+    if (box.classList.contains('qc-done')) fold(false); else fit();
+    if (!msg.hidden) say('');
+  });
+  if (clearBtn) clearBtn.addEventListener('click', function () { fold(true); say(''); noHash(); quoteBox.focus(); });
 
   /* A shared link: #q=...&a=... */
   function fromHash() {
