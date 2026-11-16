@@ -530,12 +530,16 @@
     $('empty').hidden = matches.length > 0;
     $('empty-q').textContent = 'Search the Christian Open Library for ' + (input.value.trim() || 'this') + '.';
     showMore();
+    if (!keepScroll) settle(matches.slice(0, 8).join() + '|' + (authorFilter || ''));
     buildIndex();
     saveState();
     setPinned();
     placeIndex();
     var active = (typeSel.value ? 1 : 0) + (periodSel.value ? 1 : 0) + (sortSel.value !== defaultSort() ? 1 : 0);
-    toggle.textContent = active ? 'Filter (' + active + ')' : 'Filter';
+    var n = toggle.querySelector('.opts-n');
+    n.textContent = active || '';
+    n.hidden = !active;
+    toggle.setAttribute('aria-label', active ? 'Filter, ' + active + ' on' : 'Filter');
     if (!keepScroll) {
       // If the list has been scrolled, go back to its top, just under the pinned search bar.
       var anchor = $('list-top').getBoundingClientRect().top + window.scrollY - parseFloat(getComputedStyle(bar).top);
@@ -543,6 +547,13 @@
     }
   }
 
+  // After a search or a filter, the first rows settle into place, one after another.
+  var settled = null;
+  function settle(sig) {
+    if (sig === settled) return;   // same rows as before (another letter typed): nothing moves
+    settled = sig;
+    [list, cards].forEach(function (el) { el.classList.remove('settle'); void el.offsetWidth; el.classList.add('settle'); });
+  }
   function pinnedHeight() { return parseFloat(getComputedStyle(bar).top) + bar.offsetHeight; }
   function setPinned() { document.documentElement.style.setProperty('--pinned', pinnedHeight() + 'px'); }
   toggle.addEventListener('click', function () {
