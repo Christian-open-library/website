@@ -404,7 +404,7 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
 .chips li { margin: 0; padding: .2rem .65rem; border: 1px solid var(--line-2); border-radius: 999px; font-size: .88rem; font-weight: 500; color: var(--ink); }
 .chips li:last-child { border-color: transparent; color: var(--muted); padding-left: .2rem; }
 
-.give { display: grid; grid-template-columns: 1fr minmax(0, 22rem); gap: 1.5rem; align-items: center; margin: .4rem 0 1rem; }
+.give { display: grid; grid-template-columns: 1fr minmax(0, 22rem); gap: 1.5rem; align-items: start; margin: .4rem 0 1rem; }
 .give .actions { margin: .2rem 0 .7rem; }
 .more { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 1.5rem; margin: .3rem 0 .2rem; }
 .more li { margin: 0; padding: .7rem 0 .8rem; border-top: 1px solid var(--line-2); }
