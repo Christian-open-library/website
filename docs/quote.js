@@ -168,10 +168,12 @@
     });
     return out2;
   }
-  function trimQuotes(s) { return String(s).trim().replace(/^[“”"‘]+|[“”"’]+$/g, '').trim(); }
+  /* Before a passage: quotation marks, stray marks from a scan, a chapter heading ("CHAPTER XXVII 38."). */
+  var LEAD = /^(?:[\s“”"‘'^]|\d+\.\s+|(?:CHAPTER|CHAP\.|BOOK|SECTION)\s+[IVXLC\d]+\.?\s+(?:\d+\.\s+)?)+/;
+  function trimQuotes(s) { return String(s).trim().replace(LEAD, '').replace(/[“”"’]+$/, '').trim(); }
   /* The sentence around the words: back to the start of the sentence, on to its end, 18 words at most. */
   function before(s) {
-    s = String(s || '');
+    s = String(s || '').replace(/(?:CHAPTER|CHAP\.|BOOK|SECTION)\s+[IVXLC\d]+\.?/g, ' ').replace(/\^/g, '');
     // The words open a quotation or a sentence: what comes before belongs to something else.
     s = s.replace(/[\s“"‘]+$/, '');
     if (/[.!?:]["”’)]?$/.test(s)) return '';
@@ -232,9 +234,17 @@
 
   /* The words to show for a book: the source's wording, the words submitted marked in it. */
   function bookPieces(p, quote) {
+    var out3 = bookPieces1(p, quote);
+    // A section number or stray marks before the first word ("38. Belatedly") go.
+    while (out3.length && /^[\d\s.,;:^'"“‘]*$/.test(out3[0][0])) out3.shift();
+    return out3;
+  }
+  function bookPieces1(p, quote) {
     var text = trimQuotes(p.text);
-    if (p.marked && !p.exact) return piecesMarked(p.marked).map(function (x, i, arr) {
-      if (i === 0 && x[1] === null) x[0] = x[0].replace(/^[\s“”"‘]+/, '');
+    if (p.marked && !p.exact) return piecesMarked(p.marked.map(function (x, i) {
+      return i === 0 && Array.isArray(x) && typeof x[0] === 'string' ? [x[0].replace(LEAD, ''), x[1]] : x;
+    })).map(function (x, i, arr) {
+      if (i === 0 && x[1] === null) x[0] = x[0].replace(LEAD, '');
       if (i === arr.length - 1 && x[1] === null) x[0] = x[0].replace(/[\s“”"’]+$/, '');
       return x;
     });
@@ -259,6 +269,13 @@
     d.author = d.author ? String(d.author) : '';
     var who = d.author;
     var p = d.primary && typeof d.primary === 'object' ? d.primary : null;
+    /* Words in another writer's book, much reworded (under 70% the same), aren't shown as where the words come from:
+       too often they are a different sentence on the same subject. They are listed under Details instead. */
+    var similar = null;
+    if (p && !p.exact && d.verdict === 'other_author' && Number(p.words) > 0 && Number(p.same) / Number(p.words) < 0.7
+        && !(d.bible && d.bible.ref)) {
+      similar = p; p = null; d.verdict = 'not_found'; d.others = []; d.others_total = 0; d.earlier = null;
+    }
     /* The earliest work with the words names the credited writer next to them ("Well says Baxter, ..."). */
     var named = d.verdict === 'other_author' && who && p && p.named;
     var head = named ? HEAD.named : Object.prototype.hasOwnProperty.call(HEAD, d.verdict) ? HEAD[d.verdict] : ['none', 'Checked'];
@@ -285,22 +302,15 @@
       var near = b.near === true, verse = trimQuotes(b.text);
       kind = near ? 'warn' : 'yes';
       title = near ? 'Close to a Bible verse' : 'Found in the Bible';
-      if (near) {
-        /* The words as submitted, the ones not in the verse underlined, so the card shows what makes it only close;
-           the verse follows. */
-        words = passage(piecesOf(d.quote, hits(d.quote, verse)).map(function (x) { return x[1] === '' ? [x[0], 'diff'] : x; }), { ends: true });
-        cite = add(el('figcaption', 'qc-cite'), 'Closest verse: ' + String(b.ref) + ', ' + String(b.translation || ''));
-        after2 = add(el('p', 'qc-line qc-after'), String(b.ref) + ' reads: “' + verse + '”');
-      } else {
-        words = passage(piecesOf(verse, hits(verse, d.quote)), LOOK === 'c' ? { ctx: true, ends: true } : {});
-        cite = add(el('figcaption', 'qc-cite'), String(b.ref) + ', ' + String(b.translation || ''));
-        if (b.left_out === true) notes.push(['Every word submitted is in the verse, in this order, with other words of the verse between them.']);
-      }
+      words = passage(piecesOf(verse, hits(verse, d.quote)), LOOK === 'c' ? { ctx: true, ends: true } : {});
+      cite = add(el('figcaption', 'qc-cite'), String(b.ref) + ', ' + String(b.translation || ''));
       var inAuthor = !near && who && p && d.author_works > 0 && d.verdict !== 'other_author' && d.verdict !== 'quoting';
       if (inAuthor) after2 = add(el('p', 'qc-line qc-after'), who + ' quotes it in ', el('cite', null, String(p.title)),
         (typeof p.year === 'number' && String(p.title).slice(-4) !== String(p.year) ? ' (' + p.year + ')' : '') + (p.pages ? ', ' + p.pages : '') + '.');
       if (near) {
-        notes.push([Number(b.same) + ' of the ' + Number(b.words) + ' words submitted are in this verse, in the same order; the others are underlined. Compared with the library’s seven translations, this one is the closest; the wording submitted may be from another, or quoted from memory.']);
+        sub(more, 'Your wording');
+        add(more, el('p', 'qc-given', d.quote));
+        notes.push(['The library’s seven translations were compared; this is the closest. Your wording may be from another translation, or from memory.']);
         if (p && d.verdict === 'exact' && !p.licensed) notes.push(['The wording submitted is word for word in ', where(p), '.']);
       }
       var also = Array.isArray(b.more) ? b.more.slice(0, 6).map(String) : [], rest = (Number(b.total) || 1) - 1 - also.length;
@@ -315,7 +325,7 @@
       }
     } else {
       if (!p) {
-        line = 'No work in the library has these words or a close match. That does not prove them false: the library holds about 7,100 works, not everything ever written.';
+        line = 'No book in the library has these words. That does not prove them false: the library holds about 7,100 works, not everything ever written.';
         if (who) notes.push([d.author_works > 0 ? 'The library holds ' + plural(d.author_works, 'work') + ' by ' + who + ', not the complete writings.'
           : 'The library holds no works by ' + who + '.']);
       } else if (named) {
@@ -329,8 +339,6 @@
         if (who && d.author_works > 0) notes.push(['This does not prove ' + who + ' never said it: the library does not hold the complete writings.']);
       } else if (d.verdict === 'scan_letters') {
         notes.push([plural(p.misread, 'word') + ' in the book’s text ' + (p.misread === 1 ? 'differs' : 'differ') + ' by one letter. The text was read by computer from a scan; the printed page is the authority.']);
-      } else if (d.verdict === 'left_out') {
-        notes.push(['Every word submitted is in the passage, in this order, with other words between them.']);
       } else if (d.verdict === 'quoting' && p.credit) {
         notes.push(['The line that follows these words in the source credits them to ' + p.credit + '.']);
       }
@@ -344,7 +352,7 @@
         if (p.scan) add(links, link(p.scan.url, p.scan.kind === 'page' ? 'View the printed page' : 'Find it in the scan'));
         else if (p.source) add(links, link(p.source, p.source_label === 'Official copy' ? 'Official copy' : 'See the source text'));
         if (!p.exact || d.verdict === 'left_out') {
-          sub(more, 'Wording submitted');
+          sub(more, 'Your wording');
           add(more, p.given_marked ? passage(piecesMarked(p.given_marked), { quiet: true }) : el('p', 'qc-given', d.quote));
         }
         if (p.before || p.after) {
@@ -367,12 +375,34 @@
       if (p && p.about) notes.push([p.author + ': ' + p.about + '.']);
       if (p && p.church) notes.push([p.church]);
     }
+    if (similar) notes.push(['Similar words, not the same sentence, are in ', where(similar), '.']);
     if (notes.length) {
       if (more.children.length > 1) sub(more, 'Notes');
       var nl = el('ul', 'qc-notes');
       notes.forEach(function (parts) { add(nl, add.apply(null, [el('li')].concat(parts))); });
       add(more, nl);
     }
+
+    /* The answer is where the words come from: the Bible, or the writer of the earliest book that has them. No grades:
+       the book's own wording is shown, and one plain line says so when it differs from the words checked, or when the
+       name given isn't the writer. */
+    var src = b ? 'the Bible' : p ? (p.author && !/^various$/i.test(String(p.author)) ? String(p.author) : String(p.title)) : '';
+    kind = src ? 'yes' : 'none';
+    title = src ? 'From ' + src : 'Not in the library';
+    if (!b && p && !p.licensed) {
+      line = null;
+      if (who && (d.verdict === 'other_author' || named)) {
+        line = (d.author_works > 0 ? 'Not in the library’s ' + plural(d.author_works, 'work') + ' by ' + who + '.' : 'The library has no works by ' + who + '.')
+          + (named ? ' ' + src + ' gives these words as ' + who + '’s.' : '');
+      } else if (d.verdict === 'quoting' && p.credit) {
+        line = src + ' is quoting ' + p.credit + ' here.';
+      }
+    }
+    var differs = (b && b.near) ? 'Your wording differs a little from the verse.'
+      : !b && p && !p.licensed && (d.verdict === 'reworded' || (p.same < p.words && !p.exact)) ? 'Your wording differs a little from the book’s.'
+      : !b && p && (d.verdict === 'left_out' || p.left_out) ? 'Your quotation leaves out some of the words between.'
+      : !b && p && d.verdict === 'scan_letters' ? 'A word or two differ by a letter. Compare the printed page.' : '';
+    if (differs && !after2) after2 = add(el('p', 'qc-line qc-after'), differs);
 
     var card = el('article', 'qc-card qc-' + kind + (calm ? '' : ' qc-reveal'));
     card.tabIndex = -1;
@@ -512,26 +542,33 @@
     var icon = new Image();
     var iconReady = new Promise(function (ok) { icon.onload = icon.onerror = function () { ok(); }; icon.src = 'img/icon-512.png'; });
     // The words as the card shows them (without the sentence around them), each with its marking.
-    var toks = [], cut = false, bq = card.querySelector('.qc-quote .qc-words'), citeEl = card.querySelector('.qc-quote .qc-cite');
+    var toks = [], bq = card.querySelector('.qc-quote .qc-words'), citeEl = card.querySelector('.qc-quote .qc-cite');
+    // The book's words from the first word found to the last, those between included; the sentence around them is left out.
+    var held = [];
     if (bq) Array.prototype.forEach.call(bq.childNodes, function (n) {
       var k = n.nodeType === 1 ? (n.classList.contains('qc-hit') ? 'hit' : n.classList.contains('qc-diff') ? 'diff' : n.classList.contains('qc-ctx') ? 'ctx' : '') : '';
-      // The sentence around the words is left out; its punctuation stays.
-      // Where the sentence is cut, its punctuation on either side goes too.
+      var bits = [];
+      String(n.textContent).split(/(\s+)/).forEach(function (s) { if (s) bits.push([s, '']); });
       if (k === 'ctx' && /[\p{L}\p{N}]/u.test(n.textContent)) {
-        while (toks.length && !/[\p{L}\p{N}]/u.test(toks[toks.length - 1][0])) toks.pop();
-        cut = true;
+        if (toks.length) held = held.concat(bits);
         return;
       }
-      String(n.textContent).split(/(\s+)/).forEach(function (s) {
-        if (!s) return;
-        var word = /[\p{L}\p{N}]/u.test(s);
-        if (cut && !word) return;
-        // Words left out inside the quotation are marked, as in print.
-        if (cut && word && toks.length) toks.push([' ', ''], ['…', ''], [' ', '']);
-        cut = false;
-        toks.push([s, k === 'ctx' ? '' : k]);
-      });
+      if (k === 'hit' || k === 'diff') { toks = toks.concat(held); held = []; toks = toks.concat(bits); }
+      else if (toks.length) held = held.concat(bits);
     });
+    // Words found that stop inside a phrase run on to its end (6 words at most), so the picture doesn't stop mid-phrase.
+    if (toks.length && !/[,.;:!?”’]$/.test(toks[toks.length - 1][0])) {
+      var w6 = 0;
+      for (var hi = 0; hi < held.length && w6 < 6; hi++) {
+        toks.push(held[hi]);
+        if (!/\S/.test(held[hi][0])) continue;
+        w6++;
+        if (/[,.;:!?]/.test(held[hi][0])) break;
+      }
+      if (toks.length) toks[toks.length - 1] = [toks[toks.length - 1][0].replace(/[,;:]+$/, ''), ''];
+    }
+    // Before the first word, punctuation of the sentence left out goes too.
+    while (toks.length && !/[\p{L}\p{N}]/u.test(toks[0][0])) toks.shift();
     // No space at either end, none doubled, none before a stop or comma, and no stop or comma first.
     toks = toks.reduce(function (acc, t) {
       var sp = /^\s+$/.test(t[0]), prev = acc[acc.length - 1];
@@ -620,8 +657,6 @@
         r.forEach(function (t, i) {
           var w = t[2] || g.measureText(t[0]).width;
           var next = r[i + 1];
-          if (t[1] === 'hit' && !(t[0] === ' ' && !(next && next[1] === 'hit'))) { g.fillStyle = '#f6e2a0'; g.fillRect(x, y - size * 0.62, w, size * 0.82); }
-          if (t[1] === 'diff') { g.fillStyle = PIC.warn; g.fillRect(x, y + size * 0.16, w, Math.max(3, size * 0.06)); }
           x += w;
         });
         x = M;

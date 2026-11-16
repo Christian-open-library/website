@@ -599,3 +599,7 @@ ul.works li[data-u]:not(.open) { content-visibility: auto; contain-intrinsic-siz
   .qc-card { padding: 1.15rem 1.05rem 1rem; }
   .qc-words { font-size: 1.1rem; }
 }
+
+/* The checker shows the book's words plainly: no marker, no underline. */
+.qc-quote .qc-hit, .qc-quote .qc-diff, .qc-details .qc-diff { background: none; padding-bottom: 0; }
+.qc-reveal .qc-quote .qc-hit, .qc-reveal .qc-quote .qc-diff { animation: none; }
