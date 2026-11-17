@@ -733,9 +733,13 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
 .lk-launch kbd, .lk-close kbd { font: 500 .75rem/1 var(--mono); color: var(--muted); padding: .22rem .38rem; border: 1px solid var(--line-2); border-radius: 4px; }
 .lk-launch kbd { margin-left: .25rem; }
 body:has(.lk-launch) .lk-launch { display: flex; }
-.lk-ghost { position: fixed; z-index: 61; align-items: center; padding-left: 1rem; border: 1px solid var(--line-2); background: var(--bg); color: var(--ink); pointer-events: none;
+.lk-ghost { position: fixed; z-index: 61; box-sizing: border-box; overflow: hidden; align-items: center; padding-left: 1rem; border: 1px solid var(--line-2); background: var(--bg); color: var(--ink); pointer-events: none;
   box-shadow: 0 12px 32px -12px rgba(0, 0, 0, .28); }
 .lk-ghost.lk-flying { display: flex; }
+.lk-gt { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; font-family: var(--sans); line-height: 1.2; }
+.lk-gk { position: absolute; top: 50%; right: .7rem; transform: translateY(-50%); font: 500 .75rem/1 var(--mono); color: var(--muted); padding: .22rem .38rem; border: 1px solid var(--line-2); border-radius: 4px; background: var(--bg); }
+.lk-gg { position: absolute; top: 50%; display: grid; place-items: center; border-radius: 10px; background: var(--btn); color: var(--on-btn); }
+.lk-gg svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* The home page box */
 .lk-hero { position: relative; display: flex; align-items: center; gap: .65rem; max-width: 46rem; height: 3.6rem; margin: 1.4rem 0 0; padding: 0 .45rem 0 1.05rem;

@@ -72,7 +72,9 @@
   var input = panel.querySelector('input');
   var body = panel.querySelector('.lk-body');
   var closeBtn = panel.querySelector('.lk-close');
-  var ghost = el('div', 'lk-ghost', MAG);
+  var ghost = el('div', 'lk-ghost', MAG + '<span class="lk-gt"><span class="lk-gt-a"></span><span class="lk-gt-b"></span></span>' +
+    '<kbd class="lk-gk">/</kbd><span class="lk-gg"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>');
+  ghost.setAttribute('aria-hidden', 'true');
   document.body.appendChild(launch);
   document.body.appendChild(ghost);
   document.body.appendChild(shade);
@@ -347,31 +349,72 @@
   if (hero) {
     var first = true;
     // The box in flight follows where both ends are on every frame, so it lands exactly on the box even while the
-    // page is still scrolling; at the end the real one takes its place in the same frame (no fade, no jump).
-    var springEase = bezier(.2, 1.1, .3, 1), flight = 0;
-    var corner = function (e, r) { return Math.min(parseFloat(getComputedStyle(e).borderRadius) || 0, r.height / 2); };
-    var place = function (r, rad) {
-      var g = ghost.style;
-      g.top = r.top + 'px'; g.left = r.left + 'px'; g.width = r.width + 'px'; g.height = r.height + 'px'; g.borderRadius = rad + 'px';
+    // page is still scrolling. It carries the words, the arrow and the colours of both ends and blends them, so
+    // when the real one takes its place in the same frame nothing appears, vanishes or jumps.
+    var glide = bezier(.25, .85, .3, 1), flight = 0, cur = null;
+    var gText = ghost.querySelector('.lk-gt'), gHead = ghost.querySelector('.lk-gt-a'), gTail = ghost.querySelector('.lk-gt-b');
+    var gGo = ghost.querySelector('.lk-gg'), gIcon = ghost.querySelector('svg'), gKey = ghost.querySelector('.lk-gk');
+    var heroGo = hero.querySelector('.lk-go'), launchText = launch.querySelector('.lk-launch-text'), launchKey = launch.querySelector('kbd');
+    var px = function (v) { return parseFloat(v) || 0; };
+    var scaleOf = function (t) { var m = /matrix\(([^,]+),\s*([^,]+)/.exec(t); return m ? Math.hypot(px(m[1]), px(m[2])) : 1; };
+    var lineOf = function (cs) { return px(cs.borderTopWidth) ? cs.borderTopColor : cs.backgroundColor; };
+    // Everything the box looks like at one end, read from the page so phone, computer and dark mode all match.
+    var look = function (e) {
+      var r = e.getBoundingClientRect(), cs = getComputedStyle(e), icon = px(getComputedStyle(e.querySelector('svg')).width);
+      var shadow = phone.matches ? [10, 26, -8, .45] : [12, 32, -12, .28];
+      var o = { top: r.top, left: r.left, width: r.width, height: r.height, rad: Math.min(px(cs.borderTopLeftRadius), r.height / 2),
+        bg: cs.backgroundColor, line: lineOf(cs), fg: cs.color, icon: icon, gap: px(cs.columnGap) };
+      if (e === hero) {
+        var is = getComputedStyle(heroInput), gs = getComputedStyle(heroGo), typed = heroInput.value !== '';
+        o.pad = px(cs.paddingLeft); o.indent = px(is.paddingLeft); o.fs = px(is.fontSize); o.fw = 400;
+        o.ink = typed ? is.color : getComputedStyle(document.documentElement).getPropertyValue('--muted').trim() || is.color;
+        o.head = typed ? 1 : .85; o.tail = typed ? 0 : .85; o.go = px(gs.opacity); o.goScale = scaleOf(gs.transform);
+        o.goSize = heroGo.getBoundingClientRect().width; o.goRight = px(cs.paddingRight); o.shadow = [10, 30, -18, .3]; o.key = 0;
+      } else {
+        var ls = getComputedStyle(launchText), shown = ls.display !== 'none';
+        o.pad = shown ? px(cs.paddingLeft) : (r.width - icon) / 2; o.indent = 0; o.fs = px(ls.fontSize); o.fw = 500; o.ink = cs.color;
+        o.head = shown ? 1 : 0; o.tail = 0; o.go = 0; o.goScale = .4; o.goSize = phone.matches ? 40 : 43; o.goRight = 7; o.shadow = shadow;
+        o.key = getComputedStyle(launchKey).display === 'none' ? 0 : 1;
+      }
+      return o;
+    };
+    var blend = function (a, b, k) {
+      var m = function (x, y) { return x + (y - x) * k; }, c = function (x, y) { return x === y ? x : 'color-mix(in srgb, ' + x + ' ' + (100 - k * 100).toFixed(1) + '%, ' + y + ')'; };
+      var o = {};
+      ['top', 'left', 'width', 'height', 'rad', 'icon', 'gap', 'pad', 'indent', 'fs', 'fw', 'head', 'tail', 'go', 'goScale', 'goSize', 'goRight', 'key'].forEach(function (n) { o[n] = m(a[n], b[n]); });
+      ['bg', 'line', 'fg', 'ink'].forEach(function (n) { o[n] = c(a[n], b[n]); });
+      o.shadow = a.shadow.map(function (v, i) { return m(v, b.shadow[i]); });
+      return o;
+    };
+    var place = function (o) {
+      var g = ghost.style, s = o.shadow;
+      g.top = o.top + 'px'; g.left = o.left + 'px'; g.width = o.width + 'px'; g.height = o.height + 'px'; g.borderRadius = Math.max(0, o.rad) + 'px';
+      g.background = o.bg; g.borderColor = o.line; g.color = o.fg; g.paddingLeft = o.pad + 'px'; g.gap = o.gap + 'px';
+      g.boxShadow = '0 1px 2px rgba(0, 0, 0, .05), 0 ' + s[0] + 'px ' + s[1] + 'px ' + s[2] + 'px rgba(0, 0, 0, ' + s[3].toFixed(3) + ')';
+      gIcon.style.width = gIcon.style.height = o.icon + 'px';
+      gText.style.paddingLeft = o.indent + 'px'; gText.style.fontSize = o.fs + 'px'; gText.style.fontWeight = Math.round(o.fw); gText.style.color = o.ink;
+      gHead.style.opacity = Math.max(0, Math.min(1, o.head)); gTail.style.opacity = Math.max(0, Math.min(1, o.tail));
+      gKey.style.opacity = Math.max(0, Math.min(1, o.key * o.key));
+      var gg = gGo.style;
+      gg.width = gg.height = o.goSize + 'px'; gg.right = o.goRight + 'px'; gg.opacity = Math.max(0, Math.min(1, o.go)); gg.transform = 'translateY(-50%) scale(' + o.goScale + ')';
     };
     var settle = function (e, cls) { e.style.transition = 'none'; e.classList.remove(cls); void e.offsetWidth; e.style.transition = ''; };
     var fly = function (from, to, after) {
-      var start = null;
-      if (flight) {   // turned round mid-flight: start from where the box is now
-        cancelAnimationFrame(flight);
-        var g = ghost.getBoundingClientRect();
-        start = { top: g.top, left: g.left, width: g.width, height: g.height, rad: parseFloat(ghost.style.borderRadius) || 0 };
-      }
-      if (calm) { flight = 0; ghost.classList.remove('lk-flying'); after(); return; }
-      var t0 = performance.now(), dur = 520;
+      var start = flight && cur ? cur : null;   // turned round mid-flight: start from where the box is now
+      if (flight) cancelAnimationFrame(flight);
+      flight = 0;
+      if (calm) { ghost.classList.remove('lk-flying'); after(); return; }
+      var typed = heroInput.value;
+      gHead.textContent = typed || 'Search the library';
+      gTail.textContent = typed ? '' : heroInput.placeholder.replace(/^Search the library/, '');
+      var t0 = performance.now(), dur = 460, a0 = start || look(from);
       var step = function (now) {
-        var t = Math.min(1, (now - t0) / dur), k = springEase(t);
-        var a = start || from.getBoundingClientRect(), b = to.getBoundingClientRect();
-        var ra = start ? start.rad : corner(from, a), rb = corner(to, b);
-        var mix = function (x, y) { return x + (y - x) * k; };
-        place({ top: mix(a.top, b.top), left: mix(a.left, b.left), width: mix(a.width, b.width), height: mix(a.height, b.height) }, Math.max(0, mix(ra, rb)));
+        var t = Math.min(1, (now - t0) / dur);
+        // The far end moves with the page, so it is read again on every frame; the near end stays where it was.
+        cur = blend(a0, look(to), glide(t));
+        place(cur);
         if (t < 1) { flight = requestAnimationFrame(step); return; }
-        flight = 0;
+        flight = 0; cur = null;
         after();
         ghost.classList.remove('lk-flying');
       };
