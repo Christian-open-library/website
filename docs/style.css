@@ -714,7 +714,7 @@ html.lk-lock, html.lk-lock body { overflow: hidden; }
 .lk-acts { display: flex; flex: none; align-items: flex-start; }
 .lk-ways { display: none; }
 .lk-hit.lk-sharing .lk-ways { display: flex; }
-.lk-hit.lk-sharing .lk-open-src, .lk-hit.lk-sharing .lk-copy { display: none; }
+.lk-hit.lk-sharing .lk-open-src { display: none; }
 .lk-hit.lk-sharing .lk-share { color: var(--ink); }
 .lk-ways .lk-icon { animation: lk-out .42s cubic-bezier(.2, 1.35, .4, 1) backwards; }
 .lk-ways .lk-icon:nth-child(2) { animation-delay: .04s; } .lk-ways .lk-icon:nth-child(1) { animation-delay: .08s; }
