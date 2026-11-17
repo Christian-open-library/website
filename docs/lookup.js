@@ -35,7 +35,7 @@
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
   function buzz() {
-    if (calm) return;
+    if (calm || (navigator.userActivation && !navigator.userActivation.hasBeenActive)) return;
     try {
       if (navigator.vibrate) { navigator.vibrate(10); return; }
       var lb = el('label'), sw = el('input');
@@ -61,7 +61,7 @@
     '<div class="lk-inner">' +
       '<form class="lk-form" role="search">' + MAG +
         '<label for="lk-q" class="sr">Search the library</label>' +
-        '<input id="lk-q" type="search" autocomplete="off" spellcheck="false" enterkeyhint="search" maxlength="500" placeholder="' + HINT + '">' +
+        '<input id="lk-q" type="search" dir="auto" autocomplete="off" spellcheck="false" enterkeyhint="search" maxlength="500" placeholder="' + HINT + '">' +
         '<button type="submit" class="lk-go" aria-label="Search"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>' +
         '<button type="button" class="lk-close" aria-label="Close"><kbd>esc</kbd>' + CLOSE + '</button>' +
       '</form>' +
@@ -124,6 +124,10 @@
       document.body.classList.remove('lk-open');
       document.documentElement.classList.remove('lk-lock');
       if (to === hero && heroInput) heroInput.value = input.value;
+      // Keyboard focus goes back to where the panel came from, not to the top of the page.
+      if (!panel.contains(document.activeElement) && document.activeElement !== document.body) return;
+      var back = to === hero ? heroInput : to;
+      if (back && back.focus) back.focus({ preventScroll: true });
     };
     if (calm) { done(); return; }
     var r1 = panel.getBoundingClientRect(), r0 = to.getBoundingClientRect();
@@ -185,19 +189,35 @@
     });
   }
 
+  // Syriac, Hebrew and Arabic read right to left. A passage is set that way only when most of its letters are in
+  // those scripts (an English commentary that opens with a Hebrew word stays left to right), and is tagged with
+  // its language so a screen reader uses the right voice.
+  function textDir(t) {
+    t = String(t || '');
+    // letters only, not the vowel points
+    var syr = (t.match(/[\u0710-\u072F\u074D-\u074F]/g) || []).length, heb = (t.match(/[\u05D0-\u05EA]/g) || []).length,
+      ara = (t.match(/[\u0620-\u064A\u0671-\u06D3]/g) || []).length;
+    var ltr = (t.match(/[A-Za-z\u00C0-\u024F\u0386-\u03FF\u1F00-\u1FFF\u0400-\u04FF]/g) || []).length;
+    var rtl = syr + heb + ara;
+    if (rtl <= ltr) return ' dir="ltr"';
+    return ' dir="rtl" lang="' + (syr >= heb && syr >= ara ? 'syr' : heb >= ara ? 'he' : 'ar') + '"';
+  }
+
   // A passage reads like a page of the book: the words, then who wrote it and where to see it.
   function passage(h) {
+    // Some sources give the address followed by a list of files: link the address only.
+    var link = String(h.link || '').trim().split(/\s/)[0];
     var text = esc(h.text).replace(/\[\[/g, '<mark>').replace(/\]\]/g, '</mark>').replace(/\*(.+?)\*/g, '<i>$1</i>');
     var where = ['<cite>' + esc(h.title) + '</cite>'];
     if (h.year) where.push(esc(h.year));
     if (h.page) where.push(esc(h.page));
     var a = el('article', 'lk-hit');
     a.innerHTML =
-      '<blockquote class="lk-text">' + (h.cut_start ? '&hellip;' : '') + text + (h.cut_end && !/[.?!"”]$/.test(h.text) ? '&hellip;' : '') + '</blockquote>' +
+      '<blockquote class="lk-text"' + textDir(h.text) + '>' + (h.cut_start ? '&hellip;' : '') + text + (h.cut_end && !/[.?!"”]$/.test(h.text) ? '&hellip;' : '') + '</blockquote>' +
       '<div class="lk-cite">' +
         '<p><span class="lk-who">' + esc(h.author) + '</span>' + (h.dates ? ' <span class="lk-dates">' + esc(h.dates) + '</span>' : '') +
         '<br><span class="lk-work">' + where.join(' · ') + '</span></p>' +
-        '<div class="lk-acts"><span class="lk-ways"></span>' + (!/^https?:\/\//i.test(String(h.link || '')) ? '' : '<a class="lk-icon lk-open-src" href="' + esc(h.link) + '" target="_blank" rel="noopener" title="' + (h.scan ? 'Open the scan' : 'Open the source') + '" aria-label="' + (h.scan ? 'Open the scan' : 'Open the source') + '">' + OPEN + '</a>') +
+        '<div class="lk-acts"><span class="lk-ways"></span>' + (!/^https?:\/\//i.test(link) ? '' : '<a class="lk-icon lk-open-src" href="' + esc(link) + '" target="_blank" rel="noopener" title="' + (h.scan ? 'Open the scan' : 'Open the source') + '" aria-label="' + (h.scan ? 'Open the scan' : 'Open the source') + '">' + OPEN + '</a>') +
         '<button type="button" class="lk-icon lk-copy" title="Copy the quote and link" aria-label="Copy the quote and a link">' + LINK + '</button>' +
         '<button type="button" class="lk-icon lk-share" title="Share" aria-label="Share this passage" aria-expanded="false">' + SHARE + '</button></div>' +
       '</div>';
@@ -270,6 +290,8 @@
           });
           body.appendChild(ul);
         }
+        if (!document.body.classList.contains('page-browse'))
+          body.appendChild(el('p', 'lk-next', 'Or look for an author or title in <a href="browse.html?q=' + encodeURIComponent(lastQ) + '">Browse</a>.'));
         return;
       }
       var list = el('div', 'lk-hits');
@@ -302,6 +324,14 @@
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && sharing) { unshare(); return; }
     if (e.key === 'Escape' && isOpen) { e.preventDefault(); close(); return; }
+    // While the panel is open, Tab goes round inside it (the page behind is covered).
+    if (e.key === 'Tab' && isOpen) {
+      var f = Array.prototype.filter.call(panel.querySelectorAll('a[href], button, input'), function (n) { return n.offsetParent !== null && !n.disabled; });
+      if (!f.length) return;
+      var i = f.indexOf(document.activeElement);
+      if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && (i === -1 || i === f.length - 1)) { e.preventDefault(); f[0].focus(); }
+    }
     var typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement && document.activeElement.tagName) || (document.activeElement && document.activeElement.isContentEditable);
     if (!isOpen && ((e.key === '/' && !typing && !own) || (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)))) { e.preventDefault(); open(); }
   });

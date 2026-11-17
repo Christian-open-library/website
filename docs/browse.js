@@ -366,7 +366,11 @@
     [/docsouth\.unc\.edu/, 'DocSouth', 'Read it at DocSouth (UNC)'],
     [/crosswire\.org/, 'CrossWire', 'Source: The CrossWire Bible Society'],
     [/tertullian\.org/, 'Tertullian Project', 'Read it at the Tertullian Project'],
-    [/github\.com|githubusercontent/, 'Source file', 'Source file (for the technically minded)']
+    [/github\.com\/OpenGreekAndLatin/, 'Open Greek and Latin', 'Read it at the Open Greek and Latin project (files on GitHub)'],
+    [/github\.com\/PerseusDL/, 'Perseus', 'Read it at the Perseus Digital Library (files on GitHub)'],
+    [/github\.com\/srophe/, 'Digital Syriac Corpus', 'Read it at the Digital Syriac Corpus (files on GitHub)'],
+    [/github\.com\/textcreationpartnership/, 'Text Creation Partnership', 'Read it at the Text Creation Partnership (files on GitHub)'],
+    [/github\.com|githubusercontent/, 'GitHub', 'Source file on GitHub (for the technically minded)']
   ];
   // [short name for the link, longer name for the tooltip and screen readers]
   function sourceLabel(url) {
@@ -402,13 +406,14 @@
     box.appendChild(full);
     var links = document.createElement('div');
     links.className = 'w-links';
-    if (/^https?:\/\//i.test(String(w[4] || ''))) {   // web links only, as lookup.js does
+    var src = String(w[4] || '').trim().split(/\s/)[0];   // the address only, without any file list after it
+    if (/^https?:\/\//i.test(src)) {   // web links only, as lookup.js does
       var a = document.createElement('a');
-      a.href = w[4];
+      a.href = src;
       a.target = '_blank';
       a.rel = 'noopener';
       a.className = 'w-src';
-      var lab = sourceLabel(w[4]);
+      var lab = sourceLabel(src);
       a.innerHTML = OPEN;
       a.appendChild(document.createTextNode('Read at ' + lab[0]));
       a.title = lab[1];
@@ -700,7 +705,7 @@
 
     var filtered = words.length || typeV || periodV || authorFilter;
     var total = units.length;
-    if (!filtered) count.textContent = num(total) + ' titles';
+    if (!filtered) count.textContent = plural(total, 'title', 'titles');
     else if (!matches.length) count.textContent = 'No titles match';
     else count.textContent = plural(matches.length, 'title', 'titles');
     // With no titles, words long enough are looked for in the books; the note shows only if they find nothing too.
@@ -760,12 +765,27 @@
     curL = L;
     Array.prototype.forEach.call(az.children, function (b) { b.classList.toggle('cur', b.dataset.letter === L); });
   }
+  // A jump (dragging the scroll bar, the End key, a hard fling) can land past the rows drawn so far, where the
+  // watcher on the last row never sees it: draw on until the rows reach the screen again.
+  function catchUp() {
+    for (var k = 0; k < 4 && shown < items.length; k++) {
+      var last = list.lastElementChild;
+      if (!last || last.getBoundingClientRect().bottom > innerHeight + 2000) return false;
+      showMore(1500);
+    }
+    return shown < items.length && list.lastElementChild && list.lastElementChild.getBoundingClientRect().bottom < innerHeight + 2000;
+  }
   window.addEventListener('scroll', function () {
-    if (!scrollFrame) scrollFrame = requestAnimationFrame(function () { scrollFrame = 0; placeIndex(); });
+    if (!scrollFrame) scrollFrame = requestAnimationFrame(function step() {
+      scrollFrame = 0;
+      if (catchUp()) { scrollFrame = requestAnimationFrame(step); return; }
+      placeIndex();
+    });
   }, { passive: true });
 
   function buildIndex() {
     az.hidden = !grouped() || matches.length < 30;
+    list.classList.toggle('no-az', az.hidden);
     if (az.hidden) return;
     var have = {};
     items.forEach(function (it) { if (typeof it === 'string') have[it] = true; });

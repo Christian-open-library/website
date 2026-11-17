@@ -7,7 +7,8 @@
 <meta name="description" content="Every work in the Christian Open Library, by author and title. Search for an author, a title or a word.">
 <link rel="canonical" href="https://christianopenlibrary.org/browse.html">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121315">
 <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="img/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
@@ -22,7 +23,7 @@
 <meta property="og:image:alt" content="Christian Open Library: an open book on a dark tile, with the site's name.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=2eaf5e08">
+<link rel="stylesheet" href="style.css?v=744a6772">
 </head>
 <body class="page-browse">
 <a class="skip" href="#main">Skip to the page</a>
@@ -68,7 +69,7 @@
   <div class="fd-box">
     <svg class="fd-mag" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L20 20"/></svg>
     <label for="q" class="sr">Search the library</label>
-    <input id="q" type="search" placeholder="Authors, titles or a topic" autocomplete="off" spellcheck="false" enterkeyhint="search"
+    <input id="q" type="search" dir="auto" placeholder="Authors, titles or a topic" autocomplete="off" spellcheck="false" enterkeyhint="search"
       role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggest">
     <button id="q-clear" class="fd-icon q-clear" type="button" aria-label="Clear the search" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
     <button id="opts-toggle" class="fd-icon fd-opts" type="button" aria-expanded="false" aria-controls="opts" aria-label="Order and filters" title="Order and filters"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span class="opts-n" hidden></span></button>
@@ -112,7 +113,7 @@
 
 <h2>Reading the books</h2>
 <p>To search inside them from your AI app, <a href="setup.html">add the library to it</a>. To read them as files, <a href="download.html">download them</a>.</p>
-<script src="browse.js?v=735c4ab6" defer></script>
+<script src="browse.js?v=e0359867" defer></script>
 </div>
 </main>
 <footer class="site">
@@ -137,6 +138,6 @@
   </div>
 </footer>
 <script src="site.js?v=065687c3" defer></script>
-<script src="lookup.js?v=763ccb83" defer></script>
+<script src="lookup.js?v=a4286c7d" defer></script>
 </body>
 </html>
