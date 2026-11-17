@@ -40,18 +40,24 @@
   var authorFilter = '', sortChosen = false, corrected = '';
   var sortV = 'author', typeV = '', periodV = '';
 
-  // A light tap on phones that have one (Android), or the switch trick on iPhones; nothing elsewhere.
-  function buzz() {
+  // A light tap on phones that have one. Android: a short vibration (ms; longer is firmer). iPhone (Safari 18+): the
+  // tick a switch gives when it flips; one hidden switch is kept and flipped, so a fast drag down the letters can
+  // tick on every one without building anything. Nothing on computers.
+  var tick = null;
+  function buzz(ms) {
     if (calm) return;
     try {
-      if (navigator.vibrate) { navigator.vibrate(8); return; }
+      if (navigator.vibrate) { navigator.vibrate(ms || 8); return; }
       if (!matchMedia('(pointer: coarse)').matches) return;
-      var lb = document.createElement('label'), sw = document.createElement('input');
-      sw.type = 'checkbox'; sw.setAttribute('switch', '');
-      lb.setAttribute('aria-hidden', 'true');
-      lb.style.cssText = 'position:fixed;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none';
-      lb.appendChild(sw); document.body.appendChild(lb); lb.click();
-      setTimeout(function () { lb.remove(); }, 50);
+      if (!tick) {
+        tick = document.createElement('label');
+        var sw = document.createElement('input');
+        sw.type = 'checkbox'; sw.setAttribute('switch', ''); sw.tabIndex = -1;
+        tick.setAttribute('aria-hidden', 'true');
+        tick.style.cssText = 'position:fixed;left:0;top:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none';
+        tick.appendChild(sw); document.body.appendChild(tick);
+      }
+      tick.click();
     } catch (e) { /* no tap */ }
   }
 
@@ -787,27 +793,69 @@
     window.scrollTo(0, Math.max(0, window.scrollY + first.getBoundingClientRect().top - pinnedH - head.offsetHeight + 1));
     placeIndex();
   }
-  // Tap or drag on the bar. Touch events are used on phones (Safari), pointer events elsewhere. The letter under
-  // the finger swells, the big letter in the middle snaps to it, and each new letter gives a light tap.
+  // Tap or drag on the bar. Touch events are used on phones (Safari), pointer events elsewhere. Under the finger the
+  // letters swell like a magnifier that follows it smoothly (the nearest most, its neighbours less), the big letter
+  // in the middle rolls to the new one, and each letter that has authors gives a light tap.
   var bubble = document.createElement('div');
   bubble.className = 'az-bubble';
   bubble.setAttribute('aria-hidden', 'true');
   document.body.appendChild(bubble);
   var bubbleTimer, lastL = null, lastY = null, frame = 0, pendingL = null, dragging = false;
-  // The letter under a point on the bar, from its fixed layout (not from what is drawn there).
-  function letterAtY(y) {
+  // The bar's layout, from the bar itself and the letters' offsets (which the magnifier's transforms don't move).
+  function azRows() {
     var btns = az.children;
     if (!btns.length) return null;
-    var first = btns[0].getBoundingClientRect(), last = btns[btns.length - 1].getBoundingClientRect();
-    var h = (last.bottom - first.top) / btns.length;
-    var k = Math.floor((y - first.top) / h);
-    k = Math.max(0, Math.min(btns.length - 1, k));
-    return btns[k].dataset.letter;
+    var h = btns[0].offsetHeight;
+    return { btns: btns, top: az.getBoundingClientRect().top + az.clientTop + btns[0].offsetTop, h: h };
   }
+  // The letter under a point on the bar, from its fixed layout (not from what is drawn there).
+  function letterAtY(y) {
+    var r = azRows();
+    if (!r) return null;
+    var k = Math.max(0, Math.min(r.btns.length - 1, Math.floor((y - r.top) / r.h)));
+    return r.btns[k].dataset.letter;
+  }
+  // The magnifier: each letter swells and leans out by how close it is to the finger, on a smooth curve, and the
+  // letters around it slide apart to make room (so the letter under the finger stays under it).
+  var lensY = null, lensFrame = 0, LENS_C = 3.2, LENS_M = .75;
+  function erf(x) {   // Abramowitz and Stegun 7.1.26, close enough for moving letters
+    var t = 1 / (1 + .3275911 * Math.abs(x));
+    var y = 1 - ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - .284496736) * t + .254829592) * t * Math.exp(-x * x);
+    return x < 0 ? -y : y;
+  }
+  function lens(y) {
+    if (calm) return;
+    lensY = y;
+    if (lensFrame) return;
+    lensFrame = requestAnimationFrame(function () {
+      lensFrame = 0;
+      var r = azRows();
+      if (!r || lensY === null) return;
+      for (var k = 0; k < r.btns.length; k++) {
+        var e = (r.top + (k + .5) * r.h - lensY) / r.h;   // letters from the finger, + below
+        var w = Math.exp(-e * e / LENS_C);
+        var dy = LENS_M * Math.sqrt(Math.PI * LENS_C) / 2 * erf(e / Math.sqrt(LENS_C)) * r.h;
+        r.btns[k].style.transform = 'translate(' + (-w * 1.1).toFixed(3) + 'rem, ' + dy.toFixed(1) + 'px) scale(' + (1 + w * LENS_M).toFixed(3) + ')';
+      }
+    });
+  }
+  function unlens() {
+    lensY = null;
+    if (lensFrame) { cancelAnimationFrame(lensFrame); lensFrame = 0; }
+    Array.prototype.forEach.call(az.children, function (b) { b.style.transform = ''; });
+  }
+  var shownL = null;
   function show(L) {
     bubble.textContent = L === '#' ? '#' : L;
     bubble.classList.add('show');
-    if (!calm && bubble.animate) bubble.animate([{ transform: 'translate(-50%, -50%) scale(.92)' }, { transform: 'translate(-50%, -50%)' }], { duration: 160, easing: EASE });
+    // The big letter rolls in from the side the finger came from, like a counter turning.
+    var dir = shownL ? (LETTERS.indexOf(L) > LETTERS.indexOf(shownL) ? 1 : -1) : 0;
+    var same = L === shownL;
+    shownL = L;
+    if (!same && !calm && bubble.animate) bubble.animate(dir
+      ? [{ transform: 'translate(-50%, calc(-50% + ' + (dir * 14) + 'px)) scale(.96)', opacity: .5 }, { transform: 'translate(-50%, -50%)', opacity: .95 }]
+      : [{ transform: 'translate(-50%, -50%) scale(.9)', opacity: 0 }, { transform: 'translate(-50%, -50%)', opacity: .95 }],
+      { duration: dir ? 170 : 220, easing: EASE });
     clearTimeout(bubbleTimer);
     Array.prototype.forEach.call(az.children, function (b) { b.classList.toggle('touch', b.dataset.letter === L); });
     markLetter(L);
@@ -815,10 +863,12 @@
   // While a finger moves, jump at most once per screen refresh, to the newest letter.
   function pick(y) {
     lastY = y;
+    lens(y);
     var L = letterAtY(y);
     if (!L || L === lastL) return;
     lastL = L;
-    buzz();
+    var b = az.querySelector('[data-letter="' + L + '"]');
+    if (b && !b.classList.contains('empty')) buzz(6);
     show(L);
     pendingL = L;
     if (!frame) frame = requestAnimationFrame(function () { frame = 0; if (pendingL) jump(pendingL); pendingL = null; });
@@ -829,11 +879,13 @@
     var L = typeof y === 'number' ? letterAtY(y) : lastL;
     if (frame) { cancelAnimationFrame(frame); frame = 0; pendingL = null; }
     if (L) { show(L); jump(L); setTimeout(function () { jump(L); }, 120); }
+    if (L && dragging) buzz(14);   // landed: a firmer tap (on iPhone the lift is when Safari allows one for sure)
     lastL = null; lastY = null;
     dragging = false;
     az.classList.remove('held');
+    unlens();
     Array.prototype.forEach.call(az.children, function (b) { b.classList.remove('touch'); });
-    bubbleTimer = setTimeout(function () { bubble.classList.remove('show'); }, 450);
+    bubbleTimer = setTimeout(function () { bubble.classList.remove('show'); shownL = null; }, 450);
   }
   function hold() { dragging = true; az.classList.add('held'); }
   az.addEventListener('touchstart', function (e) { e.preventDefault(); hold(); lastL = null; pick(e.touches[0].clientY); }, { passive: false });
@@ -844,6 +896,8 @@
   az.addEventListener('mousedown', function (e) { mouseDown = true; hold(); pick(e.clientY); e.preventDefault(); });
   document.addEventListener('mousemove', function (e) { if (mouseDown) pick(e.clientY); });
   document.addEventListener('mouseup', function (e) { if (mouseDown) { mouseDown = false; release(e.clientY); } });
+  az.addEventListener('mousemove', function (e) { if (!mouseDown) lens(e.clientY); });
+  az.addEventListener('mouseleave', function () { if (!mouseDown) unlens(); });
   az.addEventListener('keydown', function (e) {
     if ((e.key === 'Enter' || e.key === ' ') && e.target.dataset.letter) { e.preventDefault(); jump(e.target.dataset.letter); }
   });
