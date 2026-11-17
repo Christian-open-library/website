@@ -730,7 +730,7 @@ body:has(.lk-launch) .lk-launch { display: flex; }
 /* The home page box */
 .lk-hero { position: relative; display: flex; align-items: center; gap: .65rem; max-width: 46rem; height: 3.6rem; margin: 1.4rem 0 0; padding: 0 .45rem 0 1.05rem;
   border: 1px solid var(--line-2); border-radius: 14px; background: var(--bg); color: var(--ink); box-shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 10px 30px -18px rgba(0, 0, 0, .3);
-  transition: border-color .2s, box-shadow .2s, opacity .15s; }
+  transition: border-color .2s, box-shadow .2s; }
 .lk-hero:focus-within { border-color: var(--muted); box-shadow: 0 0 0 4px var(--accent-soft), 0 10px 30px -18px rgba(0, 0, 0, .3); }
 .lk-hero.lk-wait { opacity: 0; }
 .lk-hero input, .lk-form input { flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: none; color: var(--ink); font: 400 1.1rem/1.2 var(--sans); -webkit-appearance: none; appearance: none; }

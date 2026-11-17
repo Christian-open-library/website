@@ -18,6 +18,20 @@
   var HINT = 'Search the library: a topic or a line you remember';
 
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  // The CSS cubic-bezier() curve as a function of time, for motion driven frame by frame.
+  function bezier(x1, y1, x2, y2) {
+    var cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx, cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+    return function (t) {
+      var u = t;
+      for (var i = 0; i < 8; i++) {
+        var d = ((ax * u + bx) * u + cx) * u - t, dd = (3 * ax * u + 2 * bx) * u + cx;
+        if (Math.abs(d) < 1e-5 || Math.abs(dd) < 1e-6) break;
+        u -= d / dd;
+      }
+      u = Math.max(0, Math.min(1, u));
+      return ((ay * u + by) * u + cy) * u;
+    };
+  }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
   function buzz() {
@@ -302,11 +316,37 @@
   // corner; scroll back up and it flies back.
   if (hero) {
     var first = true;
-    var fly = function (r0, rad0, r1, rad1, after) {
-      if (calm) { after(); return; }
+    // The box in flight follows where both ends are on every frame, so it lands exactly on the box even while the
+    // page is still scrolling; at the end the real one takes its place in the same frame (no fade, no jump).
+    var springEase = bezier(.2, 1.1, .3, 1), flight = 0;
+    var corner = function (e, r) { return Math.min(parseFloat(getComputedStyle(e).borderRadius) || 0, r.height / 2); };
+    var place = function (r, rad) {
+      var g = ghost.style;
+      g.top = r.top + 'px'; g.left = r.left + 'px'; g.width = r.width + 'px'; g.height = r.height + 'px'; g.borderRadius = rad + 'px';
+    };
+    var settle = function (e, cls) { e.style.transition = 'none'; e.classList.remove(cls); void e.offsetWidth; e.style.transition = ''; };
+    var fly = function (from, to, after) {
+      var start = null;
+      if (flight) {   // turned round mid-flight: start from where the box is now
+        cancelAnimationFrame(flight);
+        var g = ghost.getBoundingClientRect();
+        start = { top: g.top, left: g.left, width: g.width, height: g.height, rad: parseFloat(ghost.style.borderRadius) || 0 };
+      }
+      if (calm) { flight = 0; ghost.classList.remove('lk-flying'); after(); return; }
+      var t0 = performance.now(), dur = 520;
+      var step = function (now) {
+        var t = Math.min(1, (now - t0) / dur), k = springEase(t);
+        var a = start || from.getBoundingClientRect(), b = to.getBoundingClientRect();
+        var ra = start ? start.rad : corner(from, a), rb = corner(to, b);
+        var mix = function (x, y) { return x + (y - x) * k; };
+        place({ top: mix(a.top, b.top), left: mix(a.left, b.left), width: mix(a.width, b.width), height: mix(a.height, b.height) }, Math.max(0, mix(ra, rb)));
+        if (t < 1) { flight = requestAnimationFrame(step); return; }
+        flight = 0;
+        after();
+        ghost.classList.remove('lk-flying');
+      };
+      step(t0);   // placed before it is shown, so it never appears where the last flight left it
       ghost.classList.add('lk-flying');
-      var a = ghost.animate([frame(r0, rad0), frame(r1, rad1)], { duration: 520, easing: SPRING });
-      a.onfinish = a.oncancel = function () { ghost.classList.remove('lk-flying'); after(); };
     };
     new IntersectionObserver(function (es) {
       var seen = es[es.length - 1].isIntersecting;
@@ -314,13 +354,13 @@
       if (isOpen) { launch.classList.toggle('lk-here', !seen); return; }
       if (!seen && !launch.classList.contains('lk-here')) {
         launch.classList.add('lk-here', 'lk-wait');
-        var r1 = launch.getBoundingClientRect();
-        fly(hero.getBoundingClientRect(), radius(hero), r1, radius(launch), function () { launch.classList.remove('lk-wait'); });
+        hero.classList.add('lk-wait');
+        fly(hero, launch, function () { settle(launch, 'lk-wait'); settle(hero, 'lk-wait'); });
       } else if (seen && launch.classList.contains('lk-here')) {
-        var r0 = launch.getBoundingClientRect(), rad = radius(launch);
+        launch.classList.add('lk-wait');
         launch.classList.remove('lk-here');
         hero.classList.add('lk-wait');
-        fly(r0, rad, hero.getBoundingClientRect(), radius(hero), function () { hero.classList.remove('lk-wait'); });
+        fly(launch, hero, function () { settle(hero, 'lk-wait'); settle(launch, 'lk-wait'); });
       }
     }, { rootMargin: '-56px 0px 0px 0px' }).observe(hero);
   } else {
