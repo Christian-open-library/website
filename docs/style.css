@@ -278,7 +278,7 @@ button.author-card:active { transform: scale(.985); }
 .author-card.on .ac-btn { color: var(--muted); align-self: flex-start; }
 
 /* The list */
-ul.works { list-style: none; padding: 0; margin: .2rem 0 1rem; }
+ul.works { list-style: none; padding: 0; margin: .2rem 0 1rem; overflow-anchor: none; }   /* rows drawn above are balanced by the script */
 ul.works li { margin: 0; }
 ul.works li.letter { position: sticky; top: calc(var(--pinned, 8rem) - 1px); z-index: 5; will-change: transform; padding: 1rem 0 .3rem; background: var(--bg); box-shadow: 0 -4px 0 var(--bg);
   color: var(--ink); font: 400 1.7rem/1 var(--serif); border-bottom: 1px solid var(--line); }
