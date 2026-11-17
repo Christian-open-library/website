@@ -833,28 +833,23 @@ html.lk-lock, html.lk-lock body { overflow: hidden; }
 .lk-sharing .lk-share svg { transform: rotate(90deg); }
 @media (prefers-reduced-motion: reduce) { .lk-ways .lk-icon { animation: none; } .lk-go { transition: none; } }
 
-/* For churches: one rule in two editions, printed once, old words struck and new words marked; the year switch moves between them. */
-.amend { margin: 1.6rem 0 .4rem; }
-.amend + p { margin-top: 1.1rem; }
-.amend-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-bottom: .75rem; border-bottom: 1px solid var(--line-2); }
-.prose .amend-q { display: flex; align-items: flex-start; gap: .55rem; margin: 0; color: var(--ink); font-size: 1.05rem; font-weight: 600; line-height: 1.35; }
-.amend-q::before { content: ""; flex: none; width: 1.1rem; height: 1.1rem; margin-top: .14rem; background: var(--muted); -webkit-mask: var(--chat) center / contain no-repeat; mask: var(--chat) center / contain no-repeat; }
-.amend-years { display: inline-flex; flex: none; padding: 2px; border: 1px solid var(--line-2); border-radius: 999px; }
-.amend-years button { padding: .42rem .8rem; border: 0; border-radius: 999px; background: none; color: var(--muted); font: 600 .85rem/1 var(--mono); cursor: pointer; transition: background-color .2s var(--ease), color .2s var(--ease); -webkit-tap-highlight-color: transparent; }
-.amend-years button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
-.prose .amend-text { margin: 1rem 0 .7rem; color: var(--ink); font: 1.2rem/1.65 var(--serif); }
-.amend .del { color: var(--muted); background: linear-gradient(currentColor, currentColor) no-repeat 0 60% / 100% 1.5px; transition: background-size .55s var(--ease), color .3s var(--ease); }
-.amend[data-year="1888"] .del { color: var(--ink); background-size: 0 1.5px; }
-.amend .ins { background: linear-gradient(var(--accent-soft), var(--accent-soft)) no-repeat 0 0 / 100% 100%; border-radius: 2px; }
-.amend.moved[data-year="1928"] .ins { animation: amend-mark .5s var(--ease) .3s both; }
-@keyframes amend-mark { from { background-size: 0 100%; } to { background-size: 100% 100%; } }
-.amend[data-year="1888"] .ins, .amend[data-year="1888"] .e28, .amend[data-year="1928"] .e88 { display: none; }
-.prose .amend-src { margin: 0; padding-bottom: .85rem; border-bottom: 1px solid var(--line-2); color: var(--muted); font-size: .88rem; line-height: 1.45; }
-@media (max-width: 40rem) {
-  .amend-top { flex-direction: column; align-items: flex-start; gap: .7rem; }
-  .prose .amend-text { font-size: 1.08rem; }
-}
-@media (prefers-reduced-motion: reduce) { .amend .del, .amend-years button { transition: none; } .amend.moved[data-year="1928"] .ins { animation: none; } }
+.page-churches .page-head h1 { text-wrap: balance; max-width: 40rem; }
+/* For churches: each section's heading on the left and its points on the right; questions folded. */
+.biz { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr); gap: 1rem 2.5rem; margin: 2.2rem 0 0; padding-top: 1.4rem; border-top: 1px solid var(--line-2); }
+.prose .biz h2 { margin: 0 0 .45rem; }
+.prose .biz-head p { margin: 0; color: var(--muted); line-height: 1.5; }
+.prose ul.biz-list { list-style: none; margin: 0; padding: 0; }
+.biz-list li { margin: 0; padding: .6rem 0; border-top: 1px solid var(--line); color: var(--text); line-height: 1.5; }
+.biz-list li:first-child { border-top: 0; padding-top: .1rem; }
+.faq { margin: .4rem 0 1.4rem; border-bottom: 1px solid var(--line-2); }
+.faq details { border-top: 1px solid var(--line-2); }
+.faq summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .85rem 0; list-style: none; cursor: pointer; color: var(--ink); font-weight: 600; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: ""; flex: none; width: .55rem; height: .55rem; margin-right: .2rem; border-right: 1.6px solid var(--muted); border-bottom: 1.6px solid var(--muted); transform: rotate(45deg) translateY(-2px); transition: transform .25s var(--ease); }
+.faq details[open] summary::after { transform: rotate(-135deg) translateY(-2px); }
+.prose .faq details p { margin: -.2rem 0 .95rem; color: var(--text); line-height: 1.55; max-width: 40rem; }
+@media (max-width: 40rem) { .biz { grid-template-columns: 1fr; gap: .9rem; } }
+@media (prefers-reduced-motion: reduce) { .faq summary::after { transition: none; } }
 
 /* For churches: the privacy section, one dark panel with a lock. */
 .vault { margin: 2.4rem 0 1.6rem; padding: 1.6rem 1.6rem 1.3rem; border-radius: 12px; background: var(--btn); color: var(--on-btn); }
