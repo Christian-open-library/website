@@ -147,7 +147,7 @@ ol.steps li::before { content: counter(st) "."; position: absolute; left: 0; col
 .address-box p { margin: 0 0 .35rem; font-size: .85rem; font-weight: 500; color: var(--muted); }
 .address { position: relative; display: flex; border-radius: var(--radius); }
 .address code { flex: 1 1 auto; display: flex; align-items: center; min-height: 48px; padding: .4rem .8rem; font-size: 1rem; background: var(--bg); border: 1px solid var(--line-2); border-radius: var(--radius); overflow-wrap: normal; user-select: all; }
-.address.has-copy code { padding-right: 3.2rem; cursor: copy; }
+.address.has-copy code { padding-right: 3.2rem; cursor: pointer; }
 button.copy { position: absolute; right: .2rem; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 2.6rem; height: 2.6rem; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--muted); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background .15s, color .15s; }
 @media (hover: hover) { button.copy:hover { background: var(--tile); color: var(--ink); } }
 button.copy:active { transform: translateY(-50%) scale(.88); }
