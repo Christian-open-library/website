@@ -10,10 +10,10 @@ import hashlib, re, pathlib
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC, OUT = ROOT / "src", ROOT / "docs"
 
-NAV = [("index", "Home"), ("setup", "Set it up"), ("browse", "Browse"), ("download", "Download"), ("churches", "For churches"),
+NAV = [("index", "Home"), ("setup", "Set it up"), ("browse", "Browse"), ("download", "Download"), ("organizations", "For organizations"),
        ("privacy", "Privacy"), ("accuracy", "Accuracy"), ("corrections", "Corrections"), ("support", "Give")]
 # The menu at the top shows only these; the footer lists every page.
-TOP = ("index", "setup", "browse", "download", "churches", "support")
+TOP = ("index", "setup", "browse", "download", "organizations", "support")
 
 LAYOUT = """<!doctype html>
 <html lang="en">

@@ -833,7 +833,7 @@ html.lk-lock, html.lk-lock body { overflow: hidden; }
 .lk-sharing .lk-share svg { transform: rotate(90deg); }
 @media (prefers-reduced-motion: reduce) { .lk-ways .lk-icon { animation: none; } .lk-go { transition: none; } }
 
-.page-churches .page-head h1 { text-wrap: balance; max-width: 40rem; }
+.page-organizations .page-head h1 { text-wrap: balance; max-width: 40rem; }
 /* For churches: each section's heading on the left and its points on the right; questions folded. */
 .biz { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr); gap: 1rem 2.5rem; margin: 2.2rem 0 0; padding-top: 1.4rem; border-top: 1px solid var(--line-2); }
 .prose .biz h2 { margin: 0 0 .45rem; }
