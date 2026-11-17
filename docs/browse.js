@@ -8,7 +8,7 @@
   var input = $('q'), toggle = $('opts-toggle'), bar = document.querySelector('.finder-bar'), menu = $('opts');
   var list = $('works'), count = $('count'), more = $('more'), az = $('az'), onChips = $('on-chips');
   var headEls = [], pinnedH = 0;
-  var clearBtn = $('q-clear'), suggest = $('suggest'), cards = $('authors'), notice = $('notice'), go = $('go'), box = document.querySelector('.fd-box');
+  var clearBtn = $('q-clear'), suggest = $('suggest'), cards = $('authors'), notice = $('notice'), inbooks = $('inbooks'), box = document.querySelector('.fd-box');
   var PAGE = 150;
   var LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').concat('#');
   var TYPES = { book: 'Books', commentary: 'Commentaries', creed: 'Creeds', confession: 'Confessions', catechism: 'Catechisms', hymnal: 'Hymnals' };
@@ -526,6 +526,7 @@
     }
     closeSuggest();
     update();
+    scheduleBooks();
     if (!name) input.focus();
   }
 
@@ -694,11 +695,10 @@
     var filtered = words.length || typeV || periodV || authorFilter;
     var total = units.length;
     if (!filtered) count.textContent = num(total) + ' titles';
-    else if (!matches.length) count.textContent = 'None match';
+    else if (!matches.length) count.textContent = 'No titles match';
     else count.textContent = plural(matches.length, 'title', 'titles');
-    $('empty').hidden = matches.length > 0;
-    $('empty-q').textContent = input.value.trim() || 'these words';
-    $('empty-inside').parentNode.hidden = !input.value.trim();
+    // With no titles, words long enough are looked for in the books; the note shows only if they find nothing too.
+    $('empty').hidden = matches.length > 0 || input.value.trim().length >= 3;
     showMore();
     fillRest();
     if (!keepScroll) settle(matches.slice(0, 8).join() + '|' + (authorFilter || ''), typing);
@@ -872,8 +872,9 @@
     titles.slice(0, 3).forEach(function (u) { picks.push({ unit: u }); });
     weak.forEach(function (a) { if (picks.length < 6) picks.push({ author: a }); });
     titles.slice(3).forEach(function (u) { if (picks.length < 6) picks.push({ unit: u }); });
-    // Last, always: the same words searched inside the books.
-    if (window.bookSearch) picks.push({ inside: raw });
+    // Last: the same words looked for in the books, unless the page is already doing that by itself.
+    if (window.bookSearch && !wantsBooks(raw)) picks.push({ inside: raw });
+    if (!picks.length) { closeSuggest(); return; }
     suggest.textContent = '';
     options = picks;
     active = -1;
@@ -916,18 +917,99 @@
     if (k >= 0) input.setAttribute('aria-activedescendant', 'sg-' + k);
     else input.removeAttribute('aria-activedescendant');
   }
-  // The same words, searched inside the books (the search panel grows out of the box).
-  function searchInside(el) {
-    closeSuggest();
-    if (window.bookSearch) { input.blur(); window.bookSearch(input.value, el || box); }
-  }
-  // The arrow springs up as soon as there is something to search.
   function hasWords() { box.classList.toggle('fd-has', input.value.trim() !== ''); }
+
+  // ---------- in the books: passages on the page, as you type ----------
+  // One box does both. Words that name an author or find titles narrow the list. Words that read like a topic or a
+  // remembered line (they find no title, or run to three words or more without naming anyone) are also looked for
+  // inside the books once typing pauses, and the passages appear above the list. The server allows each visitor a
+  // few searches a minute, so it is asked only after a pause, never twice for the same words. Enter asks at once.
+  var inQ = '', inTimer = 0, inGen = 0, inCache = {}, PASSAGES = 3;
+  function wantsBooks(raw) {
+    if (raw.length < 3 || authorFilter) return false;
+    if (!matches.length) return true;
+    if (authorsMatching(words).length) return false;
+    return raw.split(/\s+/).length >= 3;
+  }
+  function hideBooks() { clearTimeout(inTimer); inGen++; inQ = ''; inbooks.hidden = true; inbooks.textContent = ''; box.classList.remove('fd-busy'); }
+  function scheduleBooks() {
+    clearTimeout(inTimer);
+    var raw = input.value.trim();
+    if (raw && raw === inQ) return;   // these words are already being looked for, or shown (Enter asked)
+    if (!raw || !wantsBooks(raw)) { hideBooks(); return; }
+    inbooks.classList.add('stale');
+    inTimer = setTimeout(function () { booksFor(raw); }, 900);
+  }
+  function booksFor(raw) {
+    clearTimeout(inTimer);
+    if (!raw || !window.bookSearch || !window.bookSearch.find) return;
+    if (raw === inQ && !inbooks.hidden && !inbooks.classList.contains('stale')) return;
+    inQ = raw;
+    var gen = ++inGen;
+    if (inCache[raw]) { drawBooks(inCache[raw]); return; }
+    box.classList.add('fd-busy');
+    window.bookSearch.find(raw).then(function (d) {
+      if (gen !== inGen) return;
+      box.classList.remove('fd-busy');
+      inCache[raw] = d;
+      drawBooks(d);
+    }, function (e) {
+      if (gen !== inGen) return;
+      box.classList.remove('fd-busy');
+      inQ = '';
+      drawBooks({ error: e && e.say ? e.say : 'The books didn\u2019t answer. Try again in a moment.' });
+    });
+  }
+  function drawBooks(d) {
+    inbooks.textContent = '';
+    inbooks.classList.remove('stale');
+    var h = document.createElement('h2');
+    h.className = 'ib-head';
+    h.textContent = 'In the books';
+    inbooks.appendChild(h);
+    var hits = (d && d.hits) || [];
+    if (d && d.error) inbooks.appendChild(cell('ib-msg', d.error));
+    else if (!hits.length) inbooks.appendChild(cell('ib-msg', 'Nothing close in the books.'));
+    else if (d.note) inbooks.appendChild(cell('ib-note', d.note));
+    var shownHits = [];
+    hits.forEach(function (hit, k) {
+      var a = window.bookSearch.passage(hit);
+      if (k >= PASSAGES) a.hidden = true;
+      inbooks.appendChild(a);
+      if (k < PASSAGES) shownHits.push(a);
+    });
+    if (hits.length > PASSAGES) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'linkish ib-more';
+      b.textContent = 'More passages (' + (hits.length - PASSAGES) + ')';
+      b.addEventListener('click', function () {
+        buzz();
+        var rest = Array.prototype.filter.call(inbooks.querySelectorAll('.lk-hit'), function (x) { return x.hidden; });
+        rest.forEach(function (x) { x.hidden = false; });
+        b.remove();
+        rise(rest);
+      });
+      inbooks.appendChild(b);
+    }
+    inbooks.hidden = false;
+    $('empty').hidden = hits.length > 0 || matches.length > 0;
+    rise(shownHits);
+  }
+  // Passages rise in one after another, then the found words are marked as with a highlighter.
+  function rise(els) {
+    els.forEach(function (a, i) {
+      var sweep = function () { a.classList.add('lk-swept'); };
+      if (calm || !a.animate) { sweep(); return; }
+      a.animate([{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }],
+        { duration: 360, delay: 40 + i * 60, easing: EASE, fill: 'backwards' }).onfinish = sweep;
+    });
+  }
   function choose(k) {
     var p = options[k];
     closeSuggest();
     if (!p) return;
-    if (p.inside) { searchInside(box); return; }
+    if (p.inside) { booksFor(input.value.trim()); return; }
     if (p.author) { setAuthor(p.author); return; }
     // A title: list it, open it and move to it.
     var u = units[p.unit];
@@ -957,10 +1039,14 @@
       highlight(active - 1);
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      // A chosen suggestion opens it; otherwise Enter searches inside the books for the words.
+      // A chosen suggestion opens it; otherwise Enter looks in the books for the words at once.
       if (open && active >= 0) choose(active);
-      else if (input.value.trim()) searchInside(box);
-      else closeSuggest();
+      else {
+        closeSuggest();
+        if (input.value.trim()) booksFor(input.value.trim());
+        // On a phone, Enter (Search) puts the keyboard away so the results can be seen.
+        if (matchMedia('(pointer: coarse)').matches) input.blur();
+      }
     } else if (e.key === 'Escape') {
       e.preventDefault();
       if (open) closeSuggest();
@@ -1013,19 +1099,17 @@
     clearBtn.hidden = !input.value;
     hasWords();
     clearTimeout(timer);
-    timer = setTimeout(function () { update(false, true); openSuggest(); }, 120);
+    timer = setTimeout(function () { update(false, true); openSuggest(); scheduleBooks(); }, 120);
   });
   input.addEventListener('focus', function () { setMenu(false); if (input.value.trim().length >= 2) openSuggest(); });
   input.addEventListener('blur', function () { setTimeout(closeSuggest, 100); });
-  clearBtn.addEventListener('click', function () { input.value = ''; closeSuggest(); update(); input.focus(); });
+  clearBtn.addEventListener('click', function () { input.value = ''; closeSuggest(); hideBooks(); update(); input.focus(); });
   function resetAll() {
     input.value = ''; typeV = ''; periodV = ''; authorFilter = ''; sortChosen = false; sortV = 'author';
-    update(); input.focus();
+    hideBooks(); update(); input.focus();
   }
   $('empty-clear').addEventListener('click', resetAll);
-  $('empty-inside').addEventListener('click', function () { searchInside($('empty-inside')); });
-  go.addEventListener('click', function () { buzz(); searchInside(box); });
-  more.addEventListener('click', function () { showMore(); });
+    more.addEventListener('click', function () { showMore(); });
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(function (entries) { if (entries[0].isIntersecting && !more.hidden) showMore(); }, { rootMargin: '1600px' }).observe(more);
   }
@@ -1054,6 +1138,7 @@
     works.forEach(function (w) { typesSeen[w[3]] = true; });
     loadState();
     update(true);
+    scheduleBooks();
     // The full printed titles are read while the page is idle, so the first book opened doesn't stall its motion.
     var idle = window.requestIdleCallback || function (f) { return setTimeout(f, 1500); };
     idle(function () { loadFullTitles(); }, { timeout: 4000 });

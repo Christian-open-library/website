@@ -330,6 +330,10 @@
   // Such a page keeps "/" for its own box and hides the floating launcher.
   var own = document.body.classList.contains('page-browse');
   window.bookSearch = function (q, el) { q = (q || '').trim(); buzz(); open(q, el); if (q) run(q); };
+  // The browse page shows passages on the page itself as you type: it asks through here, and builds each passage
+  // the way the panel does (share and copy included).
+  window.bookSearch.find = function (q) { lastQ = q; return search(q); };
+  window.bookSearch.passage = passage;
 
   // A shared link opens the search it was made from.
   // Inside another site's frame, or in a window another page opened, it waits for a click: otherwise a page could

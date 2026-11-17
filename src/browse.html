@@ -11,7 +11,6 @@
     <input id="q" type="search" placeholder="Authors, titles or a topic" autocomplete="off" spellcheck="false" enterkeyhint="search"
       role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggest">
     <button id="q-clear" class="fd-icon q-clear" type="button" aria-label="Clear the search" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
-    <button id="go" class="fd-go" type="button" aria-label="Search inside the books" title="Search inside the books"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
     <button id="opts-toggle" class="fd-icon fd-opts" type="button" aria-expanded="false" aria-controls="opts" aria-label="Order and filters" title="Order and filters"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span class="opts-n" hidden></span></button>
     <ul id="suggest" class="suggest" role="listbox" aria-label="Suggestions" hidden></ul>
   </div>
@@ -28,6 +27,7 @@
 </div>
 <p id="notice" class="notice" role="status" hidden></p>
 <div id="authors" class="author-cards" hidden></div>
+<section id="inbooks" class="inbooks" aria-live="polite" hidden></section>
 <ul id="works" class="works loading" aria-busy="true">
 <li class="skel" aria-hidden="true"><span></span><span></span></li>
 <li class="skel" aria-hidden="true"><span></span><span></span></li>
@@ -45,7 +45,6 @@
 <nav id="az" class="az" aria-label="Jump to a letter" hidden></nav>
 <div id="empty" class="empty-state" hidden>
   <p><strong>No titles or authors match.</strong> Try one distinctive word, such as a surname, or <button id="empty-clear" class="linkish" type="button">clear the search</button>.</p>
-  <p><button id="empty-inside" class="linkish" type="button">Search inside the books</button> for <em id="empty-q"></em>.</p>
   <p class="note">A book missing? Write to <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a>.</p>
 </div>
 <p><button id="more" class="btn btn-secondary" type="button" hidden>Show more</button></p>

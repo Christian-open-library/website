@@ -192,12 +192,20 @@ ul.questions li::before { content: ""; position: absolute; left: .1rem; top: .3r
 .q-clear { animation: fd-pop .3s var(--ease); }
 @keyframes fd-pop { from { opacity: 0; transform: scale(.4); } }
 .fd-opts { color: var(--ink); }
-/* The arrow: hidden until there are words, then it springs up; it searches inside the books. */
-.fd-go { display: grid; place-items: center; flex: none; width: 2.4rem; height: 2.4rem; padding: 0; border: 0; border-radius: 9px; background: var(--btn); color: var(--on-btn); cursor: pointer;
-  -webkit-tap-highlight-color: transparent; transition: transform .4s cubic-bezier(.2, 1.5, .4, 1), opacity .2s; }
-.fd-go svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.fd-box:not(.fd-has) .fd-go { opacity: 0; transform: scale(.4) rotate(-45deg); pointer-events: none; width: 0; margin-left: -.55rem; }
-.fd-go:active { transform: scale(.92); }
+/* Looking in the books: a gold line runs along the foot of the box. */
+.fd-box::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: -1px; height: 2px; opacity: 0; transition: opacity .2s; pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--accent) 40%, var(--accent) 60%, transparent) no-repeat; background-size: 40% 100%; }
+.fd-box.fd-busy::after { opacity: 1; animation: lk-run 1s cubic-bezier(.5, 0, .5, 1) infinite; }
+@media (prefers-reduced-motion: reduce) { .fd-box.fd-busy::after { animation: none; background-size: 100% 100%; } }
+
+/* Passages found in the books, on the page above the list (built by lookup.js, so they look as in the panel). */
+.inbooks { margin: 1rem 0 .4rem; padding-bottom: .4rem; border-bottom: 1px solid var(--line); transition: opacity .2s; }
+.inbooks.stale { opacity: .45; }
+.prose .ib-head { margin: 0 0 .1rem; font-size: .95rem; font-weight: 650; letter-spacing: 0; color: var(--ink); }
+.ib-note, .ib-msg { display: block; margin: .2rem 0 .3rem; color: var(--muted); font-size: .88rem; }
+.inbooks .lk-hit { padding: .9rem 0 .8rem; }
+.inbooks .lk-hit:last-of-type { border-bottom: 0; }
+.ib-more { margin: .3rem 0 .6rem; font-size: .92rem; font-weight: 600; }
 .finder-bar.open .fd-opts { background: var(--btn); color: var(--on-btn); }
 .finder-bar.open .fd-opts svg { transform: rotate(180deg); }
 .opts-n { position: absolute; top: 1px; right: 1px; min-width: 1.05rem; height: 1.05rem; padding: 0 .2rem; border-radius: 999px; background: var(--accent); color: #1a1a1a;
@@ -237,6 +245,8 @@ ul.questions li::before { content: ""; position: absolute; left: .1rem; top: .3r
 .sg-dates { margin-left: .45rem; color: var(--muted); font-weight: 450; font-size: .85rem; font-variant-numeric: tabular-nums; }
 .sg-sub { color: var(--muted); font-size: .82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .suggest li.sg-inside { position: relative; flex-direction: row; align-items: center; gap: .6rem; margin-top: .4rem; color: var(--muted); }
+.suggest li.sg-inside:first-child { margin-top: 0; }
+.suggest li.sg-inside:first-child::before { display: none; }
 .suggest li.sg-inside::before { content: ""; position: absolute; left: .7rem; right: .7rem; top: -.25rem; border-top: 1px solid var(--line); }
 .sg-inside svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linejoin: round; }
 .sg-inside .sg-main { color: var(--muted); font-size: .92rem; }
