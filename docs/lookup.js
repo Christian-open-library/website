@@ -15,7 +15,7 @@
   var MAIL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4zM4.5 6.5L12 12.5l7.5-6"/></svg>';
   var DONE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
   var CLOSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>';
-  var HINT = 'Search the library: a question, a topic or a line you remember';
+  var HINT = 'Search the library: a topic or a line you remember';
 
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -79,10 +79,10 @@
   // Where the panel comes from and goes back to: the home page's big box while it is on screen, else the launcher.
   function source() { return hero && !launch.classList.contains('lk-here') ? hero : launch; }
 
-  function open(q) {
+  function open(q, el) {
     if (isOpen) return;
     isOpen = true;
-    from = source();
+    from = el || source();
     var r0 = from.getBoundingClientRect(), rad0 = radius(from);
     document.documentElement.classList.add('lk-lock');
     document.body.classList.add('lk-open');
@@ -104,7 +104,7 @@
     if (!isOpen) return;
     isOpen = false;
     if (!viaBack && history.state && history.state.lk) { try { history.back(); } catch (e) { /* fine */ } }
-    var to = source();
+    var to = from && from !== hero && from !== launch && from.isConnected ? from : source();
     var done = function () {
       if (hidden) { hidden.cancel(); hidden = null; }
       document.body.classList.remove('lk-open');
@@ -288,7 +288,7 @@
     if (e.key === 'Escape' && sharing) { unshare(); return; }
     if (e.key === 'Escape' && isOpen) { e.preventDefault(); close(); return; }
     var typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement && document.activeElement.tagName) || (document.activeElement && document.activeElement.isContentEditable);
-    if (!isOpen && ((e.key === '/' && !typing) || (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)))) { e.preventDefault(); open(); }
+    if (!isOpen && ((e.key === '/' && !typing && !own) || (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)))) { e.preventDefault(); open(); }
   });
   if (hero) hero.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -325,6 +325,11 @@
   } else {
     launch.classList.add('lk-here');
   }
+
+  // Other pages can open the panel from their own button, with words already in it (the browse page does).
+  // Such a page keeps "/" for its own box and hides the floating launcher.
+  var own = document.body.classList.contains('page-browse');
+  window.bookSearch = function (q, el) { q = (q || '').trim(); buzz(); open(q, el); if (q) run(q); };
 
   // A shared link opens the search it was made from.
   // Inside another site's frame, or in a window another page opened, it waits for a click: otherwise a page could

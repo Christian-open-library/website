@@ -1,15 +1,19 @@
 // Browse page: loads catalog.json (served from this site), then searches, filters
 // and lists it in the browser. Nothing is sent anywhere.
+// Sorted by author, the list reads like shelves: a letter, each author with their works under them. A work opens
+// into a card in place (editions, full titles, where the text came from). Order and filters fold into one menu
+// that grows out of the icon in the box.
 (function () {
   var $ = function (id) { return document.getElementById(id); };
-  var input = $('q'), sortSel = $('sort'), typeSel = $('type'), periodSel = $('period');
-  var toggle = $('opts-toggle'), bar = document.querySelector('.finder-bar');
-  var resetBtn = $('reset'), list = $('works'), count = $('count'), more = $('more'), az = $('az');
-  var clearBtn = $('q-clear'), suggest = $('suggest'), cards = $('authors'), notice = $('notice');
-  var bestOpt = sortSel.querySelector('option[value="best"]');
-  var PAGE = 400;
+  var input = $('q'), toggle = $('opts-toggle'), bar = document.querySelector('.finder-bar'), menu = $('opts');
+  var list = $('works'), count = $('count'), more = $('more'), az = $('az'), onChips = $('on-chips');
+  var headEls = [], pinnedH = 0;
+  var clearBtn = $('q-clear'), suggest = $('suggest'), cards = $('authors'), notice = $('notice'), go = $('go'), box = document.querySelector('.fd-box');
+  var PAGE = 150;
   var LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').concat('#');
   var TYPES = { book: 'Books', commentary: 'Commentaries', creed: 'Creeds', confession: 'Confessions', catechism: 'Catechisms', hymnal: 'Hymnals' };
+  var KIND = { commentary: 'Commentary', creed: 'Creed', confession: 'Confession', catechism: 'Catechism', hymnal: 'Hymnal' };
+  var SORTS = [['best', 'Best match'], ['author', 'By author'], ['title', 'By title'], ['year', 'Oldest'], ['year-desc', 'Newest']];
   var PERIODS = [
     ['early', 'Before 1500', function (y) { return y < 1500; }],
     ['1500', '1500s', function (y) { return y >= 1500 && y < 1600; }],
@@ -19,6 +23,12 @@
     ['1900', '1900s', function (y) { return y >= 1900; }],
     ['none', 'No year', null]
   ];
+  var SPRING = 'cubic-bezier(.25, .9, .3, 1)', EASE = 'cubic-bezier(.22, .9, .25, 1)';
+  var OPEN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
+  var ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  var CLOSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>';
+  var BOOK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5V19c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/></svg>';
+  var calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // works: one row of the catalog per edition. units: what the list shows, one per work, with
   // its editions (same author, kind and title) folded together.
@@ -28,6 +38,22 @@
   var vocab = {}, vocabList = [];   // folded word -> { n, word }, for "did you mean"
   var matches = [], items = [], shown = 0, words = [], scores = null;
   var authorFilter = '', sortChosen = false, corrected = '';
+  var sortV = 'author', typeV = '', periodV = '';
+
+  // A light tap on phones that have one (Android), or the switch trick on iPhones; nothing elsewhere.
+  function buzz() {
+    if (calm) return;
+    try {
+      if (navigator.vibrate) { navigator.vibrate(8); return; }
+      if (!matchMedia('(pointer: coarse)').matches) return;
+      var lb = document.createElement('label'), sw = document.createElement('input');
+      sw.type = 'checkbox'; sw.setAttribute('switch', '');
+      lb.setAttribute('aria-hidden', 'true');
+      lb.style.cssText = 'position:fixed;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none';
+      lb.appendChild(sw); document.body.appendChild(lb); lb.click();
+      setTimeout(function () { lb.remove(); }, 50);
+    } catch (e) { /* no tap */ }
+  }
 
   // ---------- text matching ----------
   // Lower case, no accents, and the usual old-spelling variants folded together:
@@ -62,7 +88,7 @@
     return toks.length ? toks[toks.length - 1] : '';
   }
   function shownTitle(i) { return works[i][6] || works[i][1]; }
-  function letterOf(u) { return sortSel.value === 'title' ? initial(units[u].titleNoArt) : units[u].letter; }
+  function letterOf(u) { return sortV === 'title' ? initial(units[u].titleNoArt) : units[u].letter; }
   function periodOfYear(y) {
     for (var k = 0; k < PERIODS.length; k++) {
       if (PERIODS[k][2] === null ? isNaN(y) : (!isNaN(y) && PERIODS[k][2](y))) return PERIODS[k][0];
@@ -226,16 +252,23 @@
     if (typeof content === 'string') s.textContent = content; else s.appendChild(content);
     return s;
   }
+  function shelves() { return sortV === 'author' && !authorFilter; }
+  // A work: its title set like a book's, the year to the right, and under it (when the author isn't already the
+  // shelf it sits on) who wrote it, its kind and how many editions.
   function row(ui) {
     var u = units[ui];
     var li = document.createElement('li');
-    var label = u.title + (u.type && u.type !== 'book' ? ' (' + u.type + ')' : '');
-    var t = cell('w-title', cell('w-t', highlighted(label)));
-    t.firstChild.title = label;
-    if (u.ed.length > 1) t.appendChild(cell('w-eds', u.ed.length + ' editions'));
-    li.appendChild(t);
-    li.appendChild(cell('w-author', highlighted(u.author)));
+    li.className = 'w';
+    li.appendChild(cell('w-t', highlighted(u.title)));
     li.appendChild(cell('w-year', u.yearText || '–'));
+    var by = document.createElement('span');
+    by.className = 'w-by';
+    var bits = [];
+    if (!shelves() && !authorFilter) by.appendChild(cell('w-who-n', highlighted(u.author)));
+    if (KIND[u.type] && !typeV) bits.push(KIND[u.type]);
+    if (u.ed.length > 1) bits.push(u.ed.length + ' editions');
+    if (bits.length) by.appendChild(document.createTextNode((by.firstChild ? ' · ' : '') + bits.join(' · ')));
+    if (by.firstChild) li.appendChild(by);
     li.dataset.u = ui;
     li.tabIndex = -1;
     li.setAttribute('aria-expanded', 'false');
@@ -245,22 +278,70 @@
     var li = document.createElement('li');
     li.className = 'letter';
     li.id = 'letter-' + (L === '#' ? 'other' : L);
+    li.dataset.l = L;
     li.textContent = L === '#' ? 'Other' : L;
     return li;
   }
-  function grouped() { return sortSel.value === 'author' || sortSel.value === 'title'; }
-  function showMore() {
+  // The start of an author's shelf: the name (which shows only their works), their dates, how many works.
+  function shelf(it) {
+    var name = it.a, li = document.createElement('li');
+    li.className = 'shelf';
+    li.dataset.l = it.L;
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'sh-name';
+    b.dataset.author = name;
+    b.textContent = name;
+    b.setAttribute('aria-label', name + ': show only these works');
+    li.appendChild(b);
+    var note = authorNotes[name];
+    if (note && note[0]) li.appendChild(cell('sh-dates', note[0]));
+    if (authorCount[name] > 1) li.appendChild(cell('sh-n', authorCount[name] + ' works'));
+    return li;
+  }
+  // On one author's shelf the letters say nothing (they are all the author's), so they go.
+  // The page keeps room for the rows still to come, so it has its full length from the start and the scrollbar
+  // never jumps back. On computers the rest is then drawn in the background, a slice per idle moment. Phones draw
+  // as they scroll (thousands of rows at once make a phone stutter), just ahead of the finger.
+  // Watches the last row drawn; when it nears the screen, the next rows are drawn.
+  var ahead = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) {
+    if (es[es.length - 1].isIntersecting && shown < items.length) showMore();
+  }, { rootMargin: '2000px 0px' }) : null;
+  var wide = window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches, fillGen = 0;
+  function fillRest() {
+    if (!wide) return;
+    var gen = ++fillGen, idle = window.requestIdleCallback || function (f) { return setTimeout(f, 30); };
+    (function step() {
+      if (gen !== fillGen || shown >= items.length) return;
+      idle(function () { if (gen !== fillGen) return; showMore(1500); step(); }, { timeout: 200 });
+    })();
+  }
+  function grouped() { return sortV === 'title' || (sortV === 'author' && !authorFilter); }
+  // The height still to come: the rows, author names and letters left, each at the average height of those drawn.
+  function rest() {
+    var sum = { s: 0, o: 0, n: 0 }, cnt = { s: 0, o: 0, n: 0 }, left = { s: 0, o: 0, n: 0 };
+    var kind = function (it) { return typeof it === 'string' ? 's' : typeof it === 'object' ? 'o' : 'n'; };
+    var kids = list.children;
+    for (var k = 0; k < kids.length && k < shown; k++) { var c = kind(items[k]); sum[c] += kids[k].offsetHeight; cnt[c]++; }
+    for (k = shown; k < items.length; k++) left[kind(items[k])]++;
+    return ['s', 'o', 'n'].reduce(function (h, c) { return h + left[c] * (cnt[c] ? sum[c] / cnt[c] : (cnt.n ? sum.n / cnt.n : 26)); }, 0);
+  }
+  function showMore(n) {
     var frag = document.createDocumentFragment();
     // A page at a time in every order: thousands of rows on the page make every scroll slow on phones. The A to Z
     // bar draws as far as its letter when it is used (jump), and more is drawn as the list nears its end.
-    var end = Math.min(shown + PAGE, items.length);
+    var end = Math.min(shown + (n || PAGE), items.length);
     for (var k = shown; k < end; k++) {
       var it = items[k];
-      frag.appendChild(typeof it === 'string' ? header(it) : row(it));
+      frag.appendChild(typeof it === 'string' ? header(it) : typeof it === 'object' ? shelf(it) : row(it));
     }
     list.appendChild(frag);
+    headEls = Array.prototype.slice.call(list.querySelectorAll('li.letter'));
     shown = end;
     more.hidden = shown >= items.length;
+    // Room is kept for the rows still to come, so the page has its full length from the start.
+    list.style.paddingBottom = shown < items.length && shown ? Math.round(rest()) + 'px' : '';
+    if (ahead && list.lastElementChild) { ahead.disconnect(); if (shown < items.length) ahead.observe(list.lastElementChild); }
     more.textContent = 'Show more (' + num(items.length - shown) + ' left)';
     var first = list.querySelector('li[data-u]');
     if (first && !list.querySelector('li[tabindex="0"]')) first.tabIndex = 0;
@@ -268,22 +349,24 @@
 
   // Where each book's text came from, named for people rather than as a web address.
   var SOURCES = [
-    [/quod\.lib\.umich\.edu/, 'Read it at EEBO-TCP (University of Michigan)'],
-    [/ccel\.org/, 'Read it at the Christian Classics Ethereal Library'],
-    [/archive\.org/, 'See the scanned book at the Internet Archive'],
-    [/gutenberg\.org/, 'Read it at Project Gutenberg'],
-    [/standardebooks\.org/, 'Read it at Standard Ebooks'],
-    [/wikisource\.org/, 'Read it at Wikisource'],
-    [/sefaria\.org/, 'Read it at Sefaria'],
-    [/romans45\.org|spurgeon/, 'Read it at the Spurgeon Archive'],
-    [/docsouth\.unc\.edu/, 'Read it at DocSouth (UNC)'],
-    [/crosswire\.org/, 'Source: The CrossWire Bible Society'],
-    [/tertullian\.org/, 'Read it at the Tertullian Project'],
-    [/github\.com|githubusercontent/, 'Source file (for the technically minded)']
+    [/quod\.lib\.umich\.edu/, 'EEBO-TCP', 'Read it at EEBO-TCP (University of Michigan)'],
+    [/ccel\.org/, 'CCEL', 'Read it at the Christian Classics Ethereal Library'],
+    [/archive\.org/, 'Internet Archive', 'See the scanned book at the Internet Archive'],
+    [/gutenberg\.org/, 'Project Gutenberg', 'Read it at Project Gutenberg'],
+    [/standardebooks\.org/, 'Standard Ebooks', 'Read it at Standard Ebooks'],
+    [/wikisource\.org/, 'Wikisource', 'Read it at Wikisource'],
+    [/sefaria\.org/, 'Sefaria', 'Read it at Sefaria'],
+    [/romans45\.org|spurgeon/, 'Spurgeon Archive', 'Read it at the Spurgeon Archive'],
+    [/docsouth\.unc\.edu/, 'DocSouth', 'Read it at DocSouth (UNC)'],
+    [/crosswire\.org/, 'CrossWire', 'Source: The CrossWire Bible Society'],
+    [/tertullian\.org/, 'Tertullian Project', 'Read it at the Tertullian Project'],
+    [/github\.com|githubusercontent/, 'Source file', 'Source file (for the technically minded)']
   ];
+  // [short name for the link, longer name for the tooltip and screen readers]
   function sourceLabel(url) {
-    for (var k = 0; k < SOURCES.length; k++) if (SOURCES[k][0].test(url)) return SOURCES[k][1];
-    return 'Source: ' + url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0];
+    for (var k = 0; k < SOURCES.length; k++) if (SOURCES[k][0].test(url)) return [SOURCES[k][1], SOURCES[k][2]];
+    var host = url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0];
+    return [host, 'Source: ' + host];
   }
 
   // Full titles as printed are in titles.json, fetched the first time a book is opened.
@@ -305,7 +388,7 @@
     var fill = function () {
       var t = (fullTitles && fullTitles[i]) || w[1];
       if (!many && t === u.title) t = '';
-      full.textContent = t ? (many ? t : 'Full title: ' + t) : '';
+      full.textContent = t;
       full.hidden = !t;
     };
     fill();
@@ -318,7 +401,11 @@
       a.href = w[4];
       a.target = '_blank';
       a.rel = 'noopener';
-      a.textContent = sourceLabel(w[4]) + ' ↗';
+      a.className = 'w-src';
+      var lab = sourceLabel(w[4]);
+      a.innerHTML = OPEN;
+      a.appendChild(document.createTextNode('Read at ' + lab[0]));
+      a.title = lab[1];
       links.appendChild(a);
     }
     if (w[5]) links.appendChild(cell('w-lic', w[5]));
@@ -329,28 +416,53 @@
     var u = units[ui], box = document.createElement('div');
     box.className = 'w-more';
     var note = authorNotes[u.author];
-    if (note) {
-      var who = document.createElement('p');
-      who.className = 'w-who';
-      who.textContent = u.author + (note[0] ? ' (' + note[0] + ')' : '') + (note[1] ? ', ' + note[1] : '');
-      box.appendChild(who);
-    }
+    var who = document.createElement('p');
+    who.className = 'w-who';
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'w-auth';
+    b.dataset.author = u.author;
+    b.textContent = u.author;
+    b.setAttribute('aria-label', u.author + ': show only these works');
+    who.appendChild(b);
+    if (note && note[0]) who.appendChild(cell('w-dates', note[0]));
+    if (note && note[1]) who.appendChild(cell('w-note', note[1]));
+    box.appendChild(who);
     var many = u.ed.length > 1;
-    if (many) {
-      var h = document.createElement('p');
-      h.className = 'w-eds-head';
-      h.textContent = u.ed.length + ' editions in the library';
-      box.appendChild(h);
-    }
     u.ed.slice().sort(function (a, b) { return (parseInt(works[a][2], 10) || 9999) - (parseInt(works[b][2], 10) || 9999); })
       .forEach(function (i) { box.appendChild(edition(i, u, many)); });
     return box;
   }
+
+  // Opening a work turns its row into a card in place: the details rise in under the title and the rows below
+  // glide down to make room (moved with transforms, so the long list is not laid out again on every frame).
   function toggleRow(li, open) {
-    if (open === undefined) open = !li.classList.contains('open');
-    li.classList.toggle('open', open);
+    var was = li.classList.contains('open');
+    if (open === undefined) open = !was;
+    if (open === was) return;
+    var still = calm || !li.animate, below = [], h0 = 0;
+    if (!still) {
+      // The rows below that are on screen; they all move by the same amount, so one measure is enough.
+      var bottom = window.innerHeight;
+      for (var n = li.nextElementSibling, k = 0; n && k < 30; n = n.nextElementSibling, k++) {
+        below.push(n);
+        if (n.getBoundingClientRect().top > bottom) break;
+      }
+      h0 = li.offsetHeight + parseFloat(getComputedStyle(li).marginTop) + parseFloat(getComputedStyle(li).marginBottom);
+    }
     if (open && !li.querySelector('.w-more')) li.appendChild(details(+li.dataset.u));
+    li.classList.toggle('open', open);
     li.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (still) return;
+    var cs = getComputedStyle(li), d = h0 - (li.offsetHeight + parseFloat(cs.marginTop) + parseFloat(cs.marginBottom));
+    if (Math.abs(d) > 1) below.forEach(function (n) {
+      n.animate([{ transform: 'translateY(' + d + 'px)' }, { transform: 'none' }], { duration: 280, easing: EASE });
+    });
+    if (open) {
+      li.animate([{ opacity: .4 }, { opacity: 1 }], { duration: 200, easing: EASE });
+      li.querySelector('.w-more').animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }],
+        { duration: 260, delay: 40, easing: EASE, fill: 'backwards' });
+    }
   }
 
   // ---------- author cards ----------
@@ -361,34 +473,37 @@
       return ws.every(function (w) { return has(authorKey[a], w); }) && (loose || ws.some(function (w) { return names(a, w); }));
     }).sort(function (a, b) { return authorCount[b] - authorCount[a]; });
   }
+  // An author the search names, as the front of their shelf: name, dates, who they were, how many works.
+  // The arrow shows only their works; once on their shelf, the cross goes back to everyone.
   function card(name, on) {
-    var box = document.createElement('div');
+    var box = document.createElement(on ? 'div' : 'button');
     box.className = 'author-card' + (on ? ' on' : '');
-    var text = document.createElement('div');
+    if (!on) {
+      box.type = 'button';
+      box.setAttribute('aria-label', 'Show only the works of ' + name);
+      box.addEventListener('click', function () { buzz(); setAuthor(name); });
+    }
+    var text = document.createElement('span');
     text.className = 'ac-text';
-    var h = document.createElement('p');
-    h.className = 'ac-name';
-    h.appendChild(on ? document.createTextNode(name) : highlighted(name));
+    var h = cell('ac-name', on ? document.createTextNode(name) : highlighted(name));
     var note = authorNotes[name];
     if (note && note[0]) h.appendChild(cell('ac-dates', note[0]));
     text.appendChild(h);
-    var sub = document.createElement('p');
-    sub.className = 'ac-note';
-    sub.textContent = (note && note[1] ? note[1] + ' · ' : '') + plural(authorCount[name], 'work', 'works') + ' in the library';
-    text.appendChild(sub);
+    text.appendChild(cell('ac-note', (note && note[1] ? note[1] + ' · ' : '') + plural(authorCount[name], 'work', 'works')));
     box.appendChild(text);
-    var b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'ac-btn';
     if (on) {
-      b.textContent = 'Show all authors';
-      b.addEventListener('click', function () { setAuthor(''); });
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ac-btn';
+      b.innerHTML = CLOSE;
+      b.setAttribute('aria-label', 'Show all authors');
+      b.title = 'Show all authors';
+      b.addEventListener('click', function () { buzz(); setAuthor(''); });
+      box.appendChild(b);
     } else {
-      b.textContent = authorCount[name] === 1 ? 'Show only this' : 'Show only these';
-      b.setAttribute('aria-label', 'Show only the works of ' + name);
-      b.addEventListener('click', function () { setAuthor(name); });
+      box.appendChild(cell('ac-btn', ''));
+      box.lastChild.innerHTML = ARROW;
     }
-    box.appendChild(b);
     return box;
   }
   function showCards(ws) {
@@ -416,7 +531,7 @@
 
   // ---------- filtering ----------
   function sorted(arr) {
-    var mode = sortSel.value;
+    var mode = sortV;
     var copy = arr.slice();
     if (mode === 'best' && scores) {
       copy.sort(function (a, b) { return (scores[b] - scores[a]) || units[a].titleNoArt.localeCompare(units[b].titleNoArt); });
@@ -445,28 +560,81 @@
     return hits;
   }
   function inPeriod(u, pd) { return !pd || units[u].periods[pd]; }
-  // Counts beside each choice, so a choice never leads to an empty list.
-  function refreshCounts(hits) {
-    var t = typeSel.value, pd = periodSel.value, tc = {}, pc = {};
-    hits.forEach(function (u) {
-      if (inPeriod(u, pd)) tc[units[u].type] = (tc[units[u].type] || 0) + 1;
-      if (!t || units[u].type === t) Object.keys(units[u].periods).forEach(function (p) { pc[p] = (pc[p] || 0) + 1; });
-    });
-    Array.prototype.forEach.call(typeSel.options, function (o) {
-      if (!o.value) return;
-      o.textContent = TYPES[o.value] + ' (' + num(tc[o.value] || 0) + ')';
-      o.disabled = !tc[o.value] && o.value !== t;
-    });
-    Array.prototype.forEach.call(periodSel.options, function (o) {
-      if (!o.value) return;
-      var label = PERIODS.filter(function (p) { return p[0] === o.value; })[0][1];
-      o.textContent = label + ' (' + num(pc[o.value] || 0) + ')';
-      o.disabled = !pc[o.value] && o.value !== pd;
-    });
-  }
   function defaultSort() { return words.length ? 'best' : 'author'; }
 
-  function update(keepScroll) {
+  // ---------- the menu: order, kind and period as chips ----------
+  var chipsSort = $('c-sort'), chipsType = $('c-type'), chipsPeriod = $('c-period');
+  function chip(label, n, on, off, act) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'fd-chip' + (on ? ' on' : '');
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    b.textContent = label;
+    if (n != null) b.appendChild(cell('fd-chip-n', num(n)));
+    b.disabled = !!off;
+    b.addEventListener('click', function () { buzz(); act(); });
+    return b;
+  }
+  // Counts beside each kind and period, so a choice never leads to an empty list.
+  function drawMenu(hits) {
+    var tc = {}, pc = {};
+    hits.forEach(function (u) {
+      if (inPeriod(u, periodV)) tc[units[u].type] = (tc[units[u].type] || 0) + 1;
+      if (!typeV || units[u].type === typeV) Object.keys(units[u].periods).forEach(function (p) { pc[p] = (pc[p] || 0) + 1; });
+    });
+    chipsSort.textContent = '';
+    SORTS.forEach(function (s) {
+      if (s[0] === 'best' && !words.length) return;
+      chipsSort.appendChild(chip(s[1], null, sortV === s[0], false, function () { sortV = s[0]; sortChosen = true; update(); }));
+    });
+    chipsType.textContent = '';
+    Object.keys(TYPES).forEach(function (k) {
+      if (!typesSeen[k]) return;
+      chipsType.appendChild(chip(TYPES[k], tc[k] || 0, typeV === k, !tc[k] && typeV !== k, function () { typeV = typeV === k ? '' : k; update(); }));
+    });
+    chipsPeriod.textContent = '';
+    PERIODS.forEach(function (p) {
+      chipsPeriod.appendChild(chip(p[1], pc[p[0]] || 0, periodV === p[0], !pc[p[0]] && periodV !== p[0], function () { periodV = periodV === p[0] ? '' : p[0]; update(); }));
+    });
+    // Under the box, what is on, each with a cross to take it off.
+    onChips.textContent = '';
+    var on = [];
+    if (typeV) on.push([TYPES[typeV], function () { typeV = ''; }]);
+    if (periodV) on.push([PERIODS.filter(function (p) { return p[0] === periodV; })[0][1], function () { periodV = ''; }]);
+    on.forEach(function (o) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'on-chip';
+      b.textContent = o[0];
+      b.insertAdjacentHTML('beforeend', CLOSE);
+      b.setAttribute('aria-label', o[0] + ': take off');
+      b.addEventListener('click', function () { buzz(); o[1](); update(); });
+      onChips.appendChild(b);
+    });
+  }
+  var menuOpen = false;
+  function setMenu(open) {
+    if (open === menuOpen) return;
+    menuOpen = open;
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    bar.classList.toggle('open', open);
+    if (open) {
+      menu.hidden = false;
+      if (!calm && menu.animate) {
+        // It grows out of the icon.
+        var r = toggle.getBoundingClientRect(), m = menu.getBoundingClientRect();
+        menu.style.transformOrigin = (r.left + r.width / 2 - m.left) + 'px ' + (r.top + r.height / 2 - m.top) + 'px';
+        menu.animate([{ opacity: 0, transform: 'scale(.94)' }, { opacity: 1, transform: 'none' }], { duration: 220, easing: EASE });
+      }
+    } else if (!calm && menu.animate) {
+      var a = menu.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(.96)' }], { duration: 140, easing: EASE });
+      a.onfinish = function () { if (!menuOpen) menu.hidden = true; };
+    } else menu.hidden = true;
+  }
+  toggle.addEventListener('click', function () { buzz(); setMenu(!menuOpen); });
+  document.addEventListener('pointerdown', function (e) { if (menuOpen && !menu.contains(e.target) && !toggle.contains(e.target)) setMenu(false); });
+
+  function update(keepScroll, typing) {
     words = fold(input.value).split(/\s+/).filter(Boolean);
     corrected = '';
     var hits = textMatches(words);
@@ -481,33 +649,34 @@
       });
     }
     // While searching, best matches come first unless another order was chosen.
-    if (!words.length && sortSel.value === 'best') { sortSel.value = 'author'; sortChosen = false; }
-    if (words.length && !sortChosen) sortSel.value = 'best';
-    bestOpt.hidden = bestOpt.disabled = !words.length;
+    if (!words.length && sortV === 'best') { sortV = 'author'; sortChosen = false; }
+    if (words.length && !sortChosen) sortV = 'best';
     clearBtn.hidden = !input.value;
+    hasWords();
 
     scores = null;
     if (words.length) { scores = {}; hits.forEach(function (u) { scores[u] = score(units[u], words); }); }
-    refreshCounts(hits);
-    var t = typeSel.value, pd = periodSel.value;
-    matches = sorted(hits.filter(function (u) { return (!t || units[u].type === t) && inPeriod(u, pd); }));
+    drawMenu(hits);
+    matches = sorted(hits.filter(function (u) { return (!typeV || units[u].type === typeV) && inPeriod(u, periodV); }));
     items = [];
-    var last = null, g = grouped();
+    var last = null, lastA = null, g = grouped(), sh = shelves();
     matches.forEach(function (u) {
       if (g) {
         var L = letterOf(u);
-        if (L !== last) { items.push(L); last = L; }
+        if (L !== last) { items.push(L); last = L; lastA = null; }
       }
+      if (sh && units[u].author !== lastA) { items.push({ a: units[u].author, L: last }); lastA = units[u].author; }
       items.push(u);
     });
     list.textContent = '';
     list.classList.remove('loading');
+    list.classList.toggle('shelved', sh);
     list.removeAttribute('aria-busy');
     shown = 0;
 
     notice.textContent = '';
     if (corrected) {
-      notice.appendChild(document.createTextNode('Nothing matches “' + input.value.trim() + '”. Showing results for '));
+      notice.appendChild(document.createTextNode('Nothing matches “' + input.value.trim() + '”. Showing '));
       var b = document.createElement('strong');
       b.textContent = corrected;
       notice.appendChild(b);
@@ -522,25 +691,25 @@
     notice.hidden = !corrected;
     showCards(words);
 
-    var filtered = words.length || t || pd || authorFilter;
-    resetBtn.hidden = !filtered;
+    var filtered = words.length || typeV || periodV || authorFilter;
     var total = units.length;
     if (!filtered) count.textContent = num(total) + ' titles';
-    else if (!matches.length) count.textContent = 'No titles match.';
-    else count.textContent = num(matches.length) + ' of ' + num(total) + ' titles' + (sortSel.value === 'best' && matches.length > 1 ? ', best matches first' : '');
+    else if (!matches.length) count.textContent = 'None match';
+    else count.textContent = plural(matches.length, 'title', 'titles');
     $('empty').hidden = matches.length > 0;
-    $('empty-q').textContent = 'Search the Christian Open Library for ' + (input.value.trim() || 'this') + '.';
+    $('empty-q').textContent = input.value.trim() || 'these words';
+    $('empty-inside').parentNode.hidden = !input.value.trim();
     showMore();
-    if (!keepScroll) settle(matches.slice(0, 8).join() + '|' + (authorFilter || ''));
+    fillRest();
+    if (!keepScroll) settle(matches.slice(0, 8).join() + '|' + (authorFilter || ''), typing);
     buildIndex();
     saveState();
     setPinned();
     placeIndex();
-    var active = (typeSel.value ? 1 : 0) + (periodSel.value ? 1 : 0) + (sortSel.value !== defaultSort() ? 1 : 0);
+    var active = (typeV ? 1 : 0) + (periodV ? 1 : 0) + (sortV !== defaultSort() ? 1 : 0);
     var n = toggle.querySelector('.opts-n');
-    n.textContent = active || '';
-    n.hidden = !active;
-    toggle.setAttribute('aria-label', active ? 'Filter, ' + active + ' on' : 'Filter');
+    if (n.textContent !== String(active || '')) { n.textContent = active || ''; n.hidden = !active; }
+    toggle.setAttribute('aria-label', active ? 'Order and filters, ' + active + ' on' : 'Order and filters');
     if (!keepScroll) {
       // If the list has been scrolled, go back to its top, just under the pinned search bar.
       var anchor = $('list-top').getBoundingClientRect().top + window.scrollY - parseFloat(getComputedStyle(bar).top);
@@ -548,41 +717,54 @@
     }
   }
 
-  // After a search or a filter, the first rows settle into place, one after another.
-  var settled = null, calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function settle(sig) {
-    if (sig === settled) return;   // same rows as before (another letter typed): nothing moves
+  // After a search or a filter, the first rows rise into place, one after another.
+  var settled = null;
+  // Not while typing: the list follows each letter at once, and moving rows would only flicker.
+  function settle(sig, typing) {
+    if (sig === settled) return;   // same rows as before: nothing moves
     settled = sig;
-    if (calm || !list.animate) return;
-    var rows = Array.prototype.slice.call(list.children, 0, 10).concat(Array.prototype.slice.call(cards.children));
+    if (typing || calm || !list.animate) return;
+    var rows = Array.prototype.slice.call(cards.children).concat(Array.prototype.slice.call(list.children, 0, 10));
     rows.forEach(function (el, k) {
       el.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }],
-        { duration: 300, delay: Math.min(k, 8) * 18, easing: 'cubic-bezier(.22, .9, .25, 1)', fill: 'backwards' });
+        { duration: 260, delay: Math.min(k, 8) * 15, easing: EASE, fill: 'backwards' });
     });
   }
-  function pinnedHeight() { return parseFloat(getComputedStyle(bar).top) + bar.offsetHeight; }
-  function setPinned() { document.documentElement.style.setProperty('--pinned', pinnedHeight() + 'px'); }
-  toggle.addEventListener('click', function () {
-    var open = !bar.classList.contains('open');
-    bar.classList.toggle('open', open);
-    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-    setPinned();
-  });
+  function pinnedHeight() { return parseFloat(getComputedStyle(bar).top) + bar.getBoundingClientRect().height; }
+  // Edges are measured to the fraction of a pixel and overlap by one, so no hairline of the list shows between the bars.
+  function setPinned() { var hd = document.querySelector('header.site'); if (hd) document.documentElement.style.setProperty('--head', (hd.getBoundingClientRect().height - 1) + 'px'); pinnedH = pinnedHeight(); document.documentElement.style.setProperty('--pinned', pinnedH + 'px'); }
   window.addEventListener('resize', setPinned);
-  // Show the letters only once the list has reached the pinned search bar, so they never
-  // cover the page heading and never move while a finger is on them.
-  function placeIndex() {
-    az.classList.toggle('on', list.getBoundingClientRect().top <= pinnedHeight() + 2);
-  }
-  window.addEventListener('scroll', placeIndex, { passive: true });
 
-  // ---------- A to Z bar ----------
+  // ---------- the A to Z bar ----------
+  // The letter you are in stays pinned under the box (the browser's own sticky headings, no script while scrolling).
+  // The A to Z bar shows once the list reaches the box, so it never covers the page heading, and marks the same
+  // letter, found with a few position reads (a binary search over the letter headings).
+  var curL = null, scrollFrame = 0;
+  function placeIndex() {
+    var line = pinnedH + 2, lo = 0, hi = headEls.length - 1, at = -1;
+    while (lo <= hi) {
+      var mid = (lo + hi) >> 1;
+      if (headEls[mid].getBoundingClientRect().top <= line) { at = mid; lo = mid + 1; } else hi = mid - 1;
+    }
+    az.classList.toggle('on', list.getBoundingClientRect().top <= line);
+    if (!az.hidden && !dragging) markLetter(at >= 0 ? headEls[at].dataset.l : (headEls[0] && headEls[0].dataset.l));
+  }
+  function markLetter(L) {
+    if (L === curL) return;
+    curL = L;
+    Array.prototype.forEach.call(az.children, function (b) { b.classList.toggle('cur', b.dataset.letter === L); });
+  }
+  window.addEventListener('scroll', function () {
+    if (!scrollFrame) scrollFrame = requestAnimationFrame(function () { scrollFrame = 0; placeIndex(); });
+  }, { passive: true });
+
   function buildIndex() {
     az.hidden = !grouped() || matches.length < 30;
     if (az.hidden) return;
     var have = {};
     items.forEach(function (it) { if (typeof it === 'string') have[it] = true; });
     az.textContent = '';
+    curL = null;
     LETTERS.forEach(function (L) {
       var b = document.createElement('button');
       b.type = 'button';
@@ -600,18 +782,18 @@
     while (shown < Math.min(idx + 80, items.length)) showMore();
     var head = list.children[idx], first = list.children[idx + 1];
     if (!head || !first) return;
-    // Letter headings stay pinned once scrolled past, so their position on screen says nothing
-    // about where they sit in the list. Measure from the first book under the heading instead.
-    var target = window.scrollY + first.getBoundingClientRect().top - pinnedHeight() - head.offsetHeight + 1;
-    window.scrollTo(0, Math.max(0, target));
+    // Letter headings stay pinned once scrolled past, so their place on screen says nothing about where they
+    // sit in the list. Measure from the row under the heading instead.
+    window.scrollTo(0, Math.max(0, window.scrollY + first.getBoundingClientRect().top - pinnedH - head.offsetHeight + 1));
     placeIndex();
   }
-  // Tap or drag on the bar. Touch events are used on phones (Safari), pointer events elsewhere.
+  // Tap or drag on the bar. Touch events are used on phones (Safari), pointer events elsewhere. The letter under
+  // the finger swells, the big letter in the middle snaps to it, and each new letter gives a light tap.
   var bubble = document.createElement('div');
   bubble.className = 'az-bubble';
   bubble.setAttribute('aria-hidden', 'true');
   document.body.appendChild(bubble);
-  var bubbleTimer, lastL = null, lastY = null, frame = 0, pendingL = null;
+  var bubbleTimer, lastL = null, lastY = null, frame = 0, pendingL = null, dragging = false;
   // The letter under a point on the bar, from its fixed layout (not from what is drawn there).
   function letterAtY(y) {
     var btns = az.children;
@@ -623,9 +805,12 @@
     return btns[k].dataset.letter;
   }
   function show(L) {
-    bubble.textContent = L === '#' ? 'Other' : L;
+    bubble.textContent = L === '#' ? '#' : L;
     bubble.classList.add('show');
+    if (!calm && bubble.animate) bubble.animate([{ transform: 'translate(-50%, -50%) scale(.92)' }, { transform: 'translate(-50%, -50%)' }], { duration: 160, easing: EASE });
     clearTimeout(bubbleTimer);
+    Array.prototype.forEach.call(az.children, function (b) { b.classList.toggle('touch', b.dataset.letter === L); });
+    markLetter(L);
   }
   // While a finger moves, jump at most once per screen refresh, to the newest letter.
   function pick(y) {
@@ -633,6 +818,7 @@
     var L = letterAtY(y);
     if (!L || L === lastL) return;
     lastL = L;
+    buzz();
     show(L);
     pendingL = L;
     if (!frame) frame = requestAnimationFrame(function () { frame = 0; if (pendingL) jump(pendingL); pendingL = null; });
@@ -644,14 +830,18 @@
     if (frame) { cancelAnimationFrame(frame); frame = 0; pendingL = null; }
     if (L) { show(L); jump(L); setTimeout(function () { jump(L); }, 120); }
     lastL = null; lastY = null;
+    dragging = false;
+    az.classList.remove('held');
+    Array.prototype.forEach.call(az.children, function (b) { b.classList.remove('touch'); });
     bubbleTimer = setTimeout(function () { bubble.classList.remove('show'); }, 450);
   }
-  az.addEventListener('touchstart', function (e) { e.preventDefault(); lastL = null; pick(e.touches[0].clientY); }, { passive: false });
+  function hold() { dragging = true; az.classList.add('held'); }
+  az.addEventListener('touchstart', function (e) { e.preventDefault(); hold(); lastL = null; pick(e.touches[0].clientY); }, { passive: false });
   az.addEventListener('touchmove', function (e) { e.preventDefault(); pick(e.touches[0].clientY); }, { passive: false });
   az.addEventListener('touchend', function (e) { e.preventDefault(); release(e.changedTouches.length ? e.changedTouches[0].clientY : undefined); }, { passive: false });
   az.addEventListener('touchcancel', function () { release(); });
   var mouseDown = false;
-  az.addEventListener('mousedown', function (e) { mouseDown = true; pick(e.clientY); e.preventDefault(); });
+  az.addEventListener('mousedown', function (e) { mouseDown = true; hold(); pick(e.clientY); e.preventDefault(); });
   document.addEventListener('mousemove', function (e) { if (mouseDown) pick(e.clientY); });
   document.addEventListener('mouseup', function (e) { if (mouseDown) { mouseDown = false; release(e.clientY); } });
   az.addEventListener('keydown', function (e) {
@@ -682,7 +872,8 @@
     titles.slice(0, 3).forEach(function (u) { picks.push({ unit: u }); });
     weak.forEach(function (a) { if (picks.length < 6) picks.push({ author: a }); });
     titles.slice(3).forEach(function (u) { if (picks.length < 6) picks.push({ unit: u }); });
-    if (!picks.length) { closeSuggest(); return; }
+    // Last, always: the same words searched inside the books.
+    if (window.bookSearch) picks.push({ inside: raw });
     suggest.textContent = '';
     options = picks;
     active = -1;
@@ -691,12 +882,22 @@
       li.id = 'sg-' + k;
       li.setAttribute('role', 'option');
       li.setAttribute('aria-selected', 'false');
-      if (p.author) {
+      if (p.inside) {
+        li.className = 'sg-inside';
+        li.innerHTML = BOOK;
+        var t = cell('sg-main', 'Search inside the books for ');
+        t.appendChild(cell('sg-q', '“' + p.inside + '”'));
+        li.appendChild(t);
+      } else if (p.author) {
         li.className = 'sg-author';
-        li.appendChild(cell('sg-main', highlighted(p.author, ws)));
-        li.appendChild(cell('sg-sub', 'Author · ' + plural(authorCount[p.author], 'work', 'works')));
+        var m = cell('sg-main', highlighted(p.author, ws));
+        var note = authorNotes[p.author];
+        if (note && note[0]) m.appendChild(cell('sg-dates', note[0]));
+        li.appendChild(m);
+        li.appendChild(cell('sg-sub', plural(authorCount[p.author], 'work', 'works')));
       } else {
         var u = units[p.unit];
+        li.className = 'sg-title';
         li.appendChild(cell('sg-main', highlighted(u.title, ws)));
         li.appendChild(cell('sg-sub', u.author + (u.yearText ? ', ' + u.yearText : '')));
       }
@@ -715,10 +916,18 @@
     if (k >= 0) input.setAttribute('aria-activedescendant', 'sg-' + k);
     else input.removeAttribute('aria-activedescendant');
   }
+  // The same words, searched inside the books (the search panel grows out of the box).
+  function searchInside(el) {
+    closeSuggest();
+    if (window.bookSearch) { input.blur(); window.bookSearch(input.value, el || box); }
+  }
+  // The arrow springs up as soon as there is something to search.
+  function hasWords() { box.classList.toggle('fd-has', input.value.trim() !== ''); }
   function choose(k) {
     var p = options[k];
     closeSuggest();
     if (!p) return;
+    if (p.inside) { searchInside(box); return; }
     if (p.author) { setAuthor(p.author); return; }
     // A title: list it, open it and move to it.
     var u = units[p.unit];
@@ -748,15 +957,14 @@
       highlight(active - 1);
     } else if (e.key === 'Enter') {
       e.preventDefault();
+      // A chosen suggestion opens it; otherwise Enter searches inside the books for the words.
       if (open && active >= 0) choose(active);
-      else {
-        closeSuggest();
-        // On a phone, Enter (Search) puts the keyboard away so the results can be seen.
-        if (matchMedia('(pointer: coarse)').matches) input.blur();
-      }
+      else if (input.value.trim()) searchInside(box);
+      else closeSuggest();
     } else if (e.key === 'Escape') {
       e.preventDefault();
       if (open) closeSuggest();
+      else if (menuOpen) setMenu(false);
       else if (input.value || authorFilter) { input.value = ''; authorFilter = ''; update(); }
     }
   });
@@ -774,57 +982,58 @@
     else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleRow(li); }
     else if (e.key === 'Escape') { e.preventDefault(); if (li.classList.contains('open')) toggleRow(li, false); else input.focus(); }
   });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && menuOpen && document.activeElement !== input) { setMenu(false); toggle.focus(); }
+  });
 
   // ---------- address bar: the search can be shared, and Back works ----------
   function saveState() {
     var p = new URLSearchParams();
     if (input.value.trim()) p.set('q', input.value.trim());
     if (authorFilter) p.set('author', authorFilter);
-    if (sortSel.value !== defaultSort()) p.set('sort', sortSel.value);
-    if (typeSel.value) p.set('type', typeSel.value);
-    if (periodSel.value) p.set('period', periodSel.value);
+    if (sortV !== defaultSort()) p.set('sort', sortV);
+    if (typeV) p.set('type', typeV);
+    if (periodV) p.set('period', periodV);
     var qs = p.toString();
-    history.replaceState(null, '', qs ? '?' + qs : location.pathname);
+    history.replaceState(history.state, '', qs ? '?' + qs : location.pathname);
   }
   function loadState() {
     var p = new URLSearchParams(location.search);
     input.value = p.get('q') || '';
     if (p.get('author') && authorCount[p.get('author')]) authorFilter = p.get('author');
     var s = p.get('sort');
-    if (s && Array.prototype.some.call(sortSel.options, function (o) { return o.value === s; })) { sortSel.value = s; sortChosen = true; }
-    if (p.get('type')) typeSel.value = p.get('type');
-    if (p.get('period')) periodSel.value = p.get('period');
+    if (s && SORTS.some(function (o) { return o[0] === s; })) { sortV = s; sortChosen = true; }
+    if (TYPES[p.get('type')]) typeV = p.get('type');
+    if (PERIODS.some(function (o) { return o[0] === p.get('period'); })) periodV = p.get('period');
   }
 
   // ---------- events ----------
   var timer;
   input.addEventListener('input', function () {
     clearBtn.hidden = !input.value;
+    hasWords();
     clearTimeout(timer);
-    timer = setTimeout(function () { update(); openSuggest(); }, 120);
+    timer = setTimeout(function () { update(false, true); openSuggest(); }, 120);
   });
-  input.addEventListener('focus', function () { if (input.value.trim().length >= 2) openSuggest(); });
+  input.addEventListener('focus', function () { setMenu(false); if (input.value.trim().length >= 2) openSuggest(); });
   input.addEventListener('blur', function () { setTimeout(closeSuggest, 100); });
   clearBtn.addEventListener('click', function () { input.value = ''; closeSuggest(); update(); input.focus(); });
-  sortSel.addEventListener('change', function () { sortChosen = true; });
-  [sortSel, typeSel, periodSel].forEach(function (s) {
-    s.addEventListener('change', function () {
-      // On a phone, fold the panel away after a choice; the button still shows how many are on.
-      if (getComputedStyle(toggle).display !== 'none') { bar.classList.remove('open'); toggle.setAttribute('aria-expanded', 'false'); }
-      update();
-    });
-  });
-  resetBtn.addEventListener('click', function () {
-    input.value = ''; typeSel.value = ''; periodSel.value = ''; authorFilter = ''; sortChosen = false; sortSel.value = 'author';
+  function resetAll() {
+    input.value = ''; typeV = ''; periodV = ''; authorFilter = ''; sortChosen = false; sortV = 'author';
     update(); input.focus();
-  });
-  $('empty-clear').addEventListener('click', function () { resetBtn.click(); });
-  more.addEventListener('click', showMore);
+  }
+  $('empty-clear').addEventListener('click', resetAll);
+  $('empty-inside').addEventListener('click', function () { searchInside($('empty-inside')); });
+  go.addEventListener('click', function () { buzz(); searchInside(box); });
+  more.addEventListener('click', function () { showMore(); });
   if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function (entries) { if (entries[0].isIntersecting && !more.hidden) showMore(); }, { rootMargin: '800px' }).observe(more);
+    new IntersectionObserver(function (entries) { if (entries[0].isIntersecting && !more.hidden) showMore(); }, { rootMargin: '1600px' }).observe(more);
   }
   // Tap or click a book: who wrote it, its full title, its editions and where its text came from.
+  // Tap an author's name (on a shelf or in a card): only their works.
   list.addEventListener('click', function (e) {
+    var who = e.target.closest('[data-author]');
+    if (who) { buzz(); setAuthor(who.dataset.author); return; }
     if (e.target.closest('a')) return;
     if (window.getSelection && String(window.getSelection()).length) return;   // selecting text, not opening
     var li = e.target.closest('li[data-u]');
@@ -839,18 +1048,19 @@
   });
 
   // ---------- start ----------
+  var typesSeen = {};
   fetch('catalog.json').then(function (r) { return r.json(); }).then(function (data) {
     build(data);
-    var typesSeen = {};
     works.forEach(function (w) { typesSeen[w[3]] = true; });
-    Object.keys(TYPES).forEach(function (k) { if (typesSeen[k]) { var o = document.createElement('option'); o.value = k; typeSel.appendChild(o); } });
-    PERIODS.forEach(function (p) { var o = document.createElement('option'); o.value = p[0]; periodSel.appendChild(o); });
     loadState();
-    if (typeSel.value || periodSel.value || sortChosen) { bar.classList.add('open'); toggle.setAttribute('aria-expanded', 'true'); }
     update(true);
-  }).catch(function () {
+    // The full printed titles are read while the page is idle, so the first book opened doesn't stall its motion.
+    var idle = window.requestIdleCallback || function (f) { return setTimeout(f, 1500); };
+    idle(function () { loadFullTitles(); }, { timeout: 4000 });
+  }).catch(function (err) {
     list.classList.remove('loading');
     list.textContent = '';
     count.textContent = 'The list could not be loaded. Try reloading the page.';
+    if (window.console) console.error(err);
   });
 })();

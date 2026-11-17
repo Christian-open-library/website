@@ -5,62 +5,52 @@
 <div id="list-top"></div>
 <div class="finder-bar">
 <form class="finder" role="search" onsubmit="return false">
-  <label for="q" class="sr">Search the list</label>
-  <div class="finder-row">
-    <div class="search-box">
-      <input id="q" type="search" placeholder="Search authors and titles" autocomplete="off" spellcheck="false" enterkeyhint="search"
-        role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggest">
-      <button id="q-clear" class="q-clear" type="button" aria-label="Clear the search" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-      <ul id="suggest" class="suggest" role="listbox" aria-label="Suggestions" hidden></ul>
-    </div>
-    <button id="opts-toggle" class="opts-toggle" type="button" aria-expanded="false" aria-controls="opts" aria-label="Filter" title="Filter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span class="opts-n" hidden></span></button>
+  <div class="fd-box">
+    <svg class="fd-mag" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L20 20"/></svg>
+    <label for="q" class="sr">Search the library</label>
+    <input id="q" type="search" placeholder="Authors, titles or a topic" autocomplete="off" spellcheck="false" enterkeyhint="search"
+      role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggest">
+    <button id="q-clear" class="fd-icon q-clear" type="button" aria-label="Clear the search" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
+    <button id="go" class="fd-go" type="button" aria-label="Search inside the books" title="Search inside the books"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    <button id="opts-toggle" class="fd-icon fd-opts" type="button" aria-expanded="false" aria-controls="opts" aria-label="Order and filters" title="Order and filters"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span class="opts-n" hidden></span></button>
+    <ul id="suggest" class="suggest" role="listbox" aria-label="Suggestions" hidden></ul>
   </div>
-  <div class="opts-line">
-  <div id="opts" class="opts">
-      <select id="sort" aria-label="Sort by">
-        <option value="best" hidden disabled>Best match</option>
-        <option value="author">By author</option>
-        <option value="title">By title</option>
-        <option value="year">Oldest first</option>
-        <option value="year-desc">Newest first</option>
-      </select>
-      <select id="type" aria-label="Kind of work"><option value="">All kinds</option></select>
-      <select id="period" aria-label="Period"><option value="">All periods</option></select>
-      <button id="reset" class="reset" type="button" hidden>Clear</button>
-    </div>
+  <div id="opts" class="fd-menu" hidden>
+    <div id="c-sort" class="fd-chips" role="group" aria-label="Order"></div>
+    <div id="c-type" class="fd-chips" role="group" aria-label="Kind of work"></div>
+    <div id="c-period" class="fd-chips" role="group" aria-label="Period"></div>
+  </div>
+  <div class="fd-line">
     <p id="count" class="count" aria-live="polite">Loading the list&hellip;</p>
+    <span id="on-chips" class="on-chips"></span>
   </div>
 </form>
-<div class="works-head" aria-hidden="true"><span>Title</span><span>Author</span><span>Year</span></div>
 </div>
 <p id="notice" class="notice" role="status" hidden></p>
 <div id="authors" class="author-cards" hidden></div>
 <ul id="works" class="works loading" aria-busy="true">
-<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
-<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
-<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
-<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
-<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
-<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
-<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
-<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
-<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
-<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
-<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
-<li class="skel" aria-hidden="true"><span></span><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span></li>
+<li class="skel" aria-hidden="true"><span></span><span></span></li>
 </ul>
 <nav id="az" class="az" aria-label="Jump to a letter" hidden></nav>
 <div id="empty" class="empty-state" hidden>
-  <p><strong>No titles or authors match.</strong> To search inside the books, ask your AI app once <a href="setup.html">the library is added</a>:</p>
-  <div class="address-box">
-    <div class="address" data-what="the question"><code id="empty-q"></code></div>
-  </div>
-  <p>Or try one distinctive word, such as a surname, or <button id="empty-clear" class="linkish" type="button">clear the search</button>.</p>
+  <p><strong>No titles or authors match.</strong> Try one distinctive word, such as a surname, or <button id="empty-clear" class="linkish" type="button">clear the search</button>.</p>
+  <p><button id="empty-inside" class="linkish" type="button">Search inside the books</button> for <em id="empty-q"></em>.</p>
   <p class="note">A book missing? Write to <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a>.</p>
 </div>
 <p><button id="more" class="btn btn-secondary" type="button" hidden>Show more</button></p>
 <noscript><p>This list needs JavaScript. You can also open the <a href="https://github.com/Christian-open-library/.github/blob/main/catalog.csv">catalog on GitHub</a>.</p></noscript>
 
 <h2>Reading the books</h2>
-<p>To search inside them, <a href="setup.html">add the library to your AI app</a>. To read them as files, <a href="download.html">download them</a>.</p>
+<p>To search inside them from your AI app, <a href="setup.html">add the library to it</a>. To read them as files, <a href="download.html">download them</a>.</p>
 <script src="browse.js" defer></script>
