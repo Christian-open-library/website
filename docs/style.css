@@ -484,6 +484,7 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
 
 /* The example: the question on a dark panel, the answer beside it set like print, the citation under it. */
 .demo { margin: 1.5rem 0 .25rem; }
+.demo + p { margin-top: 1rem; }
 .demo-card { display: grid; grid-template-columns: minmax(13rem, 32%) 1fr; border: 1px solid var(--line-2); border-radius: 12px; overflow: hidden; }
 .demo .demo-q { display: flex; flex-direction: column; justify-content: center; gap: .5rem; margin: 0; padding: .9rem 1.1rem; background: var(--btn); color: var(--on-btn); font-size: 1.08rem; font-weight: 600; line-height: 1.35; }
 .demo .demo-q::before { content: ""; width: 1.15rem; height: 1.15rem; background: var(--accent); -webkit-mask: var(--chat) center / contain no-repeat; mask: var(--chat) center / contain no-repeat; }
@@ -521,6 +522,7 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
 .more li { margin: 0; padding: .7rem 0 .8rem; border-top: 1px solid var(--line-2); }
 .more a { display: block; font-weight: 650; text-decoration: none; }
 .more a::after { content: " \2192"; }
+.more strong { display: block; font-weight: 650; color: var(--ink); }
 .more span { display: block; margin-top: .15rem; font-size: .9rem; line-height: 1.4; color: var(--muted); }
 .credits { margin-top: .4rem; border-top: 1px solid var(--line); padding-top: .8rem; }
 .credits summary { cursor: pointer; font-weight: 600; color: var(--ink); }
