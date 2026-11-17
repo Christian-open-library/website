@@ -324,19 +324,27 @@
   }
   function grouped() { return sortV === 'title' || (sortV === 'author' && !authorFilter); }
   // The height still to come: the rows, author names and letters left, each at the average height of those drawn.
-  function rest() {
-    var sum = { s: 0, o: 0, n: 0 }, cnt = { s: 0, o: 0, n: 0 }, left = { s: 0, o: 0, n: 0 };
-    var kind = function (it) { return typeof it === 'string' ? 's' : typeof it === 'object' ? 'o' : 'n'; };
+  // Only the rows just drawn are measured; the totals carry over (measuring every drawn row each time made a long
+  // jump on a phone take seconds).
+  var KINDS = ['s', 'o', 'n'], hSum, hCnt, hLeft;
+  function kindOf(it) { return typeof it === 'string' ? 's' : typeof it === 'object' ? 'o' : 'n'; }
+  function measureFrom(from) {
+    if (from === 0) {
+      hSum = { s: 0, o: 0, n: 0 }; hCnt = { s: 0, o: 0, n: 0 }; hLeft = { s: 0, o: 0, n: 0 };
+      for (var k = 0; k < items.length; k++) hLeft[kindOf(items[k])]++;
+    }
     var kids = list.children;
-    for (var k = 0; k < kids.length && k < shown; k++) { var c = kind(items[k]); sum[c] += kids[k].offsetHeight; cnt[c]++; }
-    for (k = shown; k < items.length; k++) left[kind(items[k])]++;
-    return ['s', 'o', 'n'].reduce(function (h, c) { return h + left[c] * (cnt[c] ? sum[c] / cnt[c] : (cnt.n ? sum.n / cnt.n : 26)); }, 0);
+    for (k = from; k < shown && k < kids.length; k++) { var c = kindOf(items[k]); hSum[c] += kids[k].offsetHeight; hCnt[c]++; hLeft[c]--; }
+  }
+  function avgRow() { return hCnt && hCnt.n ? hSum.n / hCnt.n : 40; }
+  function rest() {
+    return KINDS.reduce(function (h, c) { return h + hLeft[c] * (hCnt[c] ? hSum[c] / hCnt[c] : avgRow()); }, 0);
   }
   function showMore(n) {
     var frag = document.createDocumentFragment();
     // A page at a time in every order: thousands of rows on the page make every scroll slow on phones. The A to Z
     // bar draws as far as its letter when it is used (jump), and more is drawn as the list nears its end.
-    var end = Math.min(shown + (n || PAGE), items.length);
+    var from = shown, end = Math.min(shown + (n || PAGE), items.length);
     for (var k = shown; k < end; k++) {
       var it = items[k];
       frag.appendChild(typeof it === 'string' ? header(it) : typeof it === 'object' ? shelf(it) : row(it));
@@ -344,6 +352,7 @@
     list.appendChild(frag);
     headEls = Array.prototype.slice.call(list.querySelectorAll('li.letter'));
     shown = end;
+    measureFrom(from);
     more.hidden = shown >= items.length;
     // Room is kept for the rows still to come, so the page has its full length from the start.
     list.style.paddingBottom = shown < items.length && shown ? Math.round(rest()) + 'px' : '';
@@ -766,21 +775,21 @@
     Array.prototype.forEach.call(az.children, function (b) { b.classList.toggle('cur', b.dataset.letter === L); });
   }
   // A jump (dragging the scroll bar, the End key, a hard fling) can land past the rows drawn so far, where the
-  // watcher on the last row never sees it: draw on until the rows reach the screen again.
+  // watcher on the last row never sees it. Then the rows up to the screen are drawn in one go. Nearing the end of
+  // the drawn rows in an ordinary scroll is left to the watcher, and a letter drag draws its own rows.
   function catchUp() {
-    for (var k = 0; k < 4 && shown < items.length; k++) {
-      var last = list.lastElementChild;
-      if (!last || last.getBoundingClientRect().bottom > innerHeight + 2000) return false;
-      showMore(1500);
-    }
-    return shown < items.length && list.lastElementChild && list.lastElementChild.getBoundingClientRect().bottom < innerHeight + 2000;
+    if (dragging || shown >= items.length) return false;
+    var last = list.lastElementChild;
+    if (!last) return false;
+    var bottom = last.getBoundingClientRect().bottom;
+    if (bottom > innerHeight) return false;
+    showMore(Math.max(PAGE, Math.ceil((innerHeight - bottom + 1500) / avgRow())));
+    return true;
   }
+  // Drawn rows can fall short of the estimate: keep going, a frame at a time, until they reach the screen.
+  function settle() { scrollFrame = 0; if (catchUp()) { scrollFrame = requestAnimationFrame(settle); return; } placeIndex(); }
   window.addEventListener('scroll', function () {
-    if (!scrollFrame) scrollFrame = requestAnimationFrame(function step() {
-      scrollFrame = 0;
-      if (catchUp()) { scrollFrame = requestAnimationFrame(step); return; }
-      placeIndex();
-    });
+    if (!scrollFrame) scrollFrame = requestAnimationFrame(settle);
   }, { passive: true });
 
   function buildIndex() {
@@ -805,7 +814,8 @@
     var idx = -1;
     for (var k = LETTERS.indexOf(L); k < LETTERS.length && idx < 0; k++) idx = items.indexOf(LETTERS[k]);
     if (idx < 0) return;
-    while (shown < Math.min(idx + 80, items.length)) showMore();
+    var upTo = Math.min(idx + 80, items.length);
+    if (shown < upTo) showMore(upTo - shown);
     var head = list.children[idx], first = list.children[idx + 1];
     if (!head || !first) return;
     // Letter headings stay pinned once scrolled past, so their place on screen says nothing about where they

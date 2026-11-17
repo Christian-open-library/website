@@ -306,8 +306,8 @@ mark { background: var(--accent-soft); color: inherit; border-radius: 2px; paddi
 ul.works li[data-u] { scroll-margin-top: calc(var(--pinned, 8rem) + 3rem); scroll-margin-bottom: 1rem; }
 ul.works li[data-u]:focus { outline: none; }
 ul.works li[data-u]:focus-visible { outline: 2px solid var(--ink); outline-offset: -2px; }
-/* Phones draw only the rows near the screen (the list is long); computers draw them all, so a fast flick never shows a row arriving late. */
-@media (hover: none) { ul.works li.w:not(.open) { content-visibility: auto; contain-intrinsic-size: auto 3.1rem; } }
+/* No content-visibility on the rows: with thousands drawn (after a letter jump) it made every scroll frame on a phone
+   check every row, and scrolling crawled. The list itself is drawn a page at a time instead. */
 
 /* A work opened: the row grows into a card. */
 ul.works li.w.open { margin: .6rem -1.1rem .8rem; padding: 1.05rem 1.1rem 1.1rem; border-color: var(--line-2); border-radius: 16px; background: var(--bg); cursor: default;
