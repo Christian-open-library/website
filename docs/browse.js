@@ -920,17 +920,12 @@
   function hasWords() { box.classList.toggle('fd-has', input.value.trim() !== ''); }
 
   // ---------- in the books: passages on the page, as you type ----------
-  // One box does both. Words that name an author or find titles narrow the list. Words that read like a topic or a
-  // remembered line (they find no title, or run to three words or more without naming anyone) are also looked for
-  // inside the books once typing pauses, and the passages appear above the list. The server allows each visitor a
-  // few searches a minute, so it is asked only after a pause, never twice for the same words. Enter asks at once.
+  // One box does both. Words that find authors or titles narrow the list, and nothing is sent anywhere. Words that
+  // find nothing on the list are looked for in the books once typing pauses, and the passages appear on the page.
+  // Enter (or the last suggestion) looks in the books at once for any words. The server allows each visitor a few
+  // searches a minute, so it is asked only after a pause, and never twice for the same words.
   var inQ = '', inTimer = 0, inGen = 0, inCache = {}, PASSAGES = 3;
-  function wantsBooks(raw) {
-    if (raw.length < 3 || authorFilter) return false;
-    if (!matches.length) return true;
-    if (authorsMatching(words).length) return false;
-    return raw.split(/\s+/).length >= 3;
-  }
+  function wantsBooks(raw) { return raw.length >= 3 && !authorFilter && !matches.length; }
   function hideBooks() { clearTimeout(inTimer); inGen++; inQ = ''; inbooks.hidden = true; inbooks.textContent = ''; box.classList.remove('fd-busy'); }
   function scheduleBooks() {
     clearTimeout(inTimer);
@@ -938,7 +933,7 @@
     if (raw && raw === inQ) return;   // these words are already being looked for, or shown (Enter asked)
     if (!raw || !wantsBooks(raw)) { hideBooks(); return; }
     inbooks.classList.add('stale');
-    inTimer = setTimeout(function () { booksFor(raw); }, 900);
+    inTimer = setTimeout(function () { booksFor(raw); }, 1200);
   }
   function booksFor(raw) {
     clearTimeout(inTimer);
