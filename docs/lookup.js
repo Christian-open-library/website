@@ -70,7 +70,7 @@
   function hints() { var t = phone.matches ? 'Search the library' : HINT; input.placeholder = t; if (heroInput) heroInput.placeholder = t; }
   hints();
   if (phone.addEventListener) phone.addEventListener('change', hints);
-  var isOpen = false, busy = false, from = null, lastQ = '';
+  var isOpen = false, busy = false, from = null, lastQ = '', hidden = null;
 
   function radius(node) { return getComputedStyle(node).borderRadius; }
   function box(r) { return { top: r.top + 'px', left: r.left + 'px', width: r.width + 'px', height: r.height + 'px' }; }
@@ -95,7 +95,9 @@
     panel.animate([frame(r0, rad0), frame(r1, radius(panel))], { duration: phone.matches ? 460 : 420, easing: SPRING });
     inner.animate([{ opacity: 0 }, { opacity: 0, offset: .3 }, { opacity: 1 }], { duration: 420, easing: 'linear' });
     shade.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, easing: EASE });
-    from.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 120, fill: 'forwards' }).onfinish = function () { this.cancel(); };
+    // What it grew from stays hidden until the panel has gone back into it.
+    if (hidden) hidden.cancel();
+    hidden = from.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 120, fill: 'forwards' });
   }
 
   function close(viaBack) {
@@ -104,16 +106,25 @@
     if (!viaBack && history.state && history.state.lk) { try { history.back(); } catch (e) { /* fine */ } }
     var to = source();
     var done = function () {
+      if (hidden) { hidden.cancel(); hidden = null; }
       document.body.classList.remove('lk-open');
       document.documentElement.classList.remove('lk-lock');
       if (to === hero && heroInput) heroInput.value = input.value;
     };
     if (calm) { done(); return; }
     var r1 = panel.getBoundingClientRect(), r0 = to.getBoundingClientRect();
-    inner.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, fill: 'forwards' }).onfinish = function () { this.cancel(); };
-    shade.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, easing: EASE, fill: 'forwards' }).onfinish = function () { this.cancel(); };
+    // The words and the shade stay faded until the panel is back in place (letting them go earlier made them flash
+    // back for a moment); then everything is let go at once.
+    var fades = [
+      inner.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, fill: 'forwards' }),
+      shade.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, easing: EASE, fill: 'forwards' })
+    ];
     var a = panel.animate([frame(r1, radius(panel)), frame(r0, radius(to))], { duration: 340, easing: EASE, fill: 'forwards' });
-    a.onfinish = function () { done(); a.cancel(); };
+    a.onfinish = function () {
+      if (!isOpen) done();   // opened again meanwhile: leave it open
+      a.cancel();
+      fades.forEach(function (f) { f.cancel(); });
+    };
   }
 
   // The panel grows to fit what lands in it, instead of jumping.
