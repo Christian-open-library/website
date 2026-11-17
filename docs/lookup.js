@@ -153,6 +153,7 @@
         if (r.ok) return d;
         var e = new Error(String(r.status));
         e.say = typeof d.error === 'string' ? d.error : '';
+        e.limit = typeof d.limit === 'string' ? d.limit : '';
         throw e;
       });
     });

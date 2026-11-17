@@ -396,7 +396,7 @@
     box.appendChild(full);
     var links = document.createElement('div');
     links.className = 'w-links';
-    if (w[4]) {
+    if (/^https?:\/\//i.test(String(w[4] || ''))) {   // web links only, as lookup.js does
       var a = document.createElement('a');
       a.href = w[4];
       a.target = '_blank';
@@ -925,6 +925,10 @@
   // Enter (or the last suggestion) looks in the books at once for any words. The server allows each visitor a few
   // searches a minute, so it is asked only after a pause, and never twice for the same words.
   var inQ = '', inTimer = 0, inGen = 0, inCache = {}, PASSAGES = 3;
+  // After the server says "too many", the page stops asking by itself until the wait is over (for the rest of the
+  // visit, if the day's limit is reached); Enter still asks, and shows the server's message.
+  var holdUntil = 0;
+  var HOLD = { visitor_minute: 60, minute: 60, busy: 5, unavailable: 60, visitor_day: Infinity, day: Infinity };
   function wantsBooks(raw) { return raw.length >= 3 && !authorFilter && !matches.length; }
   function hideBooks() { clearTimeout(inTimer); inGen++; inQ = ''; inbooks.hidden = true; inbooks.textContent = ''; box.classList.remove('fd-busy'); }
   function scheduleBooks() {
@@ -932,6 +936,7 @@
     var raw = input.value.trim();
     if (raw && raw === inQ) return;   // these words are already being looked for, or shown (Enter asked)
     if (!raw || !wantsBooks(raw)) { hideBooks(); return; }
+    if (Date.now() < holdUntil) return;   // the server asked for a pause: Enter still asks
     inbooks.classList.add('stale');
     inTimer = setTimeout(function () { booksFor(raw); }, 1200);
   }
@@ -952,6 +957,7 @@
       if (gen !== inGen) return;
       box.classList.remove('fd-busy');
       inQ = '';
+      if (e && HOLD[e.limit]) holdUntil = Date.now() + HOLD[e.limit] * 1000;
       drawBooks({ error: e && e.say ? e.say : 'The books didn\u2019t answer. Try again in a moment.' });
     });
   }
@@ -1133,7 +1139,12 @@
     works.forEach(function (w) { typesSeen[w[3]] = true; });
     loadState();
     update(true);
-    scheduleBooks();
+    // A link with words in it looks in the books by itself, but not inside another site's frame or in a window
+    // another page opened: there the visitor's Enter (or a keystroke) asks, as with lookup.js's shared searches.
+    // Otherwise a page could make its visitors run searches against their own daily limit.
+    var sent = false;
+    try { sent = window.top !== window.self || !!window.opener; } catch (e) { sent = true; }
+    if (!sent) scheduleBooks();
     // The full printed titles are read while the page is idle, so the first book opened doesn't stall its motion.
     var idle = window.requestIdleCallback || function (f) { return setTimeout(f, 1500); };
     idle(function () { loadFullTitles(); }, { timeout: 4000 });
