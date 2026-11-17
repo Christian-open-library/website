@@ -852,13 +852,13 @@ html.lk-lock, html.lk-lock body { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .faq summary::after { transition: none; } }
 
 /* For churches: the privacy section, one dark panel with a lock. */
-.vault { margin: 2.4rem 0 1.6rem; padding: 1.6rem 1.6rem 1.3rem; border-radius: 12px; background: var(--btn); color: var(--on-btn); }
+.vault { margin: 2.4rem 0 1.6rem; padding: 2rem 2.2rem 1.4rem; border-radius: 12px; background: var(--btn); color: var(--on-btn); }
 .vault-ic { display: block; width: 2rem; height: 2rem; fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .prose .vault h2 { margin: .8rem 0 .35rem; color: var(--on-btn); }
-.prose .vault-lead { margin: 0 0 1rem; color: var(--on-btn); font-size: 1.08rem; }
+.prose .vault-lead { margin: 0 0 1.3rem; max-width: 36rem; color: color-mix(in srgb, var(--on-btn) 88%, transparent); font-size: 1.08rem; line-height: 1.5; }
 .prose ul.vault-list { list-style: none; margin: 0; padding: 0; }
-.vault-list li { margin: 0; padding: .75rem 0; border-top: 1px solid color-mix(in srgb, var(--on-btn) 16%, transparent); color: color-mix(in srgb, var(--on-btn) 78%, transparent); line-height: 1.5; }
+.vault-list li { display: grid; grid-template-columns: minmax(0, 19rem) minmax(0, 1fr); gap: .25rem 2rem; margin: 0; padding: 1rem 0; border-top: 1px solid color-mix(in srgb, var(--on-btn) 18%, transparent); color: color-mix(in srgb, var(--on-btn) 88%, transparent); line-height: 1.55; }
 .vault-list strong { color: var(--on-btn); font-weight: 650; }
 .vault-list a { color: var(--on-btn); }
 .prose .vault-note { margin: .2rem 0 0; padding-top: .9rem; border-top: 1px solid color-mix(in srgb, var(--on-btn) 16%, transparent); color: color-mix(in srgb, var(--on-btn) 62%, transparent); font-size: .88rem; line-height: 1.45; }
-@media (max-width: 40rem) { .vault { padding: 1.3rem 1.1rem 1.1rem; } }
+@media (max-width: 40rem) { .vault { padding: 1.4rem 1.2rem 1.1rem; } .vault-list li { grid-template-columns: 1fr; padding: .85rem 0; } }
