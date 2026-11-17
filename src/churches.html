@@ -1,32 +1,49 @@
 <!-- title: For churches, denominations and organizations | desc: Your constitution, minutes, reports and papers beside about 7,700 Christian books and the records of more than 80 denominations, studied from Claude, ChatGPT, Gemini or Grok. -->
 <h1>For churches, denominations and organizations</h1>
-<p class="lead">We put your constitution, minutes, reports and papers beside about 7,700 Christian books and the records of more than 80 denominations. Your people study them from Claude, ChatGPT, Gemini or Grok.</p>
+<p class="lead">We put your constitution, minutes, reports and papers, public or confidential, beside about 7,700 Christian books and the records of more than 80 denominations. Your people study them from Claude, ChatGPT, Gemini or Grok.</p>
 <p class="actions"><a class="btn btn-primary" href="mailto:hello@christianopenlibrary.org?subject=Your%20documents%20in%20the%20library">Write to us</a></p>
 <!-- body -->
-<figure class="demo" aria-label="An example question about a church's history and the answer">
-  <div class="demo-card">
-    <p class="demo-q">How has our Discipline's rule on amusements changed?</p>
-    <div class="demo-a demo-history">
-      <div class="was">
-        <span class="yr">1888</span>
-        <blockquote>&ldquo;&hellip;dancing, playing at games of chance, attending theaters, horse-races, circuses, dancing-parties, or patronizing dancing-schools, or taking such other amusements as are obviously of misleading or questionable moral tendency&hellip;&rdquo;</blockquote>
-        <p class="demo-src">Methodist Episcopal Church, <em>Doctrines and Discipline</em> (1888). <a href="https://archive.org/details/doctrinesanddis35churgoog?q=%22dancing%20playing%20at%20games%20of%20chance%22">Scan</a></p>
-      </div>
-      <div class="was">
-        <span class="yr">1928</span>
-        <blockquote>&ldquo;&hellip;&lsquo;taking such diversions as can not be used in the name of the Lord Jesus&rsquo;&hellip;&rdquo;</blockquote>
-        <p class="demo-src">Methodist Episcopal Church, <em>Doctrines and Discipline</em> (1928), &para; 334. <a href="https://archive.org/details/doctrinesdiscipl0000meth_a6w2?q=%22In%20cases%20of%20neglect%20of%22">Scan</a></p>
-      </div>
+<figure class="amend" data-year="1928" aria-label="An example: one rule in two editions, with the old words struck through and the new ones added">
+  <div class="amend-top">
+    <p class="amend-q">How has our Discipline's rule on amusements changed?</p>
+    <div class="amend-years" role="group" aria-label="Edition">
+      <button type="button" data-y="1888" aria-pressed="false">1888</button>
+      <button type="button" data-y="1928" aria-pressed="true">1928</button>
     </div>
   </div>
+  <p class="amend-text">&hellip;<span class="del">dancing, playing at games of chance, attending theaters, horse-races, circuses, dancing-parties, or patronizing dancing-schools, or taking such other amusements as are obviously of misleading or questionable moral tendency</span><span class="e28"> </span><span class="ins">&ldquo;taking such diversions as can not be used in the name of the Lord Jesus&rdquo;</span><span class="e28">;</span><span class="e88">,</span> or disobedience to the <span class="e28">order</span><span class="e88">Order</span> and Discipline of the Church&hellip;</p>
+  <p class="amend-src">Methodist Episcopal Church, <em>Doctrines and Discipline</em>, 1888 (<a href="https://archive.org/details/doctrinesanddis35churgoog?q=%22dancing%20playing%20at%20games%20of%20chance%22">scan</a>) and 1928, &para; 334 (<a href="https://archive.org/details/doctrinesdiscipl0000meth_a6w2?q=%22In%20cases%20of%20neglect%20of%22">scan</a>).</p>
 </figure>
+<script>
+document.querySelectorAll('.amend').forEach(function (f) {
+  f.querySelectorAll('.amend-years button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (f.dataset.year === b.dataset.y) return;
+      f.dataset.year = b.dataset.y;
+      f.classList.add('moved');
+      f.querySelectorAll('.amend-years button').forEach(function (o) { o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+    });
+  });
+});
+</script>
 <p>Ask how a rule changed, what an assembly or board decided, or for every report on a subject, and it answers from the documents themselves. There's nothing to install: they add one address to the app they already use.</p>
+
+<section class="vault" aria-labelledby="vault-h">
+  <svg class="vault-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><path d="M12 14.5v2.5"/></svg>
+  <h2 id="vault-h">Private papers stay private</h2>
+  <p class="vault-lead">You decide who reads each document: anyone, your members, or only the officers you name.</p>
+  <ul class="vault-list">
+    <li><strong>No one's questions are kept.</strong> The connector doesn't log what anyone searches for.</li>
+    <li><strong>Never used to train AI, never sold.</strong> Voyage AI, which ranks the passages, deletes them straight away and doesn't train on them.</li>
+    <li><strong>Encrypted on the way.</strong> Every request travels encrypted between the AI app and our server.</li>
+    <li><strong>Check it yourself.</strong> Our <a href="https://github.com/Christian-open-library/Connector">code</a>, <a href="https://github.com/Christian-open-library/Connector/blob/main/docs/security-review.md">security review</a> and <a href="privacy.html">privacy notes</a> are public.</li>
+    <li><strong>Yours to take back.</strong> Ask, and we take your documents out and delete our copy.</li>
+  </ul>
+  <p class="vault-note">A passage shown in someone's AI app stays in that conversation under the app's own terms, so open confidential papers only to people you'd trust with a printed copy.</p>
+</section>
 
 <h2>Every quotation can be checked</h2>
 <p>Quotations are word for word, with the page and a link to the source. When your documents don't say, it tells you so. Our <a href="accuracy.html">test results</a> are public, misses and all.</p>
-
-<h2>Who sees what</h2>
-<p>We don't keep what anyone asks. Papers you don't publish can be kept to the people you choose.</p>
 
 <h2>What it costs</h2>
 <p>The public-domain books stay free for everyone. You pay only for our work on your documents: loading them, adding each new edition or set of minutes, and your own address. We'll build a working version on yours first, at no cost.</p>
