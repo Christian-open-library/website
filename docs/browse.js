@@ -307,21 +307,13 @@
   }
   // On one author's shelf the letters say nothing (they are all the author's), so they go.
   // The page keeps room for the rows still to come, so it has its full length from the start and the scrollbar
-  // never jumps back. On computers the rest is then drawn in the background, a slice per idle moment. Phones draw
-  // as they scroll (thousands of rows at once make a phone stutter), just ahead of the finger.
+  // never jumps back. Rows are drawn as you scroll, just ahead of you, on computers too: with the whole list on the
+  // page (about 9,000 rows) every book opened made the browser lay out and repaint all of it, a quarter of a second
+  // on a fast computer and a whole second on a slow one.
   // Watches the last row drawn; when it nears the screen, the next rows are drawn.
   var ahead = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) {
     if (es[es.length - 1].isIntersecting && shown < items.length) showMore();
   }, { rootMargin: '2000px 0px' }) : null;
-  var wide = window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches, fillGen = 0;
-  function fillRest() {
-    if (!wide) return;
-    var gen = ++fillGen, idle = window.requestIdleCallback || function (f) { return setTimeout(f, 30); };
-    (function step() {
-      if (gen !== fillGen || shown >= items.length) return;
-      idle(function () { if (gen !== fillGen) return; showMore(1500); step(); }, { timeout: 200 });
-    })();
-  }
   function grouped() { return sortV === 'title' || (sortV === 'author' && !authorFilter); }
   // The list is drawn as a window: items[start] to items[shown - 1] are on the page; room is kept above and below
   // for the rest, estimated from the average height of each kind of row drawn so far (letters, author names, works).
@@ -362,9 +354,49 @@
     el.dataset.kind = kindOf(it);
     return el;
   }
+  // Room below for the rows not drawn. The room above is set when the window starts afresh (rewindow) and is then
+  // kept exact by the rows drawn above (showBefore) and let go (trim), so what is on screen never shifts.
   function pads() {
-    list.style.paddingTop = start > 0 ? Math.round(span(0, start)) + 'px' : '';
     list.style.paddingBottom = shown < items.length && shown ? Math.round(rest()) + 'px' : '';
+  }
+  // The window is kept to about this many rows. Rows well off screen are let go and their height kept as room,
+  // so a long scroll doesn't pile thousands of rows onto the page again.
+  function firstRow(el) { while (el && el.classList.contains('letter')) el = el.nextElementSibling; return el; }
+  // Each side is trimmed only as rows are drawn on the other: rows just drawn ahead are never let go.
+  var KEEP = 700, OFF = 3000;
+  // Rows far under the screen, after scrolling up (from a far jump).
+  function trimBelow() {
+    if (dragging || shown - start <= KEEP) return;
+    var kids = list.children, gone = [];
+    for (var k = kids.length - 1; k > KEEP / 2 && kids[k].getBoundingClientRect().top > innerHeight + OFF; k--) gone.push(kids[k]);
+    if (!gone.length) return;
+    gone.forEach(function (el) { el.remove(); });
+    shown -= gone.length;
+    pads();
+    if (ahead && list.lastElementChild) { ahead.disconnect(); ahead.observe(list.lastElementChild); }
+    more.hidden = false;
+    more.textContent = 'Show more (' + num(items.length - shown) + ' left)';
+    headEls = Array.prototype.slice.call(list.querySelectorAll('li.letter'));
+  }
+  // Rows far over the screen, after scrolling down. Letter headings are skipped in the measuring (a pinned heading
+  // reports where it sticks, not where it sits), and the heading of the letter on screen stays, as it is pinned.
+  function trimAbove() {
+    if (dragging || shown - start <= KEEP) return;
+    var kids = list.children, n = kids.length, k;
+    for (k = 0; k < n - KEEP / 2; k++) if (!kids[k].classList.contains('letter') && kids[k].getBoundingClientRect().bottom > -OFF) break;
+    var cut = start + k;
+    if (headAt[cut] >= start) cut = headAt[cut];
+    if (cut - start < PAGE) return;
+    var anchor = firstRow(kids[cut - start]);
+    if (!anchor) return;
+    var before = anchor.getBoundingClientRect().top, oldPad = parseFloat(list.style.paddingTop) || 0, h = 0;
+    for (k = 0; k < cut - start; k++) h += kids[k].getBoundingClientRect().height;
+    for (k = cut - start; k > 0; k--) list.firstElementChild.remove();
+    start = cut;
+    list.style.paddingTop = (oldPad + h) + 'px';
+    var off = anchor.getBoundingClientRect().top - before;   // margins the heights left out
+    if (Math.abs(off) > .5) list.style.paddingTop = (oldPad + h - off) + 'px';
+    headEls = Array.prototype.slice.call(list.querySelectorAll('li.letter'));
   }
   // Start the window afresh at item k (a far jump).
   function rewindow(k) {
@@ -373,6 +405,7 @@
     list.textContent = '';
     start = shown = k;
     showMore();
+    list.style.paddingTop = start > 0 ? Math.round(span(0, start)) + 'px' : '';
   }
   // Rows above the window, drawn as you scroll up to them. The page is moved by any difference between the room
   // that was kept and the rows' real height, so what is on screen stays still.
@@ -381,16 +414,20 @@
     var s0 = Math.max(0, start - (n || PAGE)), frag = document.createDocumentFragment(), made = [];
     if (headAt[s0] >= 0 && s0 - headAt[s0] <= 300) s0 = headAt[s0];   // from its letter, when near, so the letter is pinned
     for (var k = s0; k < start; k++) { var el = make(k); made.push(el); frag.appendChild(el); }
+    // A row already drawn holds the page still (not a letter heading: a pinned one reports where it sticks).
+    // Heights are read unrounded: offsetHeight rounds each row, and over hundreds of rows that adds up.
+    var anchor = firstRow(list.firstElementChild), before = anchor ? anchor.getBoundingClientRect().top : 0;
     var oldPad = parseFloat(list.style.paddingTop) || 0;
     list.insertBefore(frag, list.firstChild);
     measure(made);
-    var h = made.reduce(function (t, el) { return t + el.offsetHeight; }, 0);
+    var h = made.reduce(function (t, el) { return t + el.getBoundingClientRect().height; }, 0);
     start = s0;
     var pad = start > 0 ? Math.max(0, oldPad - h) : 0;
-    list.style.paddingTop = pad ? Math.round(pad) + 'px' : '';
-    var moved = Math.round(pad + h - oldPad);
-    if (moved) window.scrollBy(0, moved);
+    list.style.paddingTop = pad ? pad + 'px' : '';
+    var moved = anchor ? anchor.getBoundingClientRect().top - before : pad + h - oldPad;
+    if (Math.abs(moved) > .5) window.scrollBy(0, moved);
     headEls = Array.prototype.slice.call(list.querySelectorAll('li.letter'));
+    trimBelow();
   }
   function showMore(n) {
     var frag = document.createDocumentFragment();
@@ -406,6 +443,7 @@
     // Room is kept for the rows not drawn, so the page has its full length from the start.
     pads();
     if (ahead && list.lastElementChild) { ahead.disconnect(); if (shown < items.length) ahead.observe(list.lastElementChild); }
+    trimAbove();
     more.textContent = 'Show more (' + num(items.length - shown) + ' left)';
     var first = list.querySelector('li[data-u]');
     if (first && !list.querySelector('li[tabindex="0"]')) first.tabIndex = 0;
@@ -503,12 +541,24 @@
     return box;
   }
 
+  // One book open at a time. The one open before closes at once; if it was above, the page is moved by what it
+  // gave back, so the book just clicked stays under the pointer.
+  function closeOthers(li) {
+    Array.prototype.forEach.call(list.querySelectorAll('li.w.open'), function (o) {
+      if (o === li) return;
+      var above = o.compareDocumentPosition(li) & Node.DOCUMENT_POSITION_FOLLOWING, before = li.getBoundingClientRect().top;
+      o.classList.remove('open');
+      o.setAttribute('aria-expanded', 'false');
+      if (above) { var moved = li.getBoundingClientRect().top - before; if (Math.abs(moved) > .5) window.scrollBy(0, moved); }
+    });
+  }
   // Opening a work turns its row into a card in place: the details rise in under the title and the rows below
   // glide down to make room (moved with transforms, so the long list is not laid out again on every frame).
   function toggleRow(li, open) {
     var was = li.classList.contains('open');
     if (open === undefined) open = !was;
     if (open === was) return;
+    if (open) closeOthers(li);
     var still = calm || !li.animate, below = [], h0 = 0;
     if (!still) {
       // The rows below that are on screen; they all move by the same amount, so one measure is enough.
@@ -771,7 +821,6 @@
     // With no titles, words long enough are looked for in the books; the note shows only if they find nothing too.
     $('empty').hidden = matches.length > 0 || input.value.trim().length >= 3;
     showMore();
-    fillRest();
     if (!keepScroll) settle(matches.slice(0, 8).join() + '|' + (authorFilter || ''), typing);
     buildIndex();
     saveState();

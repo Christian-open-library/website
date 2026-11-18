@@ -362,6 +362,9 @@ li.skel span:nth-child(2) { width: 28%; height: .6rem; margin-top: .45rem; }
 .az-bubble { position: fixed; z-index: 30; left: 50%; top: 45%; transform: translate(-50%, -50%); min-width: 5.2rem; padding: .7rem 1rem .8rem; border-radius: 20px; background: var(--btn); color: var(--on-btn);
   font: 400 3.2rem/1 var(--serif); text-align: center; opacity: 0; pointer-events: none; transition: opacity .2s; box-shadow: 0 20px 50px -20px rgba(0, 0, 0, .5); }
 .az-bubble.show { opacity: .95; }
+/* In a narrowed window or on a tablet the margin beside the list is too small for the bar: the list makes room. */
+ul.works { padding-right: max(0rem, calc(max(.4rem, (100vw - 61rem) / 2 - 2.5rem) + 2.7rem - max(1.5rem, (100vw - 55rem) / 2))); }
+ul.works.no-az { padding-right: 0; }
 
 /* Computers: denser, like a printed index. The kind and editions sit beside the title, not under it. */
 @media (min-width: 40.0625rem) {
