@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Flag sentences on the site that read like AI writing: clause after clause joined by commas,
-long sentences, dashes and stock AI words. Run: python3 tools/plainspeak.py [src/page.html ...]
+long sentences, dashes and stock AI words. Run: python3 tools/plainspeak.py [src/page.html | README.md ...]
 Prints each flagged sentence with the reason. Exit code 1 if anything is flagged (with --strict).
 """
 import re, sys, glob, pathlib
@@ -28,9 +28,19 @@ class Text(HTMLParser):
     def handle_data(s, d):
         if not s.skip: s.out.append(d)
 
+def markdown_text(md):
+    md = re.sub(r'```.*?```', '', md, flags=re.S)
+    md = re.sub(r'<[^>]+>', '', md)
+    md = re.sub(r'!?\[([^\]]*)\]\([^)]*\)', r'\1', md)       # links and images: keep the words
+    md = re.sub(r'^\s*(#+|[-*]|\d+\.|\|.*)\s*', '', md, flags=re.M)  # headings, bullets, table rows
+    return re.sub(r'[*_`]', '', md)
+
 def sentences(path):
-    p = Text(); p.feed(path.read_text())
-    txt = re.sub(r'[ \t\r]+', ' ', ''.join(p.out))
+    if path.suffix == '.md':
+        txt = markdown_text(path.read_text())
+    else:
+        p = Text(); p.feed(path.read_text()); txt = ''.join(p.out)
+    txt = re.sub(r'[ \t\r]+', ' ', txt)
     for line in txt.split('\n'):
         for s in re.split(r'(?<=[.!?”"])\s+(?=[A-Z0-9“"])', line.strip()):
             if len(s.split()) > 3: yield s.strip()
