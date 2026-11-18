@@ -880,8 +880,7 @@ html.lk-lock, html.lk-lock body { overflow: hidden; }
 .ticks li::before { content: ""; position: absolute; left: 0; top: .2rem; width: 1.15rem; height: 1.15rem; background: var(--accent); -webkit-mask: var(--tick) center / contain no-repeat; mask: var(--tick) center / contain no-repeat; }
 table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--ink); font-weight: 600; }
 .page-organizations .prose p.intro { color: var(--muted); }
-.page-organizations .prose ol.org-steps li { padding-left: 2.4rem; margin-bottom: .8rem; }
-.page-organizations ol.org-steps li::before { top: -.05rem; display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--accent-soft); color: var(--ink); content: counter(st); font-size: .88rem; }
+.page-organizations .prose ol.org-steps li { margin-bottom: .7rem; }
 .org-lib { margin: 2.2rem 0 1rem; padding: 1.3rem 1.4rem .4rem; border-radius: 12px; background: var(--tile); }
 .prose .org-lib h2 { margin-top: 0; }
 @media (max-width: 40rem) {
