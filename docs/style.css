@@ -881,3 +881,20 @@ html.lk-lock, html.lk-lock body { overflow: hidden; }
 .ticks li { position: relative; margin: 0 0 .6rem; padding-left: 1.9rem; color: var(--ink); font-size: 1.08rem; line-height: 1.5; }
 .ticks li::before { content: ""; position: absolute; left: 0; top: .2rem; width: 1.15rem; height: 1.15rem; background: var(--accent); -webkit-mask: var(--tick) center / contain no-repeat; mask: var(--tick) center / contain no-repeat; }
 table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--ink); font-weight: 600; }
+.page-organizations .prose p.intro { color: var(--muted); }
+.page-organizations .prose ol.org-steps li { padding-left: 2.4rem; margin-bottom: .8rem; }
+.page-organizations ol.org-steps li::before { top: -.05rem; display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--accent-soft); color: var(--ink); content: counter(st); font-size: .88rem; }
+.org-lib { margin: 2.2rem 0 1rem; padding: 1.3rem 1.4rem .4rem; border-radius: 12px; background: var(--tile); }
+.prose .org-lib h2 { margin-top: 0; }
+@media (max-width: 40rem) {
+  .page-organizations .prose h2 { font-size: 1.45rem; line-height: 1.25; margin-top: 2.6rem; padding-top: 1.4rem; border-top: 1px solid var(--line-2); }
+  .page-organizations .prose .vault h2, .page-organizations .prose .org-lib h2 { padding-top: 0; border-top: 0; }
+  .page-organizations .prose .org-lib h2 { margin-top: 0; }
+  .page-organizations .prose p.intro { font-size: .95rem; }
+  .ticks li { font-size: 1.02rem; margin-bottom: .75rem; }
+  table.levels.stack tr { padding: .75rem 0; }
+  table.levels.stack tbody th { width: auto; font-size: 1.05rem; }
+  table.levels.stack td { display: block; text-align: left; color: var(--muted); }
+  table.levels.stack td::before { display: none; }
+  .org-lib { padding: 1.1rem 1.1rem .3rem; }
+}
