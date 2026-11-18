@@ -1,35 +1,35 @@
-<!-- title: Accuracy | desc: How to check what the Christian Open Library gives you, what it promises, and how well it finds things, misses included. -->
+<!-- title: Accuracy | desc: How to check what the Christian Open Library gives you, what it promises and how well it finds things. -->
 <h1>Accuracy</h1>
-<p class="lead">Every quotation comes with a link to its source: check it before you use it. Here is how, what the library promises, and how well it finds things.</p>
+<p class="lead">Every quotation comes with a link to its source. Check it before you use it. This page shows how, what the library promises and how well it finds things.</p>
 <!-- body -->
 <h2 id="check">How to check a quotation</h2>
 <ol class="steps">
   <li>Find the link that comes with the quotation. Your AI app is told to put one after every quotation.</li>
-  <li>Open it. A <strong>Scan page</strong> or <strong>Find on scan</strong> link opens the scanned book at the passage, with the words highlighted, so you can read them on the printed page. Other links go to where the library's copy came from.</li>
+  <li>Open it. A <strong>Scan page</strong> or <strong>Find on scan</strong> link opens the scanned book at the passage. The words are highlighted on the printed page. Other links go to where the library's copy came from.</li>
   <li>No link? Ask your AI app: <em>"Give me the source link for that quotation."</em> If it can't, don't use the quotation.</li>
-  <li>Not sure who said it? Ask: <em>"Check this quote: ..."</em>. The library's quote checker says whether the words are in the library word for word, worded differently, written by someone else, or not found. It says so when a scanned book differs from your wording by a single letter (check the scan), and when the words are there only with others left out in between.</li>
+  <li>Not sure who said it? Ask: <em>"Check this quote: ..."</em>. The library's quote checker tells you if the words are in the library word for word or worded differently. It also tells you if someone else wrote them or if they aren't found. It says when a scanned book differs from your wording by a single letter (check the scan). It also says when the words are there only with others left out in between.</li>
 </ol>
 
 <h2>What the library promises</h2>
 <ul class="points">
-  <li><strong>Quotations are word for word from the library's copy</strong>, with the author and title, and the year and page where the source gives them.</li>
+  <li><strong>Quotations are word for word from the library's copy.</strong> Each comes with the author and title. The year and page are given where the source has them.</li>
   <li><strong>Every quotation can be traced.</strong> Each result has a reference and a link to where the library's copy came from. Results from scanned books link to the scan itself, open at the passage with the words highlighted.</li>
-  <li><strong>It says when it has nothing.</strong> When the library doesn't have a book, or has nothing close, the connector says so and tells the AI not to fill the gap from memory. Each result is marked as an exact, close, partial or loose match.</li>
-  <li><strong>Scans are marked.</strong> Every passage from a scanned book is marked as uncorrected OCR: the computer's reading of the page, which may have wrong letters.</li>
-  <li><strong>Every book names its source</strong> and its license. Only public-domain and openly licensed works are included, and church documents shared by their owners' permission.</li>
-  <li><strong>Texts aren't modernized.</strong> The library doesn't modernize, correct or abridge what it copies. Some sources had already edited their editions; each file names its source, so you can see which edition you're reading.</li>
+  <li><strong>It says when it has nothing.</strong> When the library doesn't have a book or has nothing close, the connector says so. It tells the AI not to fill the gap from memory. Each result is marked as an exact, close, partial or loose match.</li>
+  <li><strong>Scans are marked.</strong> Every passage from a scanned book is marked as uncorrected OCR. That's a computer's reading of the page. It may have wrong letters.</li>
+  <li><strong>Every book names its source</strong> and its license. Every work is public domain or openly licensed, apart from church documents shared by their owners' permission.</li>
+  <li><strong>Texts aren't modernized.</strong> The library doesn't modernize, correct or abridge what it copies. Some sources had already edited their editions. Each file names its source, so you can see which edition you're reading.</li>
 </ul>
 
 <h2>What it can't promise</h2>
 <ul class="points">
-  <li><strong>The copies aren't perfect.</strong> Scanned books have misread letters, and some texts have no year or page numbers.</li>
-  <li><strong>Most church documents are historical.</strong> Most denominational records are editions from before 1931. A church's current rules may differ, and some bodies have since merged or divided.</li>
-  <li><strong>Your AI app writes the answer.</strong> The connector finds and quotes. Your app (Claude, ChatGPT, Gemini or Grok) reads the passages and writes the answer, and it can summarize badly or quote from memory.</li>
+  <li><strong>The copies aren't perfect.</strong> Scanned books have misread letters. Some texts have no year or page numbers.</li>
+  <li><strong>Most church documents are historical.</strong> Most denominational records are editions from before 1931. A church's current rules may differ. Some bodies have since merged or divided.</li>
+  <li><strong>Your AI app writes the answer.</strong> The connector finds and quotes. Your app (Claude, ChatGPT, Gemini or Grok) reads the passages and writes the answer. It can summarize badly or quote from memory.</li>
 </ul>
 
 <h2 id="tests">Finding the right book</h2>
 <p class="note">Tested 12 November 2026 on the live connector.</p>
-<p>Each of 75 questions has a known right answer: a work the passage must come from. The test asks the live connector each question and checks whether a passage from that work is among the first 3 and the first 8 results.</p>
+<p>Each of 75 questions has a known right answer: a work the passage must come from. The test asks the live connector each question. It checks whether a passage from that work is in the first 3 results and in the first 8.</p>
 <div class="tablewrap" role="region" aria-label="Results by kind of question" tabindex="0">
 <table class="stack">
   <caption>Did the right book appear in the results?</caption>
@@ -48,9 +48,9 @@
 <ul class="points">
   <li><strong>It is strongest on quotations.</strong> If you remember the words, it nearly always finds them.</li>
   <li><strong>It is weakest on paraphrases.</strong> If you remember only the gist, it finds the passage about seven times in eight. Try two or three phrasings, or one distinctive phrase.</li>
-  <li><strong>Part of the gain since 11 November is a fairer answer key.</strong> On 11 November the test scored 60 of 75 in the first 3 and 65 of 75 in the first 8. Two "misses" were Brooks's <em>Precious Remedies</em> and Owen's <em>Mortification of Sin</em> found inside their authors' collected works, which hold the same text; those volumes now count. The rest of the change came from search and library changes. Doctrine questions were not re-graded: when another sound writer answers, it still counts as a miss.</li>
-  <li><strong>The 5 misses.</strong> Two doctrine questions, where other works say much the same. Three "who said this?" questions, where it found the right subject but the wrong source: a sermon retelling Augustine's conversion instead of his <em>Confessions</em>, Puritans on sorrow for sin instead of Thomas à Kempis, and other Spurgeon volumes instead of the sermon asked for.</li>
-  <li><strong>A search upgrade helped.</strong> On 11 November, before searches were understood by a larger Voyage AI model, the same test scored 53 of 75 in the first 3 and 61 of 75 in the first 8.</li>
+  <li><strong>Part of the gain since 11 November is a fairer answer key.</strong> On 11 November the test scored 60 of 75 in the first 3 and 65 of 75 in the first 8. Two "misses" were Brooks's <em>Precious Remedies</em> and Owen's <em>Mortification of Sin</em>. They were found inside their authors' collected works, which hold the same text. Those volumes now count. The rest of the change came from search and library changes. Doctrine questions were not re-graded: when another sound writer answers, it still counts as a miss.</li>
+  <li><strong>The 5 misses.</strong> Two were doctrine questions where other works say much the same. Three were "who said this?" questions. For those it found the right subject but the wrong source. It gave a sermon retelling Augustine's conversion instead of his <em>Confessions</em>. It gave Puritans on sorrow for sin instead of Thomas à Kempis. And it gave other Spurgeon volumes instead of the sermon asked for.</li>
+  <li><strong>A search upgrade helped.</strong> Searches are now read by a larger Voyage AI model. Before that, on 11 November, the same test scored 53 of 75 in the first 3 and 61 of 75 in the first 8.</li>
   <li><strong>A miss doesn't always mean a wrong answer.</strong> On doctrine questions several works say much the same thing, and the test counts only the one named in advance.</li>
 </ul>
 
@@ -64,21 +64,21 @@
   <tbody>
     <tr><th scope="row">Subjects the library has nothing about (a home server, a sourdough starter, a salary cap)</th><td data-label="Searches" class="num">10</td><td data-label="Outcome">All 10 came back "NOT FOUND".</td></tr>
     <tr><th scope="row">Modern authors the library doesn't have (Barth, Lewis, Keller, Packer and others)</th><td data-label="Searches" class="num">10</td><td data-label="Outcome">8 came back "NO CLOSE MATCH". 2 came back with a close match, because older writers in the library say something very similar.</td></tr>
-    <tr><th scope="row">The 75 questions above</th><td data-label="Searches" class="num">75</td><td data-label="Outcome">None came back "NO CLOSE MATCH". The right work was missing from 5 results. None of the 5 carried a warning, but one (the retelling of Augustine's conversion) is now marked as quoting Augustine, pointing to the source.</td></tr>
+    <tr><th scope="row">The 75 questions above</th><td data-label="Searches" class="num">75</td><td data-label="Outcome">None came back "NO CLOSE MATCH". The right work was missing from 5 results. None of the 5 carried a warning. The one retelling Augustine's conversion is now marked as quoting Augustine and points to the source.</td></tr>
   </tbody>
 </table>
 </div>
-<p>The first run, on 11 November before the search upgrade, gave the same results for the first two tests. On the 75 questions it gave 6 warnings, 4 of them where the right work really was missing; a run earlier on 12 November gave 1. So a missing warning doesn't prove the right book was found.</p>
-<p>In every run "NOT FOUND" was never wrong. A "close" match means the passage is about what was asked, not that it is the source. The connector now tells the AI so, and tells it to use the quote checker for "who said this?" questions. When a close passage credits the words to another writer ("the story of Augustine", "so Richard Baxter wrote"), the result says it may be quoting or retelling that writer. On these 95 searches that note appeared twice, both times correctly. It can't catch a passage that is simply on the same subject, so still check the author and title on every result.</p>
+<p>The first run was on 11 November, before the search upgrade. It gave the same results for the first two tests. On the 75 questions it gave 6 warnings. In 4 of them the right work really was missing. A run earlier on 12 November gave 1. So a missing warning doesn't prove the right book was found.</p>
+<p>In every run "NOT FOUND" was never wrong. A "close" match means the passage is about what was asked, not that it is the source. The connector now tells the AI so. It also tells it to use the quote checker for "who said this?" questions. Sometimes a close passage credits the words to another writer, as in "the story of Augustine" or "so Richard Baxter wrote". Then the result says it may be quoting or retelling that writer. On these 95 searches that note appeared twice, both times correctly. It can't catch a passage that is simply on the same subject. Still check the author and title on every result.</p>
 
 <h2>How it searches</h2>
 
-<p>Each search runs two ways at once. A keyword search finds passages that contain your words, and it matches old spellings automatically. A meaning search finds passages about what you described. The meaning search uses embedding models from Voyage AI: the books are indexed with voyage-4-lite, and your question is understood by the larger voyage-4-large. A third Voyage model, rerank-3, then puts the combined results in order.</p>
-<p>To do this, Voyage sees your search words and the passages it is ranking, and keeps nothing (see <a href="privacy.html">Privacy</a>). The scores on this page were measured on exactly this setup. The code is <a href="https://github.com/Christian-open-library/Connector">public</a>.</p>
+<p>Each search runs two ways at once. A keyword search finds passages that contain your words. It matches old spellings automatically. A meaning search finds passages about what you described. The meaning search uses embedding models from Voyage AI. The books are indexed with voyage-4-lite. Your question is read by the larger voyage-4-large. A third Voyage model, rerank-3, puts the combined results in order.</p>
+<p>To do this, Voyage sees your search words and the passages it is ranking. It keeps nothing (see <a href="privacy.html">Privacy</a>). The scores on this page were measured on exactly this setup. The code is <a href="https://github.com/Christian-open-library/Connector">public</a>.</p>
 
 <h2>What isn't measured</h2>
 <ul class="points">
-  <li><strong>The AI app's answer.</strong> These tests cover what the connector returns. Your AI app then writes the answer, and it can summarize badly or quote from memory. Nothing here measures that.</li>
+  <li><strong>The AI app's answer.</strong> These tests cover what the connector returns. Your AI app then writes the answer. It can summarize badly or quote from memory. Nothing here measures that.</li>
   <li><strong>Errors in the texts.</strong> Scanned books have misread letters. The error rate hasn't been measured yet.</li>
   <li><strong>Whether the best passage came first.</strong> The test counts a passage from the right work. It doesn't judge whether it is the best passage in that work.</li>
 </ul>

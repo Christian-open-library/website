@@ -136,3 +136,8 @@ def build():
 
 if __name__ == "__main__":
     build()
+    # Plain speech: flag comma-chained, long or AI-sounding sentences (see tools/plainspeak.py).
+    import sys; sys.path.insert(0, str(ROOT / "tools")); import plainspeak
+    flagged = [(f.name, s) for f in sorted(SRC.glob("*.html")) for s in plainspeak.sentences(f) if plainspeak.problems(s)]
+    if flagged:
+        print(f"plain speech: {len(flagged)} sentence(s) to look at; run python3 tools/plainspeak.py")
