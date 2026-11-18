@@ -936,11 +936,12 @@
   document.body.appendChild(bubble);
   var bubbleTimer, lastL = null, lastY = null, frame = 0, pendingL = null, dragging = false;
   // The bar's layout, from the bar itself and the letters' offsets (which the magnifier's transforms don't move).
+  // Heights unrounded: offsetHeight gives 17 for 16.8, and by Z that put the magnifier 5px off the pointer.
   function azRows() {
     var btns = az.children;
     if (!btns.length) return null;
-    var h = btns[0].offsetHeight;
-    return { btns: btns, top: az.getBoundingClientRect().top + az.clientTop + btns[0].offsetTop, h: h };
+    var h = parseFloat(getComputedStyle(btns[0]).height) || btns[0].offsetHeight;
+    return { btns: btns, top: az.getBoundingClientRect().top + az.clientTop + (parseFloat(getComputedStyle(az).paddingTop) || 0), h: h };
   }
   // The letter under a point on the bar, from its fixed layout (not from what is drawn there).
   function letterAtY(y) {
@@ -951,7 +952,11 @@
   }
   // The magnifier: each letter swells and leans out by how close it is to the finger, on a smooth curve, and the
   // letters around it slide apart to make room (so the letter under the finger stays under it).
-  var lensY = null, lensFrame = 0, LENS_C = 3.2, LENS_M = .75;
+  // It is drawn afresh every frame where the pointer is (no easing behind it, so it stays on the pointer), and
+  // grows in over a moment when the pointer arrives.
+  // Under a finger the big letters also lean out to the left, clear of the thumb. Under a mouse they grow out from
+  // the bar's edge instead (as a Dock does), so the letter under the pointer stays under it.
+  var lensY = null, lensFrame = 0, lensFrom = 0, lensTouch = false, LENS_C = 3.2, LENS_M = .75, LENS_IN = 160;
   function erf(x) {   // Abramowitz and Stegun 7.1.26, close enough for moving letters
     var t = 1 / (1 + .3275911 * Math.abs(x));
     var y = 1 - ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - .284496736) * t + .254829592) * t * Math.exp(-x * x);
@@ -959,19 +964,23 @@
   }
   function lens(y) {
     if (calm) return;
+    if (lensY === null) lensFrom = performance.now();
     lensY = y;
-    if (lensFrame) return;
-    lensFrame = requestAnimationFrame(function () {
-      lensFrame = 0;
-      var r = azRows();
-      if (!r || lensY === null) return;
-      for (var k = 0; k < r.btns.length; k++) {
-        var e = (r.top + (k + .5) * r.h - lensY) / r.h;   // letters from the finger, + below
-        var w = Math.exp(-e * e / LENS_C);
-        var dy = LENS_M * Math.sqrt(Math.PI * LENS_C) / 2 * erf(e / Math.sqrt(LENS_C)) * r.h;
-        r.btns[k].style.transform = 'translate(' + (-w * 1.1).toFixed(3) + 'rem, ' + dy.toFixed(1) + 'px) scale(' + (1 + w * LENS_M).toFixed(3) + ')';
-      }
-    });
+    if (!lensFrame) lensFrame = requestAnimationFrame(drawLens);
+  }
+  function drawLens() {
+    lensFrame = 0;
+    var r = azRows();
+    if (!r || lensY === null) return;
+    var t = Math.min(1, (performance.now() - lensFrom) / LENS_IN), a = 1 - Math.pow(1 - t, 3), m = LENS_M * a, lean = lensTouch ? 1.1 * a : 0;
+    az.classList.toggle('lens-mouse', !lensTouch);
+    for (var k = 0; k < r.btns.length; k++) {
+      var e = (r.top + (k + .5) * r.h - lensY) / r.h;   // letters from the pointer, + below
+      var w = Math.exp(-e * e / LENS_C);
+      var dy = m * Math.sqrt(Math.PI * LENS_C) / 2 * erf(e / Math.sqrt(LENS_C)) * r.h;
+      r.btns[k].style.transform = 'translate(' + (-w * lean).toFixed(3) + 'rem, ' + dy.toFixed(2) + 'px) scale(' + (1 + w * m).toFixed(3) + ')';
+    }
+    if (t < 1) lensFrame = requestAnimationFrame(drawLens);
   }
   function unlens() {
     lensY = null;
@@ -1008,7 +1017,7 @@
     if (!frame) frame = requestAnimationFrame(function () { frame = 0; if (pendingL) jump(pendingL); pendingL = null; });
   }
   // On release, the letter under the finger wins; check again once the page has settled.
-  function release(y) {
+  function release(y, keepLens) {
     if (typeof y !== 'number') y = lastY;
     var L = typeof y === 'number' ? letterAtY(y) : lastL;
     if (frame) { cancelAnimationFrame(frame); frame = 0; pendingL = null; }
@@ -1017,20 +1026,20 @@
     lastL = null; lastY = null;
     dragging = false;
     az.classList.remove('held');
-    unlens();
+    if (keepLens) lens(y); else unlens();
     Array.prototype.forEach.call(az.children, function (b) { b.classList.remove('touch'); });
     bubbleTimer = setTimeout(function () { bubble.classList.remove('show'); shownL = null; }, 450);
   }
   function hold() { dragging = true; az.classList.add('held'); }
-  az.addEventListener('touchstart', function (e) { e.preventDefault(); hold(); lastL = null; pick(e.touches[0].clientY); }, { passive: false });
+  az.addEventListener('touchstart', function (e) { e.preventDefault(); lensTouch = true; hold(); lastL = null; pick(e.touches[0].clientY); }, { passive: false });
   az.addEventListener('touchmove', function (e) { e.preventDefault(); pick(e.touches[0].clientY); }, { passive: false });
   az.addEventListener('touchend', function (e) { e.preventDefault(); release(e.changedTouches.length ? e.changedTouches[0].clientY : undefined); }, { passive: false });
   az.addEventListener('touchcancel', function () { release(); });
   var mouseDown = false;
-  az.addEventListener('mousedown', function (e) { mouseDown = true; hold(); pick(e.clientY); e.preventDefault(); });
+  az.addEventListener('mousedown', function (e) { mouseDown = true; lensTouch = false; hold(); pick(e.clientY); e.preventDefault(); });
   document.addEventListener('mousemove', function (e) { if (mouseDown) pick(e.clientY); });
-  document.addEventListener('mouseup', function (e) { if (mouseDown) { mouseDown = false; release(e.clientY); } });
-  az.addEventListener('mousemove', function (e) { if (!mouseDown) lens(e.clientY); });
+  document.addEventListener('mouseup', function (e) { if (mouseDown) { mouseDown = false; release(e.clientY, az.contains(e.target)); } });
+  az.addEventListener('mousemove', function (e) { if (!mouseDown) { lensTouch = false; lens(e.clientY); } });
   az.addEventListener('mouseleave', function () { if (!mouseDown) unlens(); });
   az.addEventListener('keydown', function (e) {
     if ((e.key === 'Enter' || e.key === ' ') && e.target.dataset.letter) { e.preventDefault(); jump(e.target.dataset.letter); }

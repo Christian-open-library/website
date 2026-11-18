@@ -352,10 +352,14 @@ li.skel span:nth-child(2) { width: 28%; height: .6rem; margin-top: .45rem; }
 .az button { display: grid; place-items: center; width: 1.65rem; height: 1.15rem; flex: none; min-height: 0; padding: 0; border: 0; border-radius: 999px; background: none; color: var(--ink);
   font: 600 .72rem/1 var(--sans); cursor: pointer; transform-origin: 70% 50%; will-change: transform;
   transition: transform .45s cubic-bezier(.2, 1.3, .3, 1), background .12s, color .12s; }
-/* While the finger is on the bar the magnifier follows it closely; let go and the letters spring back. */
-.az.held button, .az:hover button { transition: transform .09s linear, background .12s, color .12s; }
+/* While the finger or pointer is on the bar the script moves the magnifier every frame, so nothing eases behind
+   it; let go (or move off) and the letters spring back. Hover only where there is a real pointer: a phone's
+   leftover hover would stop the spring. */
+.az.held button { transition: background .12s, color .12s; }
+@media (hover: hover) { .az:hover button { transition: background .12s, color .12s; } }
 /* A wider strip to grab than the letters show (the thumb lands left of them). */
 .az::before { content: ''; position: absolute; top: -.4rem; bottom: -.4rem; left: -.9rem; right: -.2rem; }
+.az.lens-mouse button { transform-origin: 100% 50%; }
 .az button.empty { color: var(--dots); }
 .az button.cur { background: var(--btn); color: var(--on-btn); }
 .az.held button.touch { background: var(--btn); color: var(--on-btn); }
