@@ -519,25 +519,27 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
 .hero .address button.copy { color: var(--h-muted); }
 @media (hover: hover) { .hero .address button.copy:hover { background: var(--h-line); color: var(--h-ink); } }
 
-.phone { position: relative; height: 40rem; margin: 0 0 -11.5rem; padding: .62rem; border-radius: 3.1rem; background: #0b0b0c;
+/* The phone is drawn at one size and scaled as a whole, so it keeps a real phone's shape at any width:
+   its frame and its type follow --pw (the phone's width), and everything on the screen is sized in em. */
+.phone { --pw: 20rem; position: relative; height: calc(var(--pw) * 2); margin: 0 0 -11.5rem; padding: calc(var(--pw) * .031); border-radius: calc(var(--pw) * .155); background: #0b0b0c;
   box-shadow: 0 0 0 1px #2c2d31, 0 40px 80px -30px rgba(0, 0, 0, .55), 0 18px 36px -18px rgba(0, 0, 0, .35); }
-.screen { position: relative; display: flex; flex-direction: column; height: 100%; overflow: hidden; border-radius: 2.55rem; background: #fbfbf9; color: #2e2e2e; font-size: .93rem; font-weight: 400; }
+.screen { position: relative; display: flex; flex-direction: column; height: 100%; overflow: hidden; border-radius: calc(var(--pw) * .1275); background: #fbfbf9; color: #2e2e2e; font-size: calc(var(--pw) * .0465); font-weight: 400; }
 .screen p { margin: 0; }
-.island { position: absolute; top: .55rem; left: 50%; width: 6.4rem; height: 1.75rem; margin-left: -3.2rem; border-radius: 999px; background: #0b0b0c; }
-.sb { display: flex; justify-content: space-between; align-items: center; padding: .85rem 1.6rem .2rem; color: #1a1a1a; font-size: .86rem; font-weight: 600; }
-.sb i { display: flex; gap: .3rem; align-items: center; }
-.sb svg { height: .7rem; fill: currentColor; }
-.screen .chat-top { padding: .7rem 1rem .6rem; border-bottom: 1px solid #ecebe6; text-align: center; color: #1a1a1a; font-weight: 600; }
-.chat { flex: 1; display: flex; flex-direction: column; gap: .85rem; padding: 1rem 1.05rem; overflow: hidden; }
-.screen .me { align-self: flex-end; max-width: 82%; padding: .6rem .85rem; border-radius: 1.1rem 1.1rem .3rem 1.1rem; background: #ecebe6; color: #1a1a1a; line-height: 1.4; }
-.screen .tool { display: inline-flex; align-items: center; gap: .45rem; align-self: flex-start; padding: .3rem .65rem .3rem .45rem; border: 1px solid #e3e3e3; border-radius: 999px; color: #555; font-size: .8rem; }
-.tool img { width: 18px; height: 18px; border-radius: 4px; }
-.screen blockquote { margin: .1rem 0 0; padding: .1rem 0 .1rem .8rem; border-left: 3px solid var(--accent); color: #1a1a1a; font: 1.12rem/1.42 var(--serif); }
-.screen .cite { padding: .65rem .75rem; border-radius: 10px; background: #f1f0eb; color: #555; font-size: .82rem; line-height: 1.4; }
-.cite a { display: inline-flex; align-items: center; gap: .3rem; margin-top: .35rem; color: #1a1a1a; font-weight: 600; text-decoration: none; }
-.cite a svg { width: .85rem; height: .85rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.island { position: absolute; top: .59em; left: 50%; width: 6.88em; height: 1.88em; margin-left: -3.44em; border-radius: 999px; background: #0b0b0c; }
+.sb { display: flex; justify-content: space-between; align-items: center; padding: .99em 1.86em .23em; color: #1a1a1a; font-size: .925em; font-weight: 600; }
+.sb i { display: flex; gap: .35em; align-items: center; }
+.sb svg { height: .81em; fill: currentColor; }
+.screen .chat-top { padding: .75em 1.08em .65em; border-bottom: 1px solid #ecebe6; text-align: center; color: #1a1a1a; font-weight: 600; }
+.chat { flex: 1; display: flex; flex-direction: column; gap: .91em; padding: 1.08em 1.13em; overflow: hidden; }
+.screen .me { align-self: flex-end; max-width: 82%; padding: .65em .91em; border-radius: 1.18em 1.18em .32em 1.18em; background: #ecebe6; color: #1a1a1a; line-height: 1.4; }
+.screen .tool { display: inline-flex; align-items: center; gap: .56em; align-self: flex-start; padding: .375em .81em .375em .56em; border: 1px solid #e3e3e3; border-radius: 999px; color: #555; font-size: .86em; white-space: nowrap; }
+.tool img { width: 1.4em; height: 1.4em; border-radius: .31em; }
+.screen blockquote { margin: .1em 0 0; padding: .06em 0 .06em .71em; border-left: .17em solid var(--accent); color: #1a1a1a; font: 1.2em/1.42 var(--serif); }
+.screen .cite { padding: .79em .91em; border-radius: .76em; background: #f1f0eb; color: #555; font-size: .88em; line-height: 1.4; }
+.cite a { display: inline-flex; align-items: center; gap: .37em; margin-top: .43em; color: #1a1a1a; font-weight: 600; text-decoration: none; }
+.cite a svg { width: 1.04em; height: 1.04em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .cite a:focus-visible { outline-color: #1a1a1a; }
-.screen .compose { margin: 0 .8rem 1.4rem; padding: .7rem 1rem; border: 1px solid #e3e3e3; border-radius: 999px; background: #fff; color: #767676; font-size: .9rem; }
+.screen .compose { margin: 0 .89em 1.56em; padding: .78em 1.11em; border: 1px solid #e3e3e3; border-radius: 999px; background: #fff; color: #767676; font-size: .97em; }
 /* One moment: the search runs, then the answer arrives and its words are marked like a highlighter. */
 @media (prefers-reduced-motion: no-preference) {
   .screen .tool, .screen blockquote, .screen .cite { animation: rise .6s var(--ease) both; }
@@ -558,13 +560,10 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
   .hero h1 { order: 1; margin: 0 0 .75rem; font-size: clamp(2.45rem, 11vw, 3.4rem); line-height: 1; }
   .hero-side .lead { order: 2; margin: 0 0 1.1rem; max-width: 30rem; font-size: 1.08rem; }
   .hero-act { order: 3; margin: 0 0 1.6rem !important; }
-  .phone { order: 4; align-self: center; width: min(18.75rem, 80vw); height: 31rem; margin: 0; }
-  .screen { font-size: .88rem; }
-  .screen .tool { white-space: nowrap; font-size: .74rem; }
-  .screen blockquote { font-size: 1.05rem; }
-  .chat { gap: .7rem; padding-top: .8rem; }
-  /* The band is painted from the phone, so it always ends at the same place on it. */
-  .phone::before { content: ""; position: absolute; z-index: -1; left: -100vw; right: -100vw; top: -200vh; bottom: 42%; background: var(--h-bg); }
+  .phone { --pw: min(16.5rem, 68vw); order: 4; align-self: center; width: var(--pw); height: calc(var(--pw) * 2.05); margin: 0; }
+  /* The band is painted from the phone, so it always ends at the same place on it. In dark mode the page is
+     nearly the band's colour, so the band runs past the phone instead of stopping halfway down it. */
+  .phone::before { content: ""; position: absolute; z-index: -1; left: -100vw; right: -100vw; top: -200vh; bottom: 40%; background: var(--h-bg); }
   .hero ul.facts { order: 5; flex-direction: row; flex-wrap: wrap; gap: .45rem 1.2rem; margin: 1.75rem 0 1rem; padding: .65rem 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
   .hero ul.facts li { color: var(--ink); }
   .hero-side .hero-how { order: 6; margin: 0 0 .9rem; max-width: 34rem; color: var(--text); }
@@ -574,6 +573,9 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
   .hero .address button.copy { color: var(--muted); }
   .page-index .prose { padding-top: 1rem; }
   .hero .address-box :focus-visible { outline-color: var(--ink); }
+}
+@media (max-width: 72rem) and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .phone::before { bottom: -2.25rem; }
 }
 @media (max-width: 40rem) { .hero-in { padding: 0 1rem; } }
 
