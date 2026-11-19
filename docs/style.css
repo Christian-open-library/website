@@ -518,8 +518,6 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
 @media (min-width: 74rem) { .hero .address code wbr { display: none; } }
 .hero .address button.copy { color: var(--h-muted); }
 @media (hover: hover) { .hero .address button.copy:hover { background: var(--h-line); color: var(--h-ink); } }
-.hero .hero-note { font-size: .88rem; color: var(--h-muted); }
-.hero .hero-note a { color: var(--h-text); text-decoration-color: #75767c; }
 
 .phone { position: relative; height: 40rem; margin: 0 0 -11.5rem; padding: .62rem; border-radius: 3.1rem; background: #0b0b0c;
   box-shadow: 0 0 0 1px #2c2d31, 0 40px 80px -30px rgba(0, 0, 0, .55), 0 18px 36px -18px rgba(0, 0, 0, .35); }
@@ -551,16 +549,33 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
 @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
 @keyframes sweep { to { background-size: 100% 100%; } }
 .page-index .prose > h2:first-child { margin-top: 0; }
+/* Phones and tablets: the headline, one line and the button, then the phone rising out of the band, all on the
+   first screen. The band stops part way up the phone; the facts and the address follow on the page. */
 @media (max-width: 72rem) {
-  .hero { padding-top: 2.5rem; margin-bottom: 9rem; }
-  .hero-in { grid-template-columns: 1fr; gap: 1.25rem; }
-  .hero h1 { margin-bottom: 1.1rem; font-size: clamp(2.3rem, 9.5vw, 3.2rem); }
-  .hero ul.facts { flex-direction: row; flex-wrap: wrap; gap: .45rem 1.2rem; }
-  .hero-main, .hero-side { padding-top: 0; }
-  .hero-side { order: 1; } .phone { order: 2; }
-  .phone { justify-self: center; width: min(19.5rem, 86vw); height: 34rem; margin: 1.25rem 0 -9rem; }
-  .hero .address code { font-size: .86rem; }
+  .hero { position: relative; isolation: isolate; overflow: clip; padding: 1.75rem 0 0; margin-bottom: 0; background: none; }
+  .hero-in { display: flex; flex-direction: column; gap: 0; }
+  .hero-main, .hero-side { display: contents; }
+  .hero h1 { order: 1; margin: 0 0 .75rem; font-size: clamp(2.45rem, 11vw, 3.4rem); line-height: 1; }
+  .hero-side .lead { order: 2; margin: 0 0 1.1rem; max-width: 30rem; font-size: 1.08rem; }
+  .hero-act { order: 3; margin: 0 0 1.6rem !important; }
+  .phone { order: 4; align-self: center; width: min(18.75rem, 80vw); height: 31rem; margin: 0; }
+  .screen { font-size: .88rem; }
+  .screen .tool { white-space: nowrap; font-size: .74rem; }
+  .screen blockquote { font-size: 1.05rem; }
+  .chat { gap: .7rem; padding-top: .8rem; }
+  /* The band is painted from the phone, so it always ends at the same place on it. */
+  .phone::before { content: ""; position: absolute; z-index: -1; left: -100vw; right: -100vw; top: -200vh; bottom: 42%; background: var(--h-bg); }
+  .hero ul.facts { order: 5; flex-direction: row; flex-wrap: wrap; gap: .45rem 1.2rem; margin: 1.75rem 0 1rem; padding: .65rem 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .hero ul.facts li { color: var(--ink); }
+  .hero-side .hero-how { order: 6; margin: 0 0 .9rem; max-width: 34rem; color: var(--text); }
+  .hero .address-box { order: 7; max-width: 34rem; }
+  .hero .address-box p { color: var(--muted); }
+  .hero .address code { background: var(--bg); border-color: var(--line-2); color: var(--ink); font-size: .86rem; }
+  .hero .address button.copy { color: var(--muted); }
+  .page-index .prose { padding-top: 1rem; }
+  .hero .address-box :focus-visible { outline-color: var(--ink); }
 }
+@media (max-width: 40rem) { .hero-in { padding: 0 1rem; } }
 
 /* Steps and shelves: open columns under a rule, no boxes; a plain number or a bare icon to mark each. */
 .prose ol.tiles, .prose ul.cards, .prose ul.chips, .prose ul.more { list-style: none; padding: 0; }
