@@ -574,8 +574,10 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
   .page-index .prose { padding-top: 1rem; }
   .hero .address-box :focus-visible { outline-color: var(--ink); }
 }
+/* In dark mode the band ends where the facts begin, and its edge is their top rule. */
 @media (max-width: 72rem) and (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .phone::before { bottom: -2.25rem; }
+  :root:not([data-theme="light"]) .phone::before { bottom: -1.75rem; }
+  :root:not([data-theme="light"]) .hero ul.facts { border-top: 0; padding-top: .9rem; }
 }
 @media (max-width: 40rem) { .hero-in { padding: 0 1rem; } }
 
