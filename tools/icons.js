@@ -9,9 +9,10 @@ const icon = 'data:image/svg+xml;base64,' + Buffer.from(svg).toString('base64');
 const font = 'data:font/woff2;base64,' + fs.readFileSync(path.join(DOCS, 'fonts/geist-latin-wght-normal.woff2')).toString('base64');
 
 // Link-preview card in the site's own look: name, the facts row and the example question from the home page.
-// The work count comes from docs/catalog.json (rounded down to the hundred), so the nightly can redraw it.
+// The work count comes from docs/catalog.json, shown as "Over N" with N the hundred below it (7,632 -> Over 7,600;
+// exactly 7,600 -> Over 7,500), so the nightly can redraw it and it is always true.
 const works = JSON.parse(fs.readFileSync(path.join(DOCS, 'catalog.json'), 'utf8')).works.length;
-const about = (Math.floor(works / 100) * 100).toLocaleString('en-US');
+const over = (Math.floor((works - 1) / 100) * 100).toLocaleString('en-US');
 const ic = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
 const chat = `<svg viewBox="0 0 24 24" fill="none" stroke="#e2bc62" stroke-width="1.8" stroke-linejoin="round"><path d="M4 5h16v10H9l-5 4z"/></svg>`;
 const card = `<!doctype html><style>
@@ -35,7 +36,7 @@ blockquote { margin: 0 0 14px; padding-left: 22px; border-left: 5px solid #e2bc6
 </style>
 <header><img src="${icon}"><h1>Christian Open Library</h1></header>
 <ul>
-<li>${ic('<path d="M3 5.5h6a3 3 0 0 1 3 3V20a2.5 2.5 0 0 0-2.5-2.5H3zM21 5.5h-6a3 3 0 0 0-3 3V20a2.5 2.5 0 0 1 2.5-2.5H21z"/>')}About ${about} works</li>
+<li>${ic('<path d="M3 5.5h6a3 3 0 0 1 3 3V20a2.5 2.5 0 0 0-2.5-2.5H3zM21 5.5h-6a3 3 0 0 0-3 3V20a2.5 2.5 0 0 1 2.5-2.5H21z"/>')}Over ${over} works</li>
 <li>${ic('<path d="M12 2v5M10 4h4M5 21V12l7-5 7 5v9M10 21v-4a2 2 0 0 1 4 0v4"/>')}80+ denominations</li>
 <li>${ic('<circle cx="12" cy="12" r="9"/><path d="M10.5 9.5a3 3 0 1 0 0 5M16.5 9.5a3 3 0 1 0 0 5"/>')}Public domain</li>
 <li>${ic('<path d="M8 8l-4 4 4 4M16 8l4 4-4 4"/>')}Open code</li>
@@ -61,5 +62,5 @@ blockquote { margin: 0 0 14px; padding-left: 22px; border-left: 5px solid #e2bc6
   await p.evaluate(() => document.fonts.ready);
   await p.screenshot({ path: path.join(DOCS, 'img/og.png') });
   await b.close();
-  console.log(ogOnly ? `wrote og.png (about ${about} works)` : `wrote favicon.png, apple-touch-icon.png, icon-512.png, og.png (about ${about} works)`);
+  console.log(ogOnly ? `wrote og.png (over ${over} works)` : `wrote favicon.png, apple-touch-icon.png, icon-512.png, og.png (over ${over} works)`);
 })();

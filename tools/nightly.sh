@@ -5,7 +5,7 @@ cd "$(dirname "$0")/.."
 if [ -n "$(git status --porcelain)" ]; then echo "$(date '+%F %T') skipped: uncommitted changes in $(pwd)"; exit 0; fi
 git pull -q --ff-only origin main
 python3 tools/update_catalog.py
-# Link-preview card: redrawn from catalog.json so its "About N works" stays current. A new address when it changes,
+# Link-preview card: redrawn from catalog.json so its "Over N works" stays current. A new address when it changes,
 # so X and other sites fetch the new picture.
 NODE_PATH="$HOME/Projects/node_modules" node tools/icons.js --og >/dev/null
 if ! git diff --quiet -- docs/img/og.png; then
