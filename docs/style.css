@@ -89,7 +89,6 @@ header.site .bar { max-width: 72rem; margin: 0 auto; padding: .55rem 1.25rem; di
 .page-head h1 { font-size: clamp(2rem, 5vw, 2.6rem); line-height: 1.1; font-weight: 700; letter-spacing: -.025em; margin: 0 0 .85rem; }
 .page-head .lead { font-size: 1.15rem; line-height: 1.55; color: var(--text); margin: .9rem 0 0; max-width: 44rem; }
 .page-head .meta { margin: .6rem 0 0; font-size: .95rem; color: var(--muted); }
-.home-head h1 { font-size: clamp(2.2rem, 6vw, 2.9rem); }
 
 /* Fact strip */
 ul.facts { list-style: none; margin: 0; padding: .65rem 0; display: flex; flex-wrap: wrap; gap: .45rem 1.6rem; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
@@ -483,7 +482,8 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
   table.stack tbody th { width: auto; }
 }
 @media print {
-  header.site, .actions, button.copy, .skip, .jump { display: none !important; }
+  header.site, .actions, button.copy, .skip, .jump, nav.side { display: none !important; }
+  .side-page { display: block; }
   body { background: #fff; color: #000; }
 }
 
@@ -492,21 +492,75 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
 @media (hover: hover) { .nav-desktop .nav-give a:hover { background: var(--btn); color: var(--on-btn); opacity: .88; } }
 .nav-desktop .nav-give a[aria-current="page"] { background: var(--btn); color: var(--on-btn); box-shadow: 0 0 0 2px var(--accent); }
 
-/* The example: the question on a dark panel, the answer beside it set like print, the citation under it. */
-.demo { margin: 1.5rem 0 .25rem; }
-.demo-card { display: grid; grid-template-columns: minmax(13rem, 32%) 1fr; border: 1px solid var(--line-2); border-radius: 12px; overflow: hidden; }
-.demo .demo-q { display: flex; flex-direction: column; justify-content: center; gap: .5rem; margin: 0; padding: .9rem 1.1rem; background: var(--btn); color: var(--on-btn); font-size: 1.08rem; font-weight: 600; line-height: 1.35; }
-.demo .demo-q::before { content: ""; width: 1.15rem; height: 1.15rem; background: var(--accent); -webkit-mask: var(--chat) center / contain no-repeat; mask: var(--chat) center / contain no-repeat; }
-/* The search example: the words typed, as in the box, not a question. */
-.demo .demo-q.demo-search { font-weight: 500; }
-.demo + .tiles { margin-top: 1.75rem; }
-.demo .demo-q.demo-search::before { -webkit-mask-image: var(--mag); mask-image: var(--mag); }
-.demo-a { padding: .9rem 1.1rem .85rem; background: var(--tile); }
-.demo blockquote { margin: 0 0 .45rem; padding-left: .85rem; border-left: 3px solid var(--accent); color: var(--ink); font: 1.15rem/1.45 var(--serif); }
-.demo .demo-src { margin: 0; font-size: .9rem; color: var(--muted); }
-.demo .demo-src a { color: var(--ink); font-weight: 600; white-space: nowrap; }
-.demo figcaption { margin-top: .5rem; font-size: .9rem; color: var(--muted); }
-@media (max-width: 46rem) { .demo-card { grid-template-columns: 1fr; } .demo .demo-q { flex-direction: row; align-items: flex-start; gap: .6rem; padding: .75rem 1rem; } .demo .demo-q::before { flex: none; margin-top: .15rem; } }
+/* Home: a dark band with the library at work in a phone. The phone runs past the band onto the page below. */
+.hero { --h-bg: #161719; --h-ink: #f7f7f4; --h-text: #d9d9d3; --h-muted: #a9a9a2; --h-line: #3a3b40; --h-box: #1f2024;
+  background: var(--h-bg); color: var(--h-text); padding: 4.25rem 0 0; margin-bottom: 11.5rem; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .hero { --h-bg: #202125; --h-box: #2a2b30; --h-line: #45464c; } }
+.hero-in { max-width: 74rem; margin: 0 auto; padding: 0 1.5rem; display: grid; grid-template-columns: minmax(0, 1fr) 20rem minmax(0, 1fr); gap: 2.75rem; align-items: start; }
+.hero h1 { margin: 0 0 1.5rem; color: var(--h-ink); font-size: clamp(2.6rem, 4.6vw, 4.1rem); line-height: 1.02; letter-spacing: -.035em; font-weight: 650; text-wrap: balance; }
+.hero ul.facts { flex-direction: column; gap: .55rem; padding: 0; border: 0; }
+.hero ul.facts li { color: var(--h-text); }
+.hero-main { padding-top: .5rem; }
+.hero-side { padding-top: .75rem; }
+.hero-side p { margin: 0 0 1rem; max-width: 25rem; font-size: 1.02rem; line-height: 1.55; }
+.hero-side .lead { color: var(--h-ink); font-size: 1.15rem; }
+.hero-act { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1.2rem; margin: 1.4rem 0 1.5rem !important; }
+.btn-hero { gap: .5rem; border-radius: 999px; padding: .7rem 1.2rem .7rem 1.35rem; background: var(--h-ink); color: #161719; }
+.btn-hero svg { width: 1.05rem; height: 1.05rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform .25s var(--ease); }
+@media (hover: hover) { .btn-hero:hover svg { transform: translateX(3px); } .btn-hero:hover { opacity: .92; } }
+.hero-alt { color: var(--h-ink); font-weight: 500; text-decoration-color: #75767c; }
+.hero :focus-visible { outline-color: var(--h-ink); }
+.hero .address-box { max-width: 25rem; margin: 0 0 .9rem; }
+.hero .address-box p { margin: 0 0 .4rem; color: var(--h-muted); }
+.hero .address code { padding-left: .7rem; background: var(--h-box); border-color: var(--h-line); color: var(--h-ink); font-size: .78rem; overflow-wrap: normal; }
+.hero .address.has-copy code { padding-right: 2.9rem; }
+/* Wide enough for the address on one line; narrower, it breaks after .org, never inside a word. */
+@media (min-width: 74rem) { .hero .address code wbr { display: none; } }
+.hero .address button.copy { color: var(--h-muted); }
+@media (hover: hover) { .hero .address button.copy:hover { background: var(--h-line); color: var(--h-ink); } }
+.hero .hero-note { font-size: .88rem; color: var(--h-muted); }
+.hero .hero-note a { color: var(--h-text); text-decoration-color: #75767c; }
+
+.phone { position: relative; height: 40rem; margin: 0 0 -11.5rem; padding: .62rem; border-radius: 3.1rem; background: #0b0b0c;
+  box-shadow: 0 0 0 1px #2c2d31, 0 40px 80px -30px rgba(0, 0, 0, .55), 0 18px 36px -18px rgba(0, 0, 0, .35); }
+.screen { position: relative; display: flex; flex-direction: column; height: 100%; overflow: hidden; border-radius: 2.55rem; background: #fbfbf9; color: #2e2e2e; font-size: .93rem; font-weight: 400; }
+.screen p { margin: 0; }
+.island { position: absolute; top: .55rem; left: 50%; width: 6.4rem; height: 1.75rem; margin-left: -3.2rem; border-radius: 999px; background: #0b0b0c; }
+.sb { display: flex; justify-content: space-between; align-items: center; padding: .85rem 1.6rem .2rem; color: #1a1a1a; font-size: .86rem; font-weight: 600; }
+.sb i { display: flex; gap: .3rem; align-items: center; }
+.sb svg { height: .7rem; fill: currentColor; }
+.screen .chat-top { padding: .7rem 1rem .6rem; border-bottom: 1px solid #ecebe6; text-align: center; color: #1a1a1a; font-weight: 600; }
+.chat { flex: 1; display: flex; flex-direction: column; gap: .85rem; padding: 1rem 1.05rem; overflow: hidden; }
+.screen .me { align-self: flex-end; max-width: 82%; padding: .6rem .85rem; border-radius: 1.1rem 1.1rem .3rem 1.1rem; background: #ecebe6; color: #1a1a1a; line-height: 1.4; }
+.screen .tool { display: inline-flex; align-items: center; gap: .45rem; align-self: flex-start; padding: .3rem .65rem .3rem .45rem; border: 1px solid #e3e3e3; border-radius: 999px; color: #555; font-size: .8rem; }
+.tool img { width: 18px; height: 18px; border-radius: 4px; }
+.screen blockquote { margin: .1rem 0 0; padding: .1rem 0 .1rem .8rem; border-left: 3px solid var(--accent); color: #1a1a1a; font: 1.12rem/1.42 var(--serif); }
+.screen .cite { padding: .65rem .75rem; border-radius: 10px; background: #f1f0eb; color: #555; font-size: .82rem; line-height: 1.4; }
+.cite a { display: inline-flex; align-items: center; gap: .3rem; margin-top: .35rem; color: #1a1a1a; font-weight: 600; text-decoration: none; }
+.cite a svg { width: .85rem; height: .85rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.cite a:focus-visible { outline-color: #1a1a1a; }
+.screen .compose { margin: 0 .8rem 1.4rem; padding: .7rem 1rem; border: 1px solid #e3e3e3; border-radius: 999px; background: #fff; color: #767676; font-size: .9rem; }
+/* One moment: the search runs, then the answer arrives and its words are marked like a highlighter. */
+@media (prefers-reduced-motion: no-preference) {
+  .screen .tool, .screen blockquote, .screen .cite { animation: rise .6s var(--ease) both; }
+  .screen .tool { animation-delay: .35s; }
+  .screen blockquote { animation-delay: .9s; }
+  .screen .cite { animation-delay: 1.15s; }
+  .screen blockquote { background: linear-gradient(var(--accent-soft), var(--accent-soft)) no-repeat 0 0 / 0% 100%; animation: rise .6s var(--ease) .9s both, sweep .9s var(--ease) 1.45s both; }
+}
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+@keyframes sweep { to { background-size: 100% 100%; } }
+.page-index .prose > h2:first-child { margin-top: 0; }
+@media (max-width: 72rem) {
+  .hero { padding-top: 2.5rem; margin-bottom: 9rem; }
+  .hero-in { grid-template-columns: 1fr; gap: 1.25rem; }
+  .hero h1 { margin-bottom: 1.1rem; font-size: clamp(2.3rem, 9.5vw, 3.2rem); }
+  .hero ul.facts { flex-direction: row; flex-wrap: wrap; gap: .45rem 1.2rem; }
+  .hero-main, .hero-side { padding-top: 0; }
+  .hero-side { order: 1; } .phone { order: 2; }
+  .phone { justify-self: center; width: min(19.5rem, 86vw); height: 34rem; margin: 1.25rem 0 -9rem; }
+  .hero .address code { font-size: .86rem; }
+}
 
 /* Steps and shelves: open columns under a rule, no boxes; a plain number or a bare icon to mark each. */
 .prose ol.tiles, .prose ul.cards, .prose ul.chips, .prose ul.more { list-style: none; padding: 0; }
@@ -734,6 +788,7 @@ footer.site { border-top: 1px solid var(--line); font-size: .95rem; color: var(-
   transition: transform .35s cubic-bezier(.2, 1.1, .3, 1), box-shadow .35s, opacity .2s, visibility 0s .2s; opacity: 0; visibility: hidden; transform: translateY(.75rem) scale(.96); }
 .lk-launch.lk-here { opacity: 1; visibility: visible; transform: none; transition: transform .35s cubic-bezier(.2, 1.1, .3, 1), box-shadow .35s, opacity .2s; }
 .lk-launch.lk-wait { opacity: 0; transition: none; }
+.lk-launch.lk-here.lk-band { opacity: 0; visibility: hidden; transform: translateY(8px) scale(.96); transition: transform .25s var(--ease), opacity .2s, visibility 0s .25s; }
 @media (hover: hover) { .lk-launch.lk-here:hover { transform: translateY(-2px); box-shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 18px 40px -12px rgba(0, 0, 0, .34); } }
 .lk-launch:active { transform: scale(.96); }
 .lk-launch svg, .lk-ghost svg, .lk-form > svg, .lk-hero > svg { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
@@ -902,3 +957,32 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
   table.levels.stack td::before { display: none; }
   .org-lib { padding: 1.1rem 1.1rem .3rem; }
 }
+
+/* Long pages (Accuracy): the page's sections down the side, the one you are reading marked.
+   On a phone the list folds into a bar under the header that names the section you are in. */
+.side-page { max-width: 72rem; margin: 0 auto; padding: 0 1.25rem; display: grid; grid-template-columns: 14.5rem minmax(0, var(--width)); gap: 3.25rem; justify-content: center; align-items: start; }
+.side { position: sticky; top: 4.75rem; margin-top: 2.6rem; max-height: calc(100vh - 6rem); overflow: auto; overscroll-behavior: contain; }
+.side ol { list-style: none; margin: 0; padding: 0 0 0 .1rem; border-left: 1px solid var(--line-2); }
+.side li { margin: 0; }
+.side a { display: block; margin-left: -1px; padding: .42rem .8rem; border-left: 2px solid transparent; border-radius: 0 var(--radius) var(--radius) 0; color: var(--muted); font-size: .92rem; line-height: 1.35; text-decoration: none; transition: background .2s, color .2s, border-color .2s; }
+@media (hover: hover) { .side a:hover { background: var(--tile); color: var(--ink); } }
+.side a[aria-current] { background: var(--accent-soft); border-left-color: var(--accent); color: var(--ink); font-weight: 600; }
+.side-main .page-head { padding-top: 2.25rem; }
+.side-main .prose { padding-top: .5rem; }
+.side-now { display: none; }
+@media (max-width: 56rem) {
+  .side-page { display: block; padding: 0; }
+  .side-main { padding: 0 1.5rem; }
+  .side { position: static; max-height: none; margin: 1.25rem 1.5rem 0; overflow: visible; }
+  /* With the script: a bar that stays under the header and opens the list. */
+  .side.js { position: sticky; top: var(--head-h, 3.5rem); z-index: 40; margin: 0; background: color-mix(in srgb, var(--bg) 94%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  .side.js .side-now { display: flex; align-items: center; gap: .6rem; width: 100%; min-height: 48px; padding: .4rem 1.5rem; border: 0; background: none; color: var(--ink); font: 600 .95rem/1.3 var(--sans); text-align: left; cursor: pointer; }
+  .side-now span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .side-now svg { flex: none; width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform .2s var(--ease); }
+  .side-now[aria-expanded="true"] svg { transform: rotate(180deg); }
+  .side.js ol { display: none; max-height: 60vh; overflow: auto; padding: .35rem 1rem .75rem; border: 0; border-top: 1px solid var(--line); background: var(--bg); }
+  .side.js.open ol { display: block; }
+  .side.js a { border-left: 0; border-radius: var(--radius); padding: .6rem .7rem; font-size: 1rem; }
+}
+@media (max-width: 40rem) { .side-main { padding: 0 1rem; } .side.js .side-now { padding: .4rem 1rem; } }
+@media (prefers-reduced-motion: reduce) { .side a, .side-now svg { transition: none; } }

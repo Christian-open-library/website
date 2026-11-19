@@ -93,7 +93,7 @@
   function frame(r, rad) { var b = box(r); b.borderRadius = rad; return b; }
 
   // Where the panel comes from and goes back to: the home page's big box while it is on screen, else the launcher.
-  function source() { return hero && !launch.classList.contains('lk-here') ? hero : launch; }
+  function source() { return hero && (!launch.classList.contains('lk-here') || launch.classList.contains('lk-band')) ? hero : launch; }
 
   function open(q, el) {
     if (isOpen) return;
@@ -421,10 +421,17 @@
       step(t0);   // placed before it is shown, so it never appears where the last flight left it
       ghost.classList.add('lk-flying');
     };
+    // The home page's dark band holds the set-up box: the launcher stays out of the way while the band is on
+    // screen (on a phone it would sit on the copy button), and comes in once the band has gone.
+    var band = document.querySelector('.hero');
+    if (band) new IntersectionObserver(function (es) {
+      launch.classList.toggle('lk-band', es[es.length - 1].isIntersecting);
+    }, { rootMargin: '-56px 0px 0px 0px' }).observe(band);
     new IntersectionObserver(function (es) {
       var seen = es[es.length - 1].isIntersecting;
       if (first) { first = false; launch.classList.toggle('lk-here', !seen); return; }
-      if (isOpen) { launch.classList.toggle('lk-here', !seen); return; }
+      // While the launcher is out of the way there is nothing to fly from or to.
+      if (isOpen || launch.classList.contains('lk-band')) { launch.classList.toggle('lk-here', !seen); return; }
       if (!seen && !launch.classList.contains('lk-here')) {
         launch.classList.add('lk-here', 'lk-wait');
         hero.classList.add('lk-wait');

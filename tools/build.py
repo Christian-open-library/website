@@ -84,6 +84,32 @@ LAYOUT = """<!doctype html>
 </html>
 """
 
+# Long pages with a list of their sections down the side (on a phone, a bar that opens the list).
+SIDE = ("accuracy",)
+
+def side_nav(body):
+    """Give every h2 an id (keeping any it has) and make the side list from them, so the two can't drift."""
+    links, used = [], set()
+    def one(m):
+        attrs, text = m.group(1), m.group(2)
+        label = re.sub(r"<[^>]+>", "", text).strip()
+        mid = re.search(r'\bid="([^"]+)"', attrs)
+        if mid:
+            hid = mid.group(1)
+        else:
+            hid = re.sub(r"[^a-z0-9]+", "-", label.lower().replace("'", "")).strip("-")
+            attrs = f' id="{hid}"' + attrs
+        assert hid not in used, f"two sections called {hid}"
+        used.add(hid)
+        links.append(f'    <li><a href="#{hid}">{label}</a></li>')
+        return f"<h2{attrs}>{text}</h2>"
+    body = re.sub(r"<h2([^>]*)>(.*?)</h2>", one, body, flags=re.S)
+    chev = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>'
+    nav = ('<nav class="side" aria-label="On this page">\n'
+           f'  <button class="side-now" type="button" aria-expanded="false" hidden><span></span>{chev}</button>\n'
+           '  <ol>\n' + "\n".join(links) + '\n  </ol>\n</nav>')
+    return body, nav
+
 def asset_version(name):
     """Short hash of a file, added to its link so browsers fetch a changed file at once."""
     return hashlib.sha256((OUT / name).read_bytes()).hexdigest()[:8]
@@ -111,8 +137,12 @@ def build():
             items.append(f'        <li{cls}><a href="{key}.html"{cur}>{label}</a></li>')
         foot = [f'        <li><a href="{k}.html">{l}</a></li>' for k, l in NAV]
         if name == "index":
-            main = (f'<div class="page-head home-head">\n  <div class="wrap">\n{head.strip()}\n  </div>\n</div>\n'
-                    f'<div class="wrap prose">\n{body.strip()}\n</div>')
+            # The home page's heading is a full-width band with its own layout (the hero), not the usual page head.
+            main = f'{head.strip()}\n<div class="wrap prose">\n{body.strip()}\n</div>'
+        elif name in SIDE:
+            body, nav = side_nav(body)
+            main = (f'<div class="side-page">\n{nav}\n<div class="side-main">\n<div class="page-head">\n{head.strip()}\n</div>\n'
+                    f'<div class="prose">\n{body.strip()}\n</div>\n</div>\n</div>')
         else:
             main = (f'<div class="page-head">\n  <div class="wrap">\n{head.strip()}\n  </div>\n</div>\n'
                     f'<div class="wrap prose">\n{body.strip()}\n</div>')

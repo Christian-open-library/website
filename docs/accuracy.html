@@ -23,7 +23,7 @@
 <meta property="og:image:alt" content="Christian Open Library: an open book on a dark tile, with the site's name.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" href="fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css?v=3cbdd8de">
+<link rel="stylesheet" href="style.css?v=8b663df7">
 </head>
 <body class="page-accuracy">
 <a class="skip" href="#main">Skip to the page</a>
@@ -56,13 +56,27 @@
   </div>
 </header>
 <main id="main">
+<div class="side-page">
+<nav class="side" aria-label="On this page">
+  <button class="side-now" type="button" aria-expanded="false" hidden><span></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+  <ol>
+    <li><a href="#check">How to check a quotation</a></li>
+    <li><a href="#what-the-library-promises">What the library promises</a></li>
+    <li><a href="#what-it-cant-promise">What it can't promise</a></li>
+    <li><a href="#tests">Finding the right book</a></li>
+    <li><a href="#saying-when-it-has-nothing">Saying when it has nothing</a></li>
+    <li><a href="#how-it-searches">How it searches</a></li>
+    <li><a href="#what-isnt-measured">What isn't measured</a></li>
+    <li><a href="#the-questions-are-public">The questions are public</a></li>
+    <li><a href="#where-to-look-further">Where to look further</a></li>
+  </ol>
+</nav>
+<div class="side-main">
 <div class="page-head">
-  <div class="wrap">
 <h1>Accuracy</h1>
 <p class="lead">Every quotation comes with a link to its source. Check it before you use it. This page shows how, what the library promises and how well it finds things.</p>
-  </div>
 </div>
-<div class="wrap prose">
+<div class="prose">
 <h2 id="check">How to check a quotation</h2>
 <ol class="steps">
   <li>Find the link that comes with the quotation. Your AI app is told to put one after every quotation.</li>
@@ -71,7 +85,7 @@
   <li>Not sure who said it? Ask: <em>"Check this quote: ..."</em>. The library's quote checker tells you if the words are in the library word for word or worded differently. It also tells you if someone else wrote them or if they aren't found. It says when a scanned book differs from your wording by a single letter (check the scan). It also says when the words are there only with others left out in between.</li>
 </ol>
 
-<h2>What the library promises</h2>
+<h2 id="what-the-library-promises">What the library promises</h2>
 <ul class="points">
   <li><strong>Quotations are word for word from the library's copy.</strong> Each comes with the author and title. The year and page are given where the source has them.</li>
   <li><strong>Every quotation can be traced.</strong> Each result has a reference and a link to where the library's copy came from. Results from scanned books link to the scan itself, open at the passage with the words highlighted.</li>
@@ -81,7 +95,7 @@
   <li><strong>Texts aren't modernized.</strong> The library doesn't modernize, correct or abridge what it copies. Some sources had already edited their editions. Each file names its source, so you can see which edition you're reading.</li>
 </ul>
 
-<h2>What it can't promise</h2>
+<h2 id="what-it-cant-promise">What it can't promise</h2>
 <ul class="points">
   <li><strong>The copies aren't perfect.</strong> Scanned books have misread letters. Some texts have no year or page numbers.</li>
   <li><strong>Most church documents are historical.</strong> Most denominational records are editions from before 1931. A church's current rules may differ. Some bodies have since merged or divided.</li>
@@ -115,7 +129,7 @@
   <li><strong>A miss doesn't always mean a wrong answer.</strong> On doctrine questions several works say much the same thing, and the test counts only the one named in advance.</li>
 </ul>
 
-<h2>Saying when it has nothing</h2>
+<h2 id="saying-when-it-has-nothing">Saying when it has nothing</h2>
 <p class="meta">Tested again 12 November 2026, on the current connector.</p>
 <p>Each result is marked as an exact, close, partial or loose match. When nothing is close, the result opens with "NO CLOSE MATCH". When everything is loose, it opens with "NOT FOUND". The cut-offs were set from the searches below, which were then run against the live connector.</p>
 <div class="tablewrap" role="region" aria-label="Results when the library has nothing" tabindex="0">
@@ -132,27 +146,29 @@
 <p>The first run was on 11 November, before the search upgrade. It gave the same results for the first two tests. On the 75 questions it gave 6 warnings. In 4 of them the right work really was missing. A run earlier on 12 November gave 1. So a missing warning doesn't prove the right book was found.</p>
 <p>In every run "NOT FOUND" was never wrong. A "close" match means the passage is about what was asked, not that it is the source. The connector now tells the AI so. It also tells it to use the quote checker for "who said this?" questions. Sometimes a close passage credits the words to another writer, as in "the story of Augustine" or "so Richard Baxter wrote". Then the result says it may be quoting or retelling that writer. On these 95 searches that note appeared twice, both times correctly. It can't catch a passage that is simply on the same subject. Still check the author and title on every result.</p>
 
-<h2>How it searches</h2>
+<h2 id="how-it-searches">How it searches</h2>
 
 <p>Each search runs two ways at once. A keyword search finds passages that contain your words. It matches old spellings automatically. A meaning search finds passages about what you described. The meaning search uses embedding models from Voyage AI. The books are indexed with voyage-4-lite. Your question is read by the larger voyage-4-large. A third Voyage model, rerank-3, puts the combined results in order.</p>
 <p>To do this, Voyage sees your search words and the passages it is ranking. It keeps nothing (see <a href="privacy.html">Privacy</a>). The scores on this page were measured on exactly this setup. The code is <a href="https://github.com/Christian-open-library/Connector">public</a>.</p>
 
-<h2>What isn't measured</h2>
+<h2 id="what-isnt-measured">What isn't measured</h2>
 <ul class="points">
   <li><strong>The AI app's answer.</strong> These tests cover what the connector returns. Your AI app then writes the answer. It can summarize badly or quote from memory. Nothing here measures that.</li>
   <li><strong>Errors in the texts.</strong> Scanned books have misread letters. The error rate hasn't been measured yet.</li>
   <li><strong>Whether the best passage came first.</strong> The test counts a passage from the right work. It doesn't judge whether it is the best passage in that work.</li>
 </ul>
 
-<h2>The questions are public</h2>
+<h2 id="the-questions-are-public">The questions are public</h2>
 <p>The 75 questions, the 20 searches the library can't answer (<code>unanswerable.jsonl</code>) and the test itself are in the connector's code: <a href="https://github.com/Christian-open-library/Connector/tree/main/tests/eval"><code>tests/eval</code></a>. When someone reports a missed book or a bad quotation, it becomes a new question in the set.</p>
 
-<h2>Where to look further</h2>
+<h2 id="where-to-look-further">Where to look further</h2>
 <ul class="points">
   <li><a href="corrections.html">Corrections log</a>: every error found and fixed.</li>
   <li><a href="privacy.html">What happens to your question</a>: who sees it. The connector keeps no copy of your conversations and doesn't log what you search for.</li>
   <li>The <a href="https://github.com/Christian-open-library/Connector">connector's code</a> and its <a href="https://github.com/Christian-open-library/Connector/blob/main/docs/security-review.md">security review</a> are public. The review was carried out with Claude, Anthropic's AI. No outside firm has audited it.</li>
 </ul>
+</div>
+</div>
 </div>
 </main>
 <footer class="site">
@@ -176,7 +192,7 @@
     <p class="foot-small">An independent Christian library. Not a ministry of any church, presbytery or denomination. No ads, trackers or cookies.</p>
   </div>
 </footer>
-<script src="site.js?v=065687c3" defer></script>
-<script src="lookup.js?v=a029f726" defer></script>
+<script src="site.js?v=a7969095" defer></script>
+<script src="lookup.js?v=7541d3b9" defer></script>
 </body>
 </html>
