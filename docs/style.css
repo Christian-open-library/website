@@ -1390,3 +1390,31 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
 .prose .apps-links a { color: #f7f7f4; font-weight: 600; text-decoration-color: #75767c; text-underline-offset: .2em; }
 @media (hover: hover) { .prose .apps-links a:hover { text-decoration-color: #f7f7f4; } }
 .nowrap { white-space: nowrap; }
+
+/* Organizations page, top: same band as the home page, but a desktop chat window instead of the phone (the home
+   page is for a reader on a phone, this one for a clerk at a desk). Words on two columns, the window across both. */
+.page-organizations .hero { margin-bottom: 0; padding-bottom: 4.5rem; }
+.page-organizations .hero-in { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 1.25rem 4rem; align-items: end; }
+.page-organizations .hero-main, .page-organizations .hero-side { padding-top: 0; }
+.page-organizations .hero h1 { margin-bottom: 1.25rem; }
+.page-organizations .hero-side .hero-act { margin-bottom: .2rem !important; }
+.hero-win { grid-column: 1 / -1; margin-top: 2.75rem; }
+.hero-win .win-h { margin: 0 0 .35rem; color: var(--h-ink); font-size: clamp(1.3rem, 2.2vw, 1.7rem); line-height: 1.15; letter-spacing: -.02em; font-weight: 650; }
+.hero-win .win-sub { margin: 0 0 1.1rem; color: var(--h-muted); font-size: 1.02rem; }
+.hero-win .convo p { margin: 0; }
+.hero-win .apps-note { margin: 1rem 0 0; color: var(--h-muted); font-size: .88rem; }
+.hero-win .apps-links { display: flex; flex-wrap: wrap; gap: .4rem 1.6rem; margin: .6rem 0 0; font-size: .95rem; }
+.hero-win .apps-links a { color: var(--h-ink); font-weight: 600; text-decoration-color: #75767c; text-underline-offset: .2em; }
+@media (hover: hover) { .hero-win .apps-links a:hover { text-decoration-color: var(--h-ink); } }
+.page-organizations .story + h2, .page-organizations .hero + .wrap .story { margin-top: 0; }
+@media (max-width: 72rem) {
+  /* Phones and tablets: the whole top sits on the band; the window comes right after the button. */
+  .page-organizations .hero { background: var(--h-bg); padding-bottom: 2.25rem; }
+  .page-organizations .hero-win { order: 4; margin-top: .4rem; }
+  .page-organizations .hero ul.facts { order: 5; margin: 1.6rem 0 0; border-top-color: var(--h-line); border-bottom-color: var(--h-line); }
+  .page-organizations .hero ul.facts li { color: var(--h-text); }
+  .page-organizations .hero :focus-visible { outline-color: var(--h-ink); }
+  .page-organizations .hero-win .win-body { min-height: 33rem; }
+}
+@media (max-width: 72rem) and (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .page-organizations .hero ul.facts { border-top: 1px solid var(--h-line); padding-top: .65rem; } }
+@media (max-width: 72rem) { .page-organizations .hero-in { align-items: stretch; } }
