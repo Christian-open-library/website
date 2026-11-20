@@ -1,7 +1,7 @@
 <!-- title: What happens to your question | desc: Who sees your question when you use the Christian Open Library, and what each one keeps. -->
 <h1>What happens to your question</h1>
 <p class="lead">Your question passes through a few hands. Here is what each one sees and keeps.</p>
-<p class="meta">Last checked 16 November 2026.</p>
+<p class="meta">Last checked 20 November 2026.</p>
 <!-- body -->
 <h2>In short</h2>
 <ul class="points">
@@ -28,9 +28,10 @@
 
 <h2>What the connector records</h2>
 <ul class="points">
-  <li><strong>A log line for each request:</strong> which tool was used, whether it worked and how long it took. It also has a made-up ID for the person. The ID is part of a hash of the sign-in ID, not your email address. The words you searched for are not logged.</li>
+  <li><strong>A log line for each request:</strong> which tool was used, whether it worked and how long it took. It notes whether the answer found a match or said nothing was found. It also has a made-up ID for the person. The ID is part of a hash of the sign-in ID, not your email address. The words you searched for are not logged.</li>
   <li><strong>Counts for the daily limits:</strong> how many requests each ID made today and this minute, and how many passages it read in full today. Not which passages. Cleared after a week.</li>
   <li><strong>Monthly totals:</strong> how much searching cost. These aren't tied to any person.</li>
+  <li><strong>Daily counts of searches that found nothing:</strong> how many answers said nothing was found. Also how many searches came within two minutes of the same person's last one. We use them to see where the library falls short. They are numbers only, with no IDs and no search words.</li>
 </ul>
 <p class="note">A troubleshooting switch could add search text to the log. It is off.</p>
 
