@@ -1443,3 +1443,8 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
   .page-organizations .hero-win .convo { gap: .75rem; }
   .page-organizations .hero-win .win-compose { margin-top: .8rem; padding: .6rem 1rem; }
 }
+/* Medium screens: narrower timeline labels so 1789 and 1858-61 never touch. */
+@media (min-width: 62.0625rem) and (max-width: 80rem) { .tl .node { width: 5.6rem; } .tl .node.end { width: auto; white-space: nowrap; } }
+/* Big monitors: the organizations page scales up a step instead of sitting small in the middle. */
+@media (min-width: 1800px) { html:has(body.page-organizations) { font-size: 112.5%; } }
+@media (min-width: 2300px) { html:has(body.page-organizations) { font-size: 125%; } }
