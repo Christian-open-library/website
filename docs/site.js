@@ -58,39 +58,92 @@
     box.appendChild(live);
   });
 
-  // Organizations page: as the steps scroll past, the phone acts out one answer a step at a time. Each part of the
-  // phone carries the steps it shows in (data-from, data-to). Without JavaScript the whole answer shows.
-  var sw = document.querySelector('.stage-wrap');
-  if (sw) {
-    sw.classList.add('live');
-    var steps = sw.querySelectorAll('.step'), items = sw.querySelectorAll('.stage-list li');
-    var parts = sw.querySelectorAll('.stage-phone [data-from], .stage-phone [data-to]');
-    var small = window.matchMedia('(max-width: 62rem)');
-    var cur = 0, ticking = false;
-    function setStage(n) {
-      if (n === cur) return;
-      cur = n;
-      sw.dataset.stage = n;
-      parts.forEach(function (el) {
-        var from = +(el.dataset.from || 1), to = +(el.dataset.to || 99);
-        el.classList.toggle('on', from <= n && n <= to);
+  // Organizations page: each scene stays on screen while you scroll through it, and its picture moves with the
+  // scroll. --t brings the words in; --a, --b and --c are the picture's three steps, each from 0 to 1.
+  var story = document.querySelector('.story');
+  if (story && !calm) {
+    document.documentElement.classList.add('js-story');
+    var scenes = story.querySelectorAll('.scene'), sTick = false;
+    var part = function (p, from, len) { return Math.max(0, Math.min(1, (p - from) / len)); };
+    var drawScenes = function () {
+      sTick = false;
+      var vh = window.innerHeight;
+      scenes.forEach(function (sc) {
+        var r = sc.getBoundingClientRect();
+        if (r.bottom < -vh || r.top > 2 * vh) return;
+        var p = Math.max(0, Math.min(1, -r.top / Math.max(1, r.height - vh)));
+        var enter = Math.max(0, Math.min(1, (vh - r.top) / (vh * 0.6)));
+        sc.style.setProperty('--t', enter.toFixed(3));
+        sc.style.setProperty('--a', part(p, 0.02, 0.3).toFixed(3));
+        sc.style.setProperty('--b', part(p, 0.34, 0.28).toFixed(3));
+        sc.style.setProperty('--c', part(p, 0.64, 0.26).toFixed(3));
       });
-      items.forEach(function (li) { li.classList.toggle('on', +li.dataset.stage === n); });
-      steps.forEach(function (st) { st.classList.toggle('on', +st.dataset.stage === n); });
-      // Like a real chat, the newest part scrolls into view.
-      var chat = sw.querySelector(n >= 5 ? '.chat-b' : '.chat-a'), last = null;
-      Array.prototype.forEach.call(chat.children, function (el) { if (n >= 5 || el.classList.contains('on')) last = el; });
-      if (last) chat.scrollTo({ top: Math.max(0, last.offsetTop + last.offsetHeight + 14 - chat.clientHeight), behavior: calm ? 'auto' : 'smooth' });
+    };
+    window.addEventListener('scroll', function () { if (!sTick) { sTick = true; requestAnimationFrame(drawScenes); } }, { passive: true });
+    window.addEventListener('resize', drawScenes);
+    drawScenes();
+  }
+
+  // Organizations page: the desktop window plays one church's real answer at a time. The question types itself,
+  // the search runs, then the two quotes come in. While on screen it moves on to the next church by itself; a tap
+  // on a church stops that. With reduced motion each answer shows finished.
+  var win = document.querySelector('.win');
+  if (win) {
+    var convos = win.querySelectorAll('.convo'), pickBar = document.createElement('div');
+    pickBar.className = 'church-pick';
+    pickBar.setAttribute('role', 'group');
+    pickBar.setAttribute('aria-label', 'Example churches');
+    var btns = [], timers = [], idx = -1, auto = true, seen = false, stalled = false, DWELL = 9000;
+    convos.forEach(function (c, i) {
+      c.dataset.text = c.querySelector('.me').textContent;
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.innerHTML = c.dataset.label + '<i></i>';
+      b.addEventListener('click', function () { auto = false; play(i); });
+      btns.push(b);
+      pickBar.appendChild(b);
+    });
+    win.parentNode.insertBefore(pickBar, win);
+    convos.forEach(function (c, k) { c.hidden = k !== 0; });
+    win.classList.add('live');
+    win.style.setProperty('--dwell', DWELL / 1000 + 's');
+    var later = function (fn, ms) { timers.push(setTimeout(fn, ms)); };
+    function play(i) {
+      timers.forEach(clearTimeout); timers = [];
+      idx = i;
+      convos.forEach(function (c, k) { c.hidden = k !== i; c.className = 'convo'; });
+      btns.forEach(function (b, k) { b.setAttribute('aria-pressed', k === i ? 'true' : 'false'); b.classList.remove('timing'); });
+      var c = convos[i], me = c.querySelector('.me'), text = c.dataset.text;
+      if (calm) { me.textContent = text; c.classList.add('s1', 's2', 's3', 's4'); return; }
+      me.textContent = '';
+      c.classList.add('typing');
+      var n = 0, step = Math.max(12, Math.min(28, 1500 / text.length));
+      (function type() {
+        n += 2;
+        me.textContent = text.slice(0, n);
+        if (n < text.length) { timers.push(setTimeout(type, step)); return; }
+        me.textContent = text;
+        c.classList.remove('typing');
+        later(function () { c.classList.add('s1'); }, 250);
+        later(function () { c.classList.add('s2'); }, 1500);
+        later(function () { c.classList.add('s3'); }, 2100);
+        later(function () { c.classList.add('s4'); }, 2800);
+        if (auto) {
+          later(function () { btns[i].classList.add('timing'); }, 2900);
+          later(function () { if (!auto) return; if (seen) play((i + 1) % convos.length); else stalled = true; }, 2900 + DWELL);
+        }
+      })();
     }
-    function pickStage() {
-      ticking = false;
-      var line = window.innerHeight * (small.matches ? 0.8 : 0.55), n = 1;
-      steps.forEach(function (st) { if (st.getBoundingClientRect().top < line) n = +st.dataset.stage; });
-      setStage(n);
-    }
-    window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(pickStage); } }, { passive: true });
-    window.addEventListener('resize', pickStage);
-    pickStage();
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          seen = e.isIntersecting;
+          if (seen && idx < 0) play(0);
+          else if (seen && auto && stalled) { stalled = false; play((idx + 1) % convos.length); }
+        });
+      }, { threshold: 0.35 }).observe(win);
+    } else { play(0); }
+    if (calm) play(0);
   }
 
   // Organizations page: pick an example question, and only its answer shows. Without JavaScript all of them show.
@@ -135,6 +188,8 @@
         { duration: 260, easing: 'cubic-bezier(.22, .9, .25, 1)' });
     }
     show(qas[0].dataset.pick);
+    var drawer = demo.closest('details');
+    if (drawer) drawer.addEventListener('toggle', function () { var on = dpick.querySelector('[aria-pressed="true"]'); if (on) dplace(on); });
     dmark.classList.add('ready');
     window.addEventListener('resize', function () { var on = dpick.querySelector('[aria-pressed="true"]'); if (on) dplace(on); });
   }
