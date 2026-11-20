@@ -1269,10 +1269,3 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
 .bk-t em { display: block; padding-right: .35em; font-size: .74em; letter-spacing: .08em; }
 .bk.out { transform: translateY(calc(var(--b) * -2.5rem * var(--k))) rotate(calc(var(--b) * -3deg)); }
 @media (max-width: 62rem) { .shelf-case { padding-top: 2.9rem; } .bk-t { font-size: calc(.74rem * var(--k)); } }
-/* Legible spines: larger books, plain mixed-case lettering in bright cream on a dark title panel. */
-.vis-shelf { --k: 1.12; }
-.bk { width: calc(var(--w) * var(--k) * 1.18); }
-.bk-t { height: 70%; padding: .55em .3em; border-radius: 3px; background: rgba(0, 0, 0, .28); box-shadow: inset 0 0 0 1px rgba(217, 181, 106, .35); color: #fbf3df; font: 650 calc(.98rem * var(--k)) / 1.12 var(--sans); letter-spacing: .005em; text-transform: none; text-shadow: 0 1px 1px rgba(0, 0, 0, .5); }
-.bk-t em { padding-right: .3em; color: #ecd9a6; font-size: .78em; font-weight: 500; letter-spacing: .01em; opacity: 1; }
-.c-tan .bk-t { background: rgba(0, 0, 0, .34); }
-@media (max-width: 62rem) { .vis-shelf { --k: .86; } .bk-t { font-size: calc(.98rem * var(--k)); } }
