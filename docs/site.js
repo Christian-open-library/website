@@ -74,9 +74,9 @@
         var p = Math.max(0, Math.min(1, -r.top / Math.max(1, r.height - vh)));
         var enter = Math.max(0, Math.min(1, (vh - r.top) / (vh * 0.6)));
         sc.style.setProperty('--t', enter.toFixed(3));
-        sc.style.setProperty('--a', part(p, 0.02, 0.3).toFixed(3));
-        sc.style.setProperty('--b', part(p, 0.34, 0.28).toFixed(3));
-        sc.style.setProperty('--c', part(p, 0.64, 0.26).toFixed(3));
+        sc.style.setProperty('--a', part(p, 0, 0.28).toFixed(3));
+        sc.style.setProperty('--b', part(p, 0.28, 0.27).toFixed(3));
+        sc.style.setProperty('--c', part(p, 0.55, 0.25).toFixed(3));
       });
     };
     window.addEventListener('scroll', function () { if (!sTick) { sTick = true; requestAnimationFrame(drawScenes); } }, { passive: true });

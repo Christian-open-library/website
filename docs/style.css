@@ -1061,7 +1061,7 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
 .prose .scene.dark .scene-text p { color: var(--s-muted); }
 .scene-text { opacity: var(--t); transform: translateY(calc((1 - var(--t)) * 28px)); }
 .scene-vis { position: relative; height: min(66vh, 33rem); }
-.js-story .scene { height: 260vh; }
+.js-story .scene { height: 175vh; }
 .js-story .scene-pin { position: sticky; top: 0; height: 100vh; height: 100svh; min-height: 0; overflow: hidden; }
 .story-note { margin: 1.25rem 0 2rem; color: var(--muted); font-size: .9rem; text-align: center; }
 
@@ -1244,3 +1244,4 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
   .vis-stack .doc { top: 56%; transform: translate(calc(var(--i) * var(--a) * 1.3rem - var(--i) * .3rem), calc(var(--i) * var(--a) * -.75rem - var(--i) * .2rem)) rotate(calc((var(--i) - 2.5) * var(--a) * 2deg)); }
   .vis-stack .doc.front { transform: translate(calc(var(--b) * -.6rem), calc(var(--b) * .8rem)) scale(calc(1 + var(--b) * .06)); }
 }
+@media (max-width: 62rem) { .js-story .scene { height: 165vh; } }
