@@ -1448,3 +1448,5 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
 /* Big monitors: the organizations page scales up a step instead of sitting small in the middle. */
 @media (min-width: 1800px) { html:has(body.page-organizations) { font-size: 112.5%; } }
 @media (min-width: 2300px) { html:has(body.page-organizations) { font-size: 125%; } }
+/* Headings stay solid: no scroll-linked fade (a pause mid-scroll left them gray). The pictures carry the motion. */
+.scene[data-timed] .scene-text { opacity: 1; transform: none; }
