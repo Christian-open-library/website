@@ -1319,3 +1319,34 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
   .hero-side .hero-how { color: var(--muted); }
 }
 .scene[data-timed] { overflow: clip; }
+
+/* Organizations page, plain sections after the story: one rhythm (Matt: "spacing feels off"). Headings sized to
+   follow the big scenes, the same space above every section, each part close to what it belongs to. */
+.page-organizations .prose > h2 { margin: 5rem 0 .55rem; font-size: clamp(1.6rem, 2.6vw, 2.1rem); line-height: 1.12; letter-spacing: -.025em; }
+.page-organizations .story + h2 { margin-top: 5.5rem; }
+.page-organizations .prose > p.intro { margin: 0 0 1.4rem; font-size: 1.08rem; line-height: 1.5; }
+.page-organizations table.levels thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.page-organizations table.levels { margin: 0; }
+.page-organizations table.levels th, .page-organizations table.levels td { padding-top: .95rem; padding-bottom: .95rem; }
+.page-organizations table.levels tbody tr:first-child th, .page-organizations table.levels tbody tr:first-child td { border-top: 1px solid var(--line-2); }
+.page-organizations .tablewrap { margin: 0; }
+.page-organizations .tablewrap + p.small { margin: 1rem 0 0; }
+.page-organizations .prose .vault { margin: 5rem 0 0; padding: 1.7rem 1.8rem 1rem; }
+.page-organizations .prose .vault h2 { font-size: clamp(1.4rem, 2.2vw, 1.75rem); line-height: 1.15; }
+.page-organizations .prose .vault-lead { margin-bottom: 1.1rem; }
+.page-organizations .vault-list li { grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); padding: .85rem 0; }
+.page-organizations .prose ol.org-steps { margin: .2rem 0 1rem; }
+.page-organizations .prose .faq { margin-bottom: 0; }
+.page-organizations .prose .close-band { margin-top: 5rem; }
+@media (max-width: 40rem) {
+  .page-organizations .prose > h2 { margin-top: 3.5rem; padding-top: 0; border-top: 0; font-size: 1.6rem; }
+  .page-organizations .story + h2 { margin-top: 3.75rem; }
+  .page-organizations .prose .vault { margin-top: 3.5rem; }
+  .page-organizations .vault-list li { grid-template-columns: 1fr; padding: .7rem 0; }
+  .page-organizations .prose .close-band { margin-top: 3.5rem; }
+}
+@media (max-width: 40rem) {
+  .page-organizations table.levels.stack th, .page-organizations table.levels.stack td { padding-top: 0; padding-bottom: 0; }
+  .page-organizations table.levels.stack tbody tr:first-child th, .page-organizations table.levels.stack tbody tr:first-child td { border-top: 0; }
+  .page-organizations table.levels.stack td { margin-top: .2rem; }
+}
