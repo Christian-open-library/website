@@ -1005,3 +1005,41 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
 }
 @media (max-width: 40rem) { .side-main { padding: 0 1rem; } .side.js .side-now { padding: .4rem 1rem; } }
 @media (prefers-reduced-motion: reduce) { .side a, .side-now svg { transition: none; } }
+
+/* Organizations page: the home page's band and phone with a denomination's example, then the same conversation at
+   full size, one example question at a time (site.js), and the band again to close. */
+.page-organizations .prose { padding-top: .5rem; }
+@media (max-width: 72rem) { .page-organizations .prose { padding-top: 1rem; } }
+.hero .address code .hidden-key { letter-spacing: .12em; color: var(--h-muted); }
+@media (max-width: 72rem) { .hero .address code .hidden-key { color: var(--muted); } }
+@media (max-width: 22.5rem) { .hero .address code { font-size: .76rem; } }
+.address.no-copy code { cursor: default; user-select: text; }
+
+.demo-pick { overflow-x: auto; scrollbar-width: none; margin-top: .4rem; }
+.demo-pick::-webkit-scrollbar { display: none; }
+.demo-pick button { flex: none; white-space: nowrap; }
+.demo.picked { overflow: hidden; }
+.demo.picked .qa h3 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.demo .qa { padding: 1.1rem 0 .6rem; }
+.demo:not(.picked) .qa + .qa { border-top: 1px solid var(--line); margin-top: 1rem; padding-top: 1.6rem; }
+.prose .qa p.from { margin: 0 0 1.1rem; color: var(--muted); font-size: .88rem; line-height: 1.45; }
+.prose .qa p.q { margin: 0 0 .9rem auto; max-width: 30rem; width: fit-content; padding: .7rem 1rem; border-radius: 1.15rem 1.15rem .3rem 1.15rem; background: var(--tile); color: var(--ink); font-size: 1.02rem; line-height: 1.45; }
+.prose .qa p.tool { display: inline-flex; align-items: center; gap: .5rem; margin: 0 0 .9rem; padding: .3rem .75rem .3rem .45rem; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: .85rem; }
+.qa .tool img { width: 1.15rem; height: 1.15rem; border-radius: .25rem; }
+.qa .a { max-width: 44rem; font-family: var(--serif); font-size: 1.06rem; line-height: 1.62; color: var(--text); }
+.prose .qa .a p { margin: 0 0 .85rem; }
+.qa .a strong { color: var(--ink); }
+.prose .qa .a ul { margin: 0 0 .85rem; padding-left: 1.15rem; }
+.qa .a li { margin: 0 0 .45rem; }
+.qa .a li::marker { color: var(--dots); }
+.qa .a a { overflow-wrap: anywhere; text-underline-offset: .18em; }
+.prose .qa .a p:last-child { margin: 1rem 0 0; color: var(--muted); font: 500 .88rem/1.4 var(--sans); }
+
+.close-band { --h-bg: #161719; --h-ink: #f7f7f4; margin: 3rem calc(50% - 50vw) -2rem; padding: 3.5rem max(1.5rem, calc(50vw - var(--width) / 2)) 3.25rem; background: var(--h-bg); color: #d9d9d3; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .close-band { --h-bg: #202125; } }
+.prose .close-band h2 { margin: 0 0 .7rem; padding: 0; border: 0; color: var(--h-ink); font-size: clamp(1.8rem, 4vw, 2.5rem); line-height: 1.08; letter-spacing: -.03em; font-weight: 650; text-wrap: balance; }
+.prose .close-band p { margin: 0 0 1rem; max-width: 34rem; font-size: 1.05rem; line-height: 1.55; }
+.prose .close-band .hero-act { margin: 1.4rem 0 0 !important; }
+.close-band :focus-visible { outline-color: var(--h-ink); }
+@media (max-width: 40rem) { .close-band { padding: 2.75rem 1rem 2.5rem; } }
+@media (max-width: 40rem) { .demo-pick { -webkit-mask-image: linear-gradient(90deg, #000 82%, transparent); mask-image: linear-gradient(90deg, #000 82%, transparent); } }

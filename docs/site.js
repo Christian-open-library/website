@@ -22,7 +22,7 @@
 
   // Copy: a small icon in the address box; tapping the box copies too. On a copy the icon becomes a tick
   // that draws and snaps, and a ring of colour runs out from the box.
-  document.querySelectorAll('.address').forEach(function (box) {
+  document.querySelectorAll('.address:not(.no-copy)').forEach(function (box) {
     var code = box.querySelector('code');
     if (!code || !navigator.clipboard) return;
     var what = box.dataset.what || 'the address';
@@ -57,6 +57,52 @@
     box.appendChild(btn);
     box.appendChild(live);
   });
+
+  // Organizations page: pick an example question, and only its answer shows. Without JavaScript all of them show.
+  var demo = document.querySelector('.demo');
+  if (demo) {
+    var qas = demo.querySelectorAll('.qa');
+    var dpick = document.createElement('div');
+    dpick.className = 'app-pick demo-pick';
+    dpick.setAttribute('role', 'group');
+    dpick.setAttribute('aria-label', 'Example questions');
+    var dmark = document.createElement('span');
+    dmark.className = 'app-mark';
+    dmark.setAttribute('aria-hidden', 'true');
+    var dtabs = {};
+    qas.forEach(function (p) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = p.querySelector('h3').textContent;
+      b.addEventListener('click', function () { show(p.dataset.pick, true); });
+      dtabs[p.dataset.pick] = b;
+      dpick.appendChild(b);
+    });
+    dpick.appendChild(dmark);
+    demo.parentNode.insertBefore(dpick, demo);
+    demo.classList.add('picked');
+    function dplace(b) {
+      dmark.style.width = b.offsetWidth + 'px';
+      dmark.style.transform = 'translateX(' + b.offsetLeft + 'px)';
+    }
+    function show(key, tapped) {
+      if (!dtabs[key]) return;
+      var h0 = demo.offsetHeight;
+      qas.forEach(function (p) { p.hidden = p.dataset.pick !== key; });
+      Object.keys(dtabs).forEach(function (k) { dtabs[k].setAttribute('aria-pressed', k === key ? 'true' : 'false'); });
+      dplace(dtabs[key]);
+      if (tapped && dpick.scrollWidth > dpick.clientWidth) dtabs[key].scrollIntoView({ block: 'nearest', inline: 'center', behavior: calm ? 'auto' : 'smooth' });
+      if (!tapped || calm || !demo.animate) return;
+      var h1 = demo.offsetHeight;
+      demo.animate([{ height: h0 + 'px' }, { height: h1 + 'px' }], { duration: 280, easing: 'cubic-bezier(.22, .9, .25, 1)' });
+      demo.querySelector('.qa:not([hidden])').animate(
+        [{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }],
+        { duration: 260, easing: 'cubic-bezier(.22, .9, .25, 1)' });
+    }
+    show(qas[0].dataset.pick);
+    dmark.classList.add('ready');
+    window.addEventListener('resize', function () { var on = dpick.querySelector('[aria-pressed="true"]'); if (on) dplace(on); });
+  }
 
   // Set-up page: pick your app, and only its steps show. Without JavaScript all four show.
   var apps = document.querySelector('.apps');

@@ -136,8 +136,9 @@ def build():
             cls = ' class="nav-give"' if key == "support" else ""
             items.append(f'        <li{cls}><a href="{key}.html"{cur}>{label}</a></li>')
         foot = [f'        <li><a href="{k}.html">{l}</a></li>' for k, l in NAV]
-        if name == "index":
+        if name in ("index", "organizations"):
             # The home page's heading is a full-width band with its own layout (the hero), not the usual page head.
+            # The organizations page uses the same band, with its own example in the phone.
             main = f'{head.strip()}\n<div class="wrap prose">\n{body.strip()}\n</div>'
         elif name in SIDE:
             body, nav = side_nav(body)
