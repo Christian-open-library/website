@@ -1350,3 +1350,18 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
   .page-organizations table.levels.stack tbody tr:first-child th, .page-organizations table.levels.stack tbody tr:first-child td { border-top: 0; }
   .page-organizations table.levels.stack td { margin-top: .2rem; }
 }
+
+/* The constitution moment is now the to-scale line (Matt liked the history animation): it plays once on screen.
+   The line draws, ECO's rule today rises under 2012, then the 1926 ruling rises from its mark. */
+.js-story .scene-history[data-timed] { transition: --a 1s var(--ease), --b .8s var(--ease) .95s, --c .9s var(--ease) 1.75s; }
+.scene-history .vis-line .now.card { opacity: var(--b); transform: translateY(calc((1 - var(--b)) * -18px)); }
+.scene-history .vis-line .then { opacity: var(--c); transform: translateY(calc((1 - var(--c)) * 26px)) scale(calc(.96 + var(--c) * .04)); }
+.scene-history .tl .mark { transform: scale(calc(.6 + var(--c) * .4)); box-shadow: 0 0 0 calc(var(--c) * 7px) rgba(226, 188, 98, calc(.35 - var(--c) * .2)); }
+@media (max-width: 62rem) {
+  /* Phones: the line on top, then today's rule, then the 1926 ruling under it. */
+  .scene-history .scene-vis.vis-line { display: flex; flex-direction: column; gap: .9rem; height: auto; min-height: 0; padding-top: 6.3rem; }
+  .scene-history .vis-line .card { position: relative; top: auto; left: auto; right: auto; bottom: auto; width: auto; }
+  .scene-history .vis-line .now.card { order: 1; opacity: var(--b); transform: translateY(calc((1 - var(--b)) * 16px)); }
+  .scene-history .vis-line .then { order: 2; opacity: var(--c); transform: translateY(calc((1 - var(--c)) * 16px)); }
+}
+.story-init .scene { transition: none !important; }

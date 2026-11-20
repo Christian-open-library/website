@@ -62,7 +62,9 @@
   // scroll. --t brings the words in; --a, --b and --c are the picture's three steps, each from 0 to 1.
   var story = document.querySelector('.story');
   if (story && !calm) {
-    document.documentElement.classList.add('js-story');
+    // Start each timed scene at its first frame without animating there (no reverse run on load).
+    document.documentElement.classList.add('js-story', 'story-init');
+    requestAnimationFrame(function () { requestAnimationFrame(function () { document.documentElement.classList.remove('story-init'); }); });
     var scenes = story.querySelectorAll('.scene'), sTick = false;
     var part = function (p, from, len) { return Math.max(0, Math.min(1, (p - from) / len)); };
     var drawScenes = function () {
