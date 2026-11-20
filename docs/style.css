@@ -1298,3 +1298,24 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
   .tl .node.up::before { bottom: -1.35rem; }
   .vis-line .then, .vis-line .now.card { top: 6.6rem; bottom: auto; left: 0; right: 0; }
 }
+
+/* Trimmed page (Matt: "do what you think is best"): three short moments that each play once when they come on
+   screen; nothing is pinned and nothing waits on the scroll. */
+.js-story .scene[data-timed] { height: auto; }
+.js-story .scene[data-timed] .scene-pin { position: relative; height: auto; min-height: 0; overflow: visible; }
+.scene[data-timed] .scene-pin { min-height: 0; padding-top: 5rem; padding-bottom: 5rem; }
+.scene[data-timed] .scene-vis { height: min(60vh, 30rem); }
+.js-story .scene[data-timed] { transition: --a .8s var(--ease), --b .8s var(--ease) .45s, --c 1s var(--ease) 1s; }
+.scene.tint .scan-quote { box-shadow: 0 0 0 1px var(--line), 0 24px 50px -24px rgba(0, 0, 0, .45); }
+.scene:not(.dark) .vis-stack .doc:not(.front) { box-shadow: 0 0 0 1px #3a3b40, 0 18px 36px -20px rgba(0, 0, 0, .45); }
+.prose .apps-note { margin: 1.1rem 0 0; color: #a9a9a2; font-size: .88rem; }
+.hero-side .hero-how { color: var(--h-muted); font-size: .95rem; }
+@media (max-width: 62rem) {
+  .scene[data-timed] .scene-pin { padding-top: 3.5rem; padding-bottom: 3.5rem; }
+  .scene[data-timed] .scene-vis { height: auto; min-height: 22rem; }
+  .vis-stack { height: 24rem; }
+  .vis-scan { min-height: 26rem; }
+  .vis-guess { min-height: 26rem; }
+  .hero-side .hero-how { color: var(--muted); }
+}
+.scene[data-timed] { overflow: clip; }
