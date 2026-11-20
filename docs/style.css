@@ -1385,3 +1385,7 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tl .node.at-mark b, :root:not([data-theme="light"]) .tl .stem { color: var(--accent); background: var(--accent); } :root:not([data-theme="light"]) .tl .node.at-mark b { background: none; } }
 @media (max-width: 62rem) { .tl .stem { display: none; } .tl .node.at-mark { font-size: 0; } }
 @media (max-width: 62rem) { .tl .node.end { width: auto; white-space: nowrap; } }
+/* Proof under the demo: two plain links, the accuracy tests and the corrections log. */
+.prose .apps-links { display: flex; flex-wrap: wrap; gap: .4rem 1.6rem; margin: .7rem 0 0; font-size: .95rem; }
+.prose .apps-links a { color: #f7f7f4; font-weight: 600; text-decoration-color: #75767c; text-underline-offset: .2em; }
+@media (hover: hover) { .prose .apps-links a:hover { text-decoration-color: #f7f7f4; } }
