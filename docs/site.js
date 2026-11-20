@@ -74,6 +74,12 @@
         var p = Math.max(0, Math.min(1, -r.top / Math.max(1, r.height - vh)));
         var enter = Math.max(0, Math.min(1, (vh - r.top) / (vh * 0.6)));
         sc.style.setProperty('--t', enter.toFixed(3));
+        // A timed scene plays by itself once it is mostly on screen, and resets if you scroll back above it.
+        if (sc.hasAttribute('data-timed')) {
+          if (enter >= 0.8) sc.classList.add('played');
+          else if (r.top > vh * 0.9) sc.classList.remove('played');
+          return;
+        }
         sc.style.setProperty('--a', part(p, 0, 0.28).toFixed(3));
         sc.style.setProperty('--b', part(p, 0.28, 0.27).toFixed(3));
         sc.style.setProperty('--c', part(p, 0.55, 0.25).toFixed(3));

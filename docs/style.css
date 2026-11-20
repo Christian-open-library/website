@@ -1245,3 +1245,11 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
   .vis-stack .doc.front { transform: translate(calc(var(--b) * -.6rem), calc(var(--b) * .8rem)) scale(calc(1 + var(--b) * .06)); }
 }
 @media (max-width: 62rem) { .js-story .scene { height: 165vh; } }
+/* The constitution scene plays as one motion once it is on screen (site.js adds .played): the stack fans out, ECO's
+   Constitution comes forward, its words are marked. Registered properties let the three steps animate in turn. */
+@property --a { syntax: '<number>'; inherits: true; initial-value: 1; }
+@property --b { syntax: '<number>'; inherits: true; initial-value: 1; }
+@property --c { syntax: '<number>'; inherits: true; initial-value: 1; }
+.js-story .scene[data-timed] { --a: 0; --b: 0; --c: 0; height: 130vh; transition: --a .8s var(--ease), --b .8s var(--ease) .5s, --c 1.1s var(--ease) 1.1s; }
+.js-story .scene[data-timed].played { --a: 1; --b: 1; --c: 1; }
+@media (max-width: 62rem) { .js-story .scene[data-timed] { height: 125vh; } }
