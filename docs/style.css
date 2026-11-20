@@ -1418,3 +1418,28 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
 }
 @media (max-width: 72rem) and (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .page-organizations .hero ul.facts { border-top: 1px solid var(--h-line); padding-top: .65rem; } }
 @media (max-width: 72rem) { .page-organizations .hero-in { align-items: stretch; } }
+/* Wide screens: the promise on the left, the demo playing on the right, both on the first screen. */
+@media (min-width: 72.0625rem) {
+  .page-organizations .hero { padding: 3.75rem 0 4rem; }
+  .page-organizations .hero-in { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); grid-template-rows: auto auto auto 1fr; gap: 0 3.5rem; align-items: start; }
+  .page-organizations .hero-main, .page-organizations .hero-side { display: contents; }
+  .page-organizations .hero h1 { grid-column: 1; grid-row: 1; margin: 2.2rem 0 1.1rem; font-size: clamp(2.5rem, 3.7vw, 3.5rem); }
+  .page-organizations .hero-side .lead { grid-column: 1; grid-row: 2; margin: 0 0 1.4rem; max-width: 26rem; }
+  .page-organizations .hero-side .hero-act { grid-column: 1; grid-row: 3; margin: 0 0 1.8rem !important; }
+  .page-organizations .hero ul.facts { grid-column: 1; grid-row: 4; align-self: start; }
+  .page-organizations .hero-win { grid-column: 2; grid-row: 1 / 5; margin-top: 0; }
+  .page-organizations .hero-win .win-side { display: none; }
+  .page-organizations .hero-win .win-body { grid-template-columns: minmax(0, 1fr); min-height: 29rem; }
+  .page-organizations .hero-win .win-main { padding: 1.3rem 1.4rem 1rem; }
+  .page-organizations .hero-win .qc blockquote { font-size: .98rem; }
+}
+@media (min-width: 72.0625rem) { .page-organizations .hero-win .win-body { min-height: clamp(22rem, calc(100vh - 19.5rem), 29rem); } }
+@media (min-width: 72.0625rem) and (max-height: 820px) {
+  .page-organizations .hero { padding-top: 2.1rem; }
+  .page-organizations .hero h1 { margin-top: 1.4rem; }
+  .page-organizations .hero-win .win-sub { margin-bottom: .7rem; }
+  .page-organizations .hero-win .church-pick { margin-bottom: .7rem; }
+  .page-organizations .hero-win .win-main { padding: 1rem 1.3rem .85rem; }
+  .page-organizations .hero-win .convo { gap: .75rem; }
+  .page-organizations .hero-win .win-compose { margin-top: .8rem; padding: .6rem 1rem; }
+}
