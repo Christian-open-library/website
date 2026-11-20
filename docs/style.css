@@ -1043,3 +1043,52 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
 .close-band :focus-visible { outline-color: var(--h-ink); }
 @media (max-width: 40rem) { .close-band { padding: 2.75rem 1rem 2.5rem; } }
 @media (max-width: 40rem) { .demo-pick { -webkit-mask-image: linear-gradient(90deg, #000 82%, transparent); mask-image: linear-gradient(90deg, #000 82%, transparent); } }
+
+/* Organizations page: how it answers. The phone and the step list stay put while the steps scroll past; the phone
+   acts out one real answer a step at a time (site.js). Without JavaScript the whole answer shows at once. */
+.stages { margin: 2.5rem 0 1rem; }
+.stage-wrap { display: grid; grid-template-columns: 8.5rem 18rem minmax(0, 1fr); gap: 0 3.25rem; margin: 1.5rem calc(50% - min(36rem, 50vw - 1.5rem)) 0; }
+.prose ol.stage-list { position: sticky; top: 42vh; align-self: start; list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--line-2); }
+.stage-list li { position: relative; margin: 0; }
+.stage-list a { display: block; padding: .42rem 0 .42rem 1rem; color: var(--muted); font-size: .95rem; text-decoration: none; transition: color .25s; }
+.stage-list li.on a { color: var(--ink); font-weight: 600; }
+.stage-list li::before { content: ""; position: absolute; left: -4px; top: calc(50% - 3.5px); width: 7px; height: 7px; border-radius: 50%; background: var(--accent); transform: scale(0); transition: transform .35s var(--ease); }
+.stage-list li.on::before { transform: none; }
+@media (hover: hover) { .stage-list a:hover { color: var(--ink); } }
+.stage-stick { position: sticky; top: max(4.5rem, calc(50vh - 18rem)); align-self: start; }
+.phone.stage-phone { --pw: 18rem; width: var(--pw); height: calc(var(--pw) * 2); margin: 0; }
+.stage-phone::before { content: none !important; }
+.stage-phone .screen .tool, .stage-phone .screen blockquote, .stage-phone .screen .cite { animation: none; }
+.stage-phone .chats { position: relative; flex: 1; min-height: 0; }
+.stage-phone .screen p.said { color: #2e2e2e; line-height: 1.42; font-size: .96em; }
+.stage-phone .screen .cite b { color: #1a1a1a; font-weight: 600; }
+.stage-phone .screen .cite.old { background: #f4efe0; }
+.stage-wrap:not(.live) .chat-b { display: none; }
+.live .stage-phone .chat { position: absolute; inset: 0; }
+.live .stage-phone [data-from], .live .stage-phone [data-to] { opacity: 0; transform: translateY(10px); transition: opacity .45s var(--ease), transform .55s var(--ease); }
+.live .stage-phone .on { opacity: 1; transform: none; }
+.live .stage-phone blockquote { background: linear-gradient(var(--accent-soft), var(--accent-soft)) no-repeat 0 0 / 0% 100%; transition: opacity .45s var(--ease), transform .55s var(--ease), background-size .9s var(--ease) .4s; }
+.live .stage-phone blockquote.on { background-size: 100% 100%; }
+.live[data-stage="2"] .stage-phone .tool.on { background: linear-gradient(90deg, transparent 0%, var(--accent-soft) 50%, transparent 100%) no-repeat -120% 0 / 60% 100%; animation: seek 1.3s var(--ease) infinite; }
+@keyframes seek { to { background-position: 220% 0; } }
+.stage-steps .step { min-height: 72vh; display: flex; flex-direction: column; justify-content: center; scroll-margin-top: 20vh; opacity: .3; transition: opacity .35s; }
+.stage-steps .step.on, .stage-wrap:not(.live) .step { opacity: 1; }
+.prose .step h3 { margin: 0 0 .5rem; font-size: clamp(1.35rem, 2.2vw, 1.75rem); line-height: 1.15; letter-spacing: -.02em; font-weight: 650; text-wrap: balance; }
+.prose .step p { margin: 0; max-width: 24rem; color: var(--muted); font-size: 1.05rem; line-height: 1.55; }
+.stage-steps .step:first-child { min-height: 60vh; }
+.stage-steps .step:last-child { min-height: 80vh; }
+@media (prefers-reduced-motion: reduce) {
+  .live .stage-phone [data-from], .live .stage-phone [data-to], .live .stage-phone blockquote, .stage-steps .step, .stage-list li::before { transition: none; }
+  .live[data-stage="2"] .stage-phone .tool.on { animation: none; background: none; }
+}
+/* Phones and tablets: the phone sits at the top of the screen, the steps pass under it, the list is left out. */
+@media (max-width: 62rem) {
+  .stage-wrap { grid-template-columns: minmax(0, 1fr); margin: 1rem 0 0; }
+  .prose ol.stage-list { display: none; }
+  .stage-stick { top: 3.6rem; z-index: 2; display: flex; justify-content: center; margin: 0 -1.5rem; padding: .75rem 0 1rem; background: var(--bg); box-shadow: 0 10px 14px -12px rgba(0, 0, 0, .25); }
+  .phone.stage-phone { --pw: min(12.5rem, 50vw); }
+  .stage-steps .step { min-height: 46vh; justify-content: flex-start; padding-top: 1.5rem; scroll-margin-top: 0; }
+  .stage-steps .step:first-child { min-height: 36vh; }
+  .stage-steps .step:last-child { min-height: 50vh; }
+}
+@media (max-width: 40rem) { .stage-stick { margin: 0 -1rem; } }

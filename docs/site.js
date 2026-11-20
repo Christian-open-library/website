@@ -58,6 +58,41 @@
     box.appendChild(live);
   });
 
+  // Organizations page: as the steps scroll past, the phone acts out one answer a step at a time. Each part of the
+  // phone carries the steps it shows in (data-from, data-to). Without JavaScript the whole answer shows.
+  var sw = document.querySelector('.stage-wrap');
+  if (sw) {
+    sw.classList.add('live');
+    var steps = sw.querySelectorAll('.step'), items = sw.querySelectorAll('.stage-list li');
+    var parts = sw.querySelectorAll('.stage-phone [data-from], .stage-phone [data-to]');
+    var small = window.matchMedia('(max-width: 62rem)');
+    var cur = 0, ticking = false;
+    function setStage(n) {
+      if (n === cur) return;
+      cur = n;
+      sw.dataset.stage = n;
+      parts.forEach(function (el) {
+        var from = +(el.dataset.from || 1), to = +(el.dataset.to || 99);
+        el.classList.toggle('on', from <= n && n <= to);
+      });
+      items.forEach(function (li) { li.classList.toggle('on', +li.dataset.stage === n); });
+      steps.forEach(function (st) { st.classList.toggle('on', +st.dataset.stage === n); });
+      // Like a real chat, the newest part scrolls into view.
+      var chat = sw.querySelector(n >= 5 ? '.chat-b' : '.chat-a'), last = null;
+      Array.prototype.forEach.call(chat.children, function (el) { if (n >= 5 || el.classList.contains('on')) last = el; });
+      if (last) chat.scrollTo({ top: Math.max(0, last.offsetTop + last.offsetHeight + 14 - chat.clientHeight), behavior: calm ? 'auto' : 'smooth' });
+    }
+    function pickStage() {
+      ticking = false;
+      var line = window.innerHeight * (small.matches ? 0.8 : 0.55), n = 1;
+      steps.forEach(function (st) { if (st.getBoundingClientRect().top < line) n = +st.dataset.stage; });
+      setStage(n);
+    }
+    window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(pickStage); } }, { passive: true });
+    window.addEventListener('resize', pickStage);
+    pickStage();
+  }
+
   // Organizations page: pick an example question, and only its answer shows. Without JavaScript all of them show.
   var demo = document.querySelector('.demo');
   if (demo) {
