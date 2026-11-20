@@ -1384,3 +1384,4 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
 .tl .stem { position: absolute; left: calc(var(--x) * 100%); bottom: .7rem; width: 2px; height: 1rem; margin-left: -1px; border-radius: 1px; background: #a07c22; transform-origin: 50% 100%; transform: scaleY(var(--c)); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tl .node.at-mark b, :root:not([data-theme="light"]) .tl .stem { color: var(--accent); background: var(--accent); } :root:not([data-theme="light"]) .tl .node.at-mark b { background: none; } }
 @media (max-width: 62rem) { .tl .stem { display: none; } .tl .node.at-mark { font-size: 0; } }
+@media (max-width: 62rem) { .tl .node.end { width: auto; white-space: nowrap; } }
