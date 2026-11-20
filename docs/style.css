@@ -1365,3 +1365,16 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
   .scene-history .vis-line .then { order: 2; opacity: var(--c); transform: translateY(calc((1 - var(--c)) * 16px)); }
 }
 .story-init .scene { transition: none !important; }
+/* The line ends at 2026: a stop there for ECO's current Constitution, where the "2026 · Current" card hangs.
+   2012 (ECO founded) moves above the line. Each stop now lights fully as the line reaches it. */
+.tl .node { --on: clamp(0, calc((var(--a) - var(--x) * .9) * 10), 1); }
+.tl .node.eco { transform: translateX(-70%) translateY(calc((1 - var(--on)) * -8px)); }
+.tl .node.eco::before { left: calc(70% - .45rem); background: var(--tile); border-color: var(--ink); width: .9rem; height: .9rem; }
+.tl .node.end { --on: clamp(0, calc((var(--a) - .9) * 10), 1); transform: translateX(-100%) translateY(calc((1 - var(--on)) * 8px)); text-align: right; }
+.tl .node.end::before { left: auto; right: -.5rem; top: -1.65rem; width: 1rem; height: 1rem; background: var(--accent); border-color: var(--accent); }
+@media (max-width: 62rem) {
+  .tl .node.eco, .tl .node.end { font-size: .7rem; }
+  .tl .node.eco b, .tl .node.end b { font-size: .92rem; }
+  .tl .node.eco::before { left: calc(70% - .375rem); width: .75rem; height: .75rem; }
+  .tl .node.end::before { right: -.425rem; top: -1.4rem; width: .85rem; height: .85rem; }
+}
