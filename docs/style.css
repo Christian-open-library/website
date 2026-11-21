@@ -1434,3 +1434,61 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
 @media (min-width: 2300px) { html:has(body.page-organizations) { font-size: 125%; } }
 /* Headings stay solid: no scroll-linked fade (a pause mid-scroll left them gray). The pictures carry the motion. */
 .scene[data-timed] .scene-text { opacity: 1; transform: none; }
+
+/* "How do you know your AI is right?": the home page's band and phone, with one morph. The plain AI answer shows first,
+   then a gold "With the library" pill opens, a light passes over it, the phone glows and the library's answer arrives.
+   Without script (or with reduced motion) the library's answer shows at once. */
+.page-check-ai .screen .chat-top { position: relative; display: grid; justify-items: center; align-items: center; min-height: 2.6em; }
+.page-check-ai .chat-top > span { grid-area: 1 / 1; transition: opacity .35s var(--ease), transform .35s var(--ease); }
+.page-check-ai .t-b { display: inline-flex; align-items: center; gap: .45em; padding: .28em .85em .28em .4em; border-radius: 999px; background: #e2bc62; color: #1a1a1a; position: relative; overflow: hidden; }
+.page-check-ai .t-b img { width: 1.35em; height: 1.35em; border-radius: .3em; }
+.page-check-ai .t-b::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.85) 50%, transparent 70%); transform: translateX(-120%); }
+.page-check-ai .screen .me { max-width: 86%; }
+.page-check-ai .ans-a, .page-check-ai .ans-b { display: flex; flex-direction: column; gap: .7em; }
+.page-check-ai .who { color: #767676; font-size: .82em; }
+.page-check-ai .plain { color: #1a1a1a; line-height: 1.45; padding-left: .71em; border-left: .17em solid #c0573f; }
+.page-check-ai .verdict { display: inline-flex; align-items: center; gap: .4em; color: #1d6b3a; font-weight: 600; font-size: .92em; }
+.page-check-ai .verdict svg { width: 1.1em; height: 1.1em; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.page-check-ai .screen blockquote { font-size: 1.12em; animation: none; }
+.page-check-ai .screen .tool, .page-check-ai .screen .cite { animation: none; }
+.page-check-ai .replay { position: absolute; right: .7em; top: 50%; width: 2em; height: 2em; margin-top: -1em; padding: 0; border: 0; border-radius: 999px; background: transparent; color: #767676; cursor: pointer; display: grid; place-items: center; opacity: 0; pointer-events: none; transition: opacity .3s; }
+.page-check-ai .replay svg { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.page-check-ai .done .replay { opacity: 1; pointer-events: auto; }
+@media (hover: hover) { .page-check-ai .replay:hover { color: #1a1a1a; background: #ecebe6; } }
+.page-check-ai .t-a { opacity: 0; }
+.page-check-ai .ans-a { display: none; }
+.page-check-ai .js .t-a { opacity: 1; }
+.page-check-ai .js .t-b { opacity: 0; transform: translateY(-4px); }
+.page-check-ai .js .ans-a { display: flex; }
+.page-check-ai .js .ans-b { display: none; }
+.page-check-ai .js .ans-a > *, .page-check-ai .js .ans-b > *, .page-check-ai .js .me { opacity: 0; transform: translateY(8px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
+.page-check-ai .js.s1 .me, .page-check-ai .js.s2 .ans-a > * { opacity: 1; transform: none; }
+.page-check-ai .js.s2 .ans-a .plain { transition-delay: .2s; }
+.page-check-ai .js.s3 .ans-a { opacity: 0; transform: scale(.97); filter: blur(2px); transition: opacity .45s var(--ease), transform .45s var(--ease), filter .45s; }
+.page-check-ai .js.s3 .t-a { opacity: 0; transform: translateY(4px); }
+.page-check-ai .js.s3 .t-b { opacity: 1; transform: none; animation: ca-pill .7s cubic-bezier(.3, 1.5, .5, 1) both; }
+.page-check-ai .js.s3 .t-b::after { animation: ca-shine 1s ease-in-out .55s both; }
+.page-check-ai .js.s3 { animation: ca-glow 1.4s ease-out .2s both; }
+.page-check-ai .js.s4 .ans-a { display: none; }
+.page-check-ai .js.s4 .ans-b { display: flex; }
+.page-check-ai .js.s5 .ans-b > * { opacity: 1; transform: none; }
+.page-check-ai .js.s5 .ans-b .verdict { transition-delay: .35s; }
+.page-check-ai .js.s5 .ans-b .cite { transition-delay: .95s; }
+.page-check-ai .js .ans-b blockquote { background: linear-gradient(var(--accent-soft), var(--accent-soft)) no-repeat 0 0 / 0% 100%; }
+.page-check-ai .js.s5 .ans-b blockquote { background-size: 100% 100%; transition: opacity .6s var(--ease) .7s, transform .6s var(--ease) .7s, background-size .9s var(--ease) 1.3s; }
+@keyframes ca-pill { from { clip-path: inset(0 50% 0 50% round 999px); transform: scale(.85); } to { clip-path: inset(0 0 0 0 round 999px); transform: none; } }
+@keyframes ca-shine { to { transform: translateX(120%); } }
+@keyframes ca-glow { 0% { box-shadow: 0 0 0 1px #2c2d31, 0 0 0 0 rgba(226, 188, 98, .7), 0 40px 80px -30px rgba(0, 0, 0, .55); } 100% { box-shadow: 0 0 0 1px #2c2d31, 0 0 0 26px rgba(226, 188, 98, 0), 0 40px 80px -30px rgba(0, 0, 0, .55); } }
+@media (prefers-reduced-motion: reduce) { .page-check-ai .js *, .page-check-ai .js { transition: none !important; animation: none !important; } }
+.page-check-ai .prose .ask { padding: 1rem 1.1rem; border-radius: var(--radius); background: var(--tile); font-family: var(--serif); }
+.page-check-ai .prose figure.page-scan { margin: 1.4rem 0 .5rem; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: #e9dccb; }
+.page-check-ai .prose figure.page-scan img { display: block; width: 100%; height: auto; }
+.page-check-ai .prose blockquote .note { display: inline-block; margin-top: .35rem; font-family: var(--sans); font-style: normal; }
+/* Phones and tablets: the headline, then the phone, all on the first screen; the lead follows. */
+@media (max-width: 72rem) {
+  .page-check-ai .hero h1 { margin-bottom: 1.4rem; }
+  .page-check-ai .hero-side .lead { order: 5; margin: 1.6rem 0 0; color: var(--ink); }
+  .page-check-ai .hero-side .hero-how { order: 6; margin: 1rem 0 0; }
+  .page-check-ai .hero-act { order: 7; margin: 1rem 0 0 !important; }
+  .page-check-ai .btn-hero { background: var(--ink); color: var(--bg); }
+}

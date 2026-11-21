@@ -11,7 +11,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SRC, OUT = ROOT / "src", ROOT / "docs"
 
 NAV = [("index", "Home"), ("setup", "Set it up"), ("browse", "Browse"), ("download", "Download"), ("organizations", "For organizations"),
-       ("privacy", "Privacy"), ("accuracy", "Accuracy"), ("corrections", "Corrections"), ("support", "Give")]
+       ("privacy", "Privacy"), ("accuracy", "Accuracy"), ("check-ai", "Is your AI right?"), ("corrections", "Corrections"), ("support", "Give")]
 # The menu at the top shows only these; the footer lists every page.
 TOP = ("index", "setup", "browse", "download", "organizations", "support")
 
@@ -136,7 +136,7 @@ def build():
             cls = ' class="nav-give"' if key == "support" else ""
             items.append(f'        <li{cls}><a href="{key}.html"{cur}>{label}</a></li>')
         foot = [f'        <li><a href="{k}.html">{l}</a></li>' for k, l in NAV]
-        if name in ("index", "organizations"):
+        if name in ("index", "organizations", "check-ai"):
             # The home page's heading is a full-width band with its own layout (the hero), not the usual page head.
             # The organizations page uses the same band, with its own example in the phone.
             main = f'{head.strip()}\n<div class="wrap prose">\n{body.strip()}\n</div>'
