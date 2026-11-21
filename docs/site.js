@@ -322,8 +322,8 @@
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { p.classList.add('done'); return; }
   var home = document.body.classList.contains('page-index');
   var steps = home
-    ? [['s1', 200], ['s2', 700], ['s3', 1400], ['s4', 1900], ['s6', 5400], ['s7', 6000], ['s8', 7300], ['done', 16500]]
-    : [['s1', 300], ['s2', 1000], ['s3', 9500], ['s4', 10100], ['s5', 10150], ['s6', 13600], ['s7', 14200], ['s8', 15500], ['done', 24700]];
+    ? [['s1', 200], ['s2', 700], ['s3', 1400], ['s4', 1900], ['s6', 5400], ['s7', 6000], ['s8', 7300], ['done', 17200]]
+    : [['s1', 300], ['s2', 1000], ['s3', 9500], ['s4', 10100], ['s5', 10150], ['s6', 13600], ['s7', 14200], ['s8', 15500], ['done', 25400]];
   var rest = 5000, timers = [], base = p.className.replace(/\b(js|s\d|done)\b/g, '').trim();
   function play() {
     timers.forEach(clearTimeout); timers = [];

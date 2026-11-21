@@ -1505,7 +1505,7 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
 .page-check-ai .t-a svg { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
 .page-check-ai .plain { border-left-color: #a8452f; }
 /* Then the source opens (AI page and home page): a tap on the scan link, the scanned page slides up, then the camera
-   zooms in and reads along the printed lines, marking them, and pulls back. Positions are in % of the page image (from
+   zooms in at the left of the passage, pans once, slowly, to the right while the marks follow, and pulls back to the whole page. Positions are in % of the page image (from
    the scan's OCR boxes); transform-origin is the top left corner. Plays when site.js adds the step classes. */
 .phone .screen .cite a { position: relative; }
 .phone.js.s6 .cite a::after { content: ""; position: absolute; left: 2.2em; top: 50%; width: 2.6em; height: 2.6em; margin: -1.3em; border-radius: 50%; background: rgba(26, 26, 26, .22); animation: ca-tap .7s ease-out both; }
@@ -1523,42 +1523,39 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
 @keyframes ca-hl { to { transform: none; } }
 
 /* AI page: Spurgeon, The Salt-Cellars (1889), p. 89: the proverb, then his note. */
-.page-check-ai .phone.js.s8 .sv-zoom { animation: ca-read 9s both; }
+.page-check-ai .phone.js.s8 .sv-zoom { animation: ca-read 9.8s both; }
+/* One slow pan to the right (never back), then out to the whole page. */
 @keyframes ca-read {
   0%    { transform: translate(0, 0) scale(1); animation-timing-function: cubic-bezier(.6, 0, .2, 1); }
-  17.6% { transform: translate(-8.56%, -151.98%) scale(2.6); animation-timing-function: linear; }
-  44.1% { transform: translate(-67.2%, -151.98%) scale(2.6); animation-timing-function: cubic-bezier(.5, 0, .3, 1); }
-  55.9% { transform: translate(-21.56%, -159.52%) scale(2.6); animation-timing-function: linear; }
-  82.4% { transform: translate(-124.14%, -159.52%) scale(2.6); animation-timing-function: cubic-bezier(.5, 0, .3, 1); }
-  100%  { transform: translate(-3.48%, -60%) scale(1.6); }
+  16.3% { transform: translate(-5%, -124%) scale(2.2); animation-timing-function: linear; }
+  77.6% { transform: translate(-90.8%, -124%) scale(2.2); }
+  83.7% { transform: translate(-90.8%, -124%) scale(2.2); animation-timing-function: cubic-bezier(.5, 0, .3, 1); }
+  100%  { transform: translate(0, 0) scale(1); }
 }
 .page-check-ai .sv-hl.h1 { left: 5.2%; top: 81.1%; width: 57.2%; height: 2.3%; }
 .page-check-ai .sv-hl.h2 { left: 10.2%; top: 83.5%; width: 74%; height: 1.6%; }
 .page-check-ai .sv-hl.h3 { left: 7.7%; top: 85.2%; width: 60%; height: 1.85%; }
-.page-check-ai .phone.js.s8 .sv-hl.h1 { animation: ca-hl 2.38s linear 1.59s both; }
-.page-check-ai .phone.js.s8 .sv-hl.h2 { animation: ca-hl 2.38s linear 5.03s both; }
-.page-check-ai .phone.js.s8 .sv-hl.h3 { animation: ca-hl 1.06s ease-out 7.55s both; }
+.page-check-ai .phone.js.s8 .sv-hl.h1 { animation: ca-hl 4.34s linear 1.62s both; }
+.page-check-ai .phone.js.s8 .sv-hl.h2 { animation: ca-hl 5.62s linear 2s both; }
+.page-check-ai .phone.js.s8 .sv-hl.h3 { animation: ca-hl 4.56s linear 1.81s both; }
 /* Replay sits above the scan. */
 .page-check-ai .screen .replay { top: 3.55em; right: .8em; margin-top: -1em; z-index: 3; }
 
 /* Home page: Spurgeon, Metropolitan Tabernacle Pulpit, vol. 53 (1908), p. 490, three lines read one after another. */
-.page-index .phone.js.s8 .sv-zoom { animation: home-read 9s both; }
+.page-index .phone.js.s8 .sv-zoom { animation: home-read 9.8s both; }
 @keyframes home-read {
   0%    { transform: translate(0, 0) scale(1); animation-timing-function: cubic-bezier(.6, 0, .2, 1); }
-  15.6% { transform: translate(-72.8%, -158.5%) scale(2.6); animation-timing-function: linear; }
-  36.7% { transform: translate(-158.2%, -158.5%) scale(2.6); animation-timing-function: cubic-bezier(.5, 0, .3, 1); }
-  44.4% { transform: translate(-28.3%, -160%) scale(2.6); animation-timing-function: linear; }
-  68.9% { transform: translate(-158.7%, -160%) scale(2.6); animation-timing-function: cubic-bezier(.5, 0, .3, 1); }
-  75.6% { transform: translate(-28.3%, -160%) scale(2.6); animation-timing-function: linear; }
-  91.1% { transform: translate(-98.4%, -160%) scale(2.6); animation-timing-function: cubic-bezier(.5, 0, .3, 1); }
-  100%  { transform: translate(-10.85%, -10%) scale(1.1); }
+  16.3% { transform: translate(-22.6%, -128%) scale(2.2); animation-timing-function: linear; }
+  77.6% { transform: translate(-119.4%, -128%) scale(2.2); }
+  83.7% { transform: translate(-119.4%, -128%) scale(2.2); animation-timing-function: cubic-bezier(.5, 0, .3, 1); }
+  100%  { transform: translate(0, 0) scale(1); }
 }
 .page-index .sv-hl.h1 { left: 30.3%; top: 85.45%; width: 66.7%; height: 1.8%; }
 .page-index .sv-hl.h2 { left: 13.2%; top: 87.3%; width: 84%; height: 1.7%; }
 .page-index .sv-hl.h3 { left: 13.2%; top: 89.05%; width: 60.8%; height: 1.6%; }
-.page-index .phone.js.s8 .sv-hl.h1 { animation: ca-hl 1.9s linear 1.4s both; }
-.page-index .phone.js.s8 .sv-hl.h2 { animation: ca-hl 2.2s linear 4s both; }
-.page-index .phone.js.s8 .sv-hl.h3 { animation: ca-hl 1.4s linear 6.8s both; }
+.page-index .phone.js.s8 .sv-hl.h1 { animation: ca-hl 4.76s linear 2.84s both; }
+.page-index .phone.js.s8 .sv-hl.h2 { animation: ca-hl 6s linear 1.61s both; }
+.page-index .phone.js.s8 .sv-hl.h3 { animation: ca-hl 4.34s linear 1.61s both; }
 /* With script, the home phone's answer is played by site.js (so it can loop) instead of the load animation above. */
 .page-index .phone.js .screen .tool, .page-index .phone.js .screen blockquote, .page-index .phone.js .screen .cite { animation: none; opacity: 0; transform: translateY(8px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
 .page-index .phone.js .screen blockquote { background: linear-gradient(var(--accent-soft), var(--accent-soft)) no-repeat 0 0 / 0% 100%; }
