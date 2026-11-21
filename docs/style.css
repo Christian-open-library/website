@@ -1504,19 +1504,37 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
 .page-check-ai .t-a { display: inline-flex; align-items: center; gap: .4em; padding: .28em .85em .28em .55em; border-radius: 999px; background: #a8452f; color: #fff; font-weight: 600; }
 .page-check-ai .t-a svg { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
 .page-check-ai .plain { border-left-color: #a8452f; }
-/* Then the source opens: a tap on "Open the scan", the scanned page slides up, zooms to the line and marks it.
-   The page sits at the bottom of the view and zooms from its bottom left corner (scale 1.6), so the whole printed line stays in view and no empty space shows. */
+/* Then the source opens: a tap on "Open the scan", the scanned page slides up, then the camera zooms in and reads
+   along the printed line, marking it, moves down to Spurgeon's note and reads that, then pulls back.
+   Positions are in % of the page image (from the scan's OCR boxes); transform-origin is the top left corner. */
 .page-check-ai .screen .cite a { position: relative; }
 .page-check-ai .js.s6 .cite a::after { content: ""; position: absolute; left: 2.2em; top: 50%; width: 2.6em; height: 2.6em; margin: -1.3em; border-radius: 50%; background: rgba(26, 26, 26, .22); animation: ca-tap .5s ease-out both; }
 @keyframes ca-tap { from { transform: scale(.3); opacity: 1; } to { transform: scale(1.5); opacity: 0; } }
 .page-check-ai .scanview { position: absolute; left: 0; right: 0; top: 2.35em; bottom: 0; display: flex; flex-direction: column; background: #fbfbf9; transform: translateY(102%); visibility: hidden; }
 .page-check-ai .js.s7 .scanview { visibility: visible; transform: none; transition: transform .6s var(--ease); }
-.page-check-ai .sv-bar { display: flex; align-items: center; gap: .5em; padding: .55em .9em .6em; border-bottom: 1px solid #ecebe6; color: #555; font-size: .84em; }
+.page-check-ai .sv-bar { display: flex; align-items: center; gap: .5em; padding: .55em 2.9em .6em .9em; border-bottom: 1px solid #ecebe6; color: #555; font-size: .84em; }
 .page-check-ai .sv-bar svg { width: 1.2em; height: 1.2em; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .page-check-ai .sv-bar span { flex: 1; padding: .35em .8em; border-radius: 999px; background: #f1f0eb; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .page-check-ai .sv-page { position: relative; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; background: #d9c9b3; }
-.page-check-ai .sv-zoom { position: relative; flex: none; transform-origin: 5.8% 100%; }
+.page-check-ai .sv-zoom { position: relative; flex: none; transform-origin: 0 0; }
 .page-check-ai .sv-zoom img { display: block; width: 100%; height: auto; }
-.page-check-ai .js.s8 .sv-zoom { transform: scale(1.6); transition: transform 1.2s cubic-bezier(.6, 0, .2, 1); }
-.page-check-ai .sv-hl { position: absolute; left: 4.4%; top: 80.9%; width: 58.6%; height: 2.1%; border-radius: 2px; background: rgba(226, 188, 98, .5); mix-blend-mode: multiply; transform: scaleX(0); transform-origin: left center; }
-.page-check-ai .js.s9 .sv-hl { transform: none; transition: transform .7s var(--ease); }
+.page-check-ai .js.s8 .sv-zoom { animation: ca-read 6.8s both; }
+@keyframes ca-read {
+  0%    { transform: translate(0, 0) scale(1); animation-timing-function: cubic-bezier(.6, 0, .2, 1); }
+  17.6% { transform: translate(-8.56%, -151.98%) scale(2.6); animation-timing-function: linear; }
+  44.1% { transform: translate(-67.2%, -151.98%) scale(2.6); animation-timing-function: cubic-bezier(.5, 0, .3, 1); }
+  55.9% { transform: translate(-21.56%, -159.52%) scale(2.6); animation-timing-function: linear; }
+  82.4% { transform: translate(-124.14%, -159.52%) scale(2.6); animation-timing-function: cubic-bezier(.5, 0, .3, 1); }
+  100%  { transform: translate(-3.48%, -60%) scale(1.6); }
+}
+.page-check-ai .sv-hl { position: absolute; border-radius: 2px; background: rgba(226, 188, 98, .5); mix-blend-mode: multiply; transform: scaleX(0); transform-origin: left center; }
+.page-check-ai .sv-hl.h1 { left: 5.2%; top: 81.1%; width: 57.2%; height: 2.3%; }
+.page-check-ai .sv-hl.h2 { left: 10.2%; top: 83.5%; width: 74%; height: 1.6%; }
+.page-check-ai .sv-hl.h3 { left: 7.7%; top: 85.2%; width: 60%; height: 1.85%; }
+.page-check-ai .js.s8 .sv-hl.h1 { animation: ca-hl 1.8s linear 1.2s both; }
+.page-check-ai .js.s8 .sv-hl.h2 { animation: ca-hl 1.8s linear 3.8s both; }
+.page-check-ai .js.s8 .sv-hl.h3 { animation: ca-hl .8s ease-out 5.7s both; }
+@keyframes ca-hl { to { transform: none; } }
+/* Replay sits above the scan once the whole thing has played. */
+.page-check-ai .screen .replay { top: 3.55em; right: .8em; margin-top: -1em; z-index: 3; }
+.page-check-ai .done .scanview ~ .replay, .page-check-ai .done .replay { opacity: 1; pointer-events: auto; }
