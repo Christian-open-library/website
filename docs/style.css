@@ -1492,3 +1492,15 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
   .page-check-ai .hero-act { order: 7; margin: 1rem 0 0 !important; }
   .page-check-ai .btn-hero { background: var(--ink); color: var(--bg); }
 }
+/* Dark mode on phones: the band runs on under the words and the button, so it doesn't stop in a hard edge between the phone and the text. */
+@media (max-width: 72rem) and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .page-check-ai .hero { background: var(--h-bg); padding-bottom: 2.25rem; border-bottom: 1px solid var(--h-line); }
+  :root:not([data-theme="light"]) .page-check-ai .phone::before { content: none; }
+  :root:not([data-theme="light"]) .page-check-ai .hero-side .lead { color: var(--h-ink); }
+  :root:not([data-theme="light"]) .page-check-ai .hero-side .hero-how { color: var(--h-text); }
+  :root:not([data-theme="light"]) .page-check-ai .btn-hero { background: var(--h-ink); color: #161719; }
+}
+/* "Without the library": a red pill, the twin of the gold one, so it is clear which answer is which. */
+.page-check-ai .t-a { display: inline-flex; align-items: center; gap: .4em; padding: .28em .85em .28em .55em; border-radius: 999px; background: #a8452f; color: #fff; font-weight: 600; }
+.page-check-ai .t-a svg { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.page-check-ai .plain { border-left-color: #a8452f; }
