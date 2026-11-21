@@ -27,30 +27,31 @@
   <li><strong>Your AI app writes the answer.</strong> The connector finds and quotes. Your app (Claude, ChatGPT, Gemini or Grok) reads the passages and writes the answer. It can summarize badly or quote from memory.</li>
 </ul>
 
-<h2 id="tests">Finding the right book</h2>
-<p class="note">Tested 12 November 2026 on the live connector.</p>
-<p>Each of 75 questions has a known right answer: a work the passage must come from. The test asks the live connector each question. It checks whether a passage from that work is in the first 3 results and in the first 8.</p>
+<h2 id="tests">Does it find the right book?</h2>
+<p>Ask for a quotation you half remember and it finds the book 19 times out of 19. Questions in old spelling: 8 out of 8. Exact phrases: 6 out of 6.</p>
+<p>Across all 75 questions in the test, it found the right book 70 times. The 5 misses are listed below, with the reason for each.</p>
 <div class="tablewrap" role="region" aria-label="Results by kind of question" tabindex="0">
 <table class="stack">
-  <caption>Did the right book appear in the results?</caption>
-  <thead><tr><th scope="col">Kind of question</th><th scope="col" class="num">Questions</th><th scope="col" class="num">In the first 3</th><th scope="col" class="num">In the first 8</th></tr></thead>
+  <caption>Did the library find the right book?</caption>
+  <thead><tr><th scope="col">Kind of question</th><th scope="col" class="num">Asked</th><th scope="col" class="num">Found</th></tr></thead>
   <tbody>
-    <tr><th scope="row">A remembered quotation</th><td data-label="Questions" class="num">19</td><td data-label="In the first 3" class="num">18</td><td data-label="In the first 8" class="num">19</td></tr>
-    <tr><th scope="row">A paraphrase from memory</th><td data-label="Questions" class="num">16</td><td data-label="In the first 3" class="num">14</td><td data-label="In the first 8" class="num">14</td></tr>
-    <tr><th scope="row">A doctrine question</th><td data-label="Questions" class="num">13</td><td data-label="In the first 3" class="num">7</td><td data-label="In the first 8" class="num">11</td></tr>
-    <tr><th scope="row">A question in old spelling</th><td data-label="Questions" class="num">8</td><td data-label="In the first 3" class="num">8</td><td data-label="In the first 8" class="num">8</td></tr>
-    <tr><th scope="row">A search narrowed by author, year or collection</th><td data-label="Questions" class="num">13</td><td data-label="In the first 3" class="num">11</td><td data-label="In the first 8" class="num">12</td></tr>
-    <tr><th scope="row">An exact phrase</th><td data-label="Questions" class="num">6</td><td data-label="In the first 3" class="num">6</td><td data-label="In the first 8" class="num">6</td></tr>
-    <tr class="total"><th scope="row">All</th><td data-label="Questions" class="num">75</td><td data-label="In the first 3" class="num">64 (85%)</td><td data-label="In the first 8" class="num">70 (93%)</td></tr>
+    <tr><th scope="row">A remembered quotation</th><td data-label="Asked" class="num">19</td><td data-label="Found" class="num">19</td></tr>
+    <tr><th scope="row">A paraphrase from memory</th><td data-label="Asked" class="num">16</td><td data-label="Found" class="num">14</td></tr>
+    <tr><th scope="row">A doctrine question</th><td data-label="Asked" class="num">13</td><td data-label="Found" class="num">11</td></tr>
+    <tr><th scope="row">A question in old spelling</th><td data-label="Asked" class="num">8</td><td data-label="Found" class="num">8</td></tr>
+    <tr><th scope="row">A search narrowed by author, year or collection</th><td data-label="Asked" class="num">13</td><td data-label="Found" class="num">12</td></tr>
+    <tr><th scope="row">An exact phrase</th><td data-label="Asked" class="num">6</td><td data-label="Found" class="num">6</td></tr>
+    <tr class="total"><th scope="row">All</th><td data-label="Asked" class="num">75</td><td data-label="Found" class="num">70</td></tr>
   </tbody>
 </table>
 </div>
+<p class="note">How the test works: each question has one book that holds the answer, chosen before the test was run. When you ask a question, the library hands your AI app 8 passages to read. "Found" means one of them came from that book. In 64 of the 75 questions it was one of the first three. Tested 12 November 2026 on the live library.</p>
 <ul class="points">
-  <li><strong>It is strongest on quotations.</strong> If you remember the words, it nearly always finds them.</li>
-  <li><strong>It is weakest on paraphrases.</strong> If you remember only the gist, it finds the passage about seven times in eight. Try two or three phrasings, or one distinctive phrase.</li>
-  <li><strong>Part of the gain since 11 November is a fairer answer key.</strong> On 11 November the test scored 60 of 75 in the first 3 and 65 of 75 in the first 8. Two "misses" were Brooks's <em>Precious Remedies</em> and Owen's <em>Mortification of Sin</em>. They were found inside their authors' collected works, which hold the same text. Those volumes now count. The rest of the change came from search and library changes. Doctrine questions were not re-graded: when another sound writer answers, it still counts as a miss.</li>
+  <li><strong>It is strongest on quotations.</strong> If you remember the words, it finds them.</li>
+  <li><strong>Paraphrases are harder.</strong> If you remember only the gist, it found the passage 14 times out of 16. Try two or three phrasings, or one distinctive phrase.</li>
+  <li><strong>Part of the gain since 11 November is a fairer answer key.</strong> On 11 November it found the right book 65 times out of 75. Two "misses" were Brooks's <em>Precious Remedies</em> and Owen's <em>Mortification of Sin</em>. They were found inside their authors' collected works, which hold the same text. Those volumes now count. The rest of the change came from search and library changes. Doctrine questions were not re-graded: when another sound writer answers, it still counts as a miss.</li>
   <li><strong>The 5 misses.</strong> Two were doctrine questions where other works say much the same. Three were "who said this?" questions. For those it found the right subject but the wrong source. It gave a sermon retelling Augustine's conversion instead of his <em>Confessions</em>. It gave Puritans on sorrow for sin instead of Thomas à Kempis. And it gave other Spurgeon volumes instead of the sermon asked for.</li>
-  <li><strong>A search upgrade helped.</strong> Searches are now read by a larger Voyage AI model. Before that, on 11 November, the same test scored 53 of 75 in the first 3 and 61 of 75 in the first 8.</li>
+  <li><strong>A search upgrade helped.</strong> Searches are now read by a larger Voyage AI model. Before that, on 11 November, it found the right book 61 times out of 75.</li>
   <li><strong>A miss doesn't always mean a wrong answer.</strong> On doctrine questions several works say much the same thing, and the test counts only the one named in advance.</li>
 </ul>
 
