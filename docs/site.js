@@ -314,12 +314,12 @@
   }
 })();
 
-/* "How do you know your AI is right?" page: the phone shows the plain answer, then the library's answer takes its place. Plays once; the button replays it. */
+/* "How do you know your AI is right?" page: the phone shows the plain answer, then the library's answer takes its place, then its link opens the scanned page and zooms to the line. Plays once; the button replays it. */
 (function () {
   var p = document.getElementById('phone'), r = document.getElementById('replay');
   if (!p || !r) return;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { p.classList.add('done'); return; }
-  var steps = [['s1', 300], ['s2', 900], ['s3', 8200], ['s4', 8650], ['s5', 8700], ['done', 10400]], timers = [];
+  var steps = [['s1', 300], ['s2', 900], ['s3', 8200], ['s4', 8650], ['s5', 8700], ['s6', 11300], ['s7', 11700], ['s8', 12700], ['s9', 13900], ['done', 14600]], timers = [];
   function play() {
     timers.forEach(clearTimeout); timers = [];
     p.className = 'phone js';
