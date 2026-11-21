@@ -63,7 +63,7 @@
     <li><a href="#check">How to check a quotation</a></li>
     <li><a href="#what-the-library-promises">What the library promises</a></li>
     <li><a href="#what-it-cant-promise">What it can't promise</a></li>
-    <li><a href="#tests">Finding the right book</a></li>
+    <li><a href="#tests">Does it find the right book?</a></li>
     <li><a href="#saying-when-it-has-nothing">Saying when it has nothing</a></li>
     <li><a href="#how-it-searches">How it searches</a></li>
     <li><a href="#what-isnt-measured">What isn't measured</a></li>
@@ -102,10 +102,9 @@
   <li><strong>Your AI app writes the answer.</strong> The connector finds and quotes. Your app (Claude, ChatGPT, Gemini or Grok) reads the passages and writes the answer. It can summarize badly or quote from memory.</li>
 </ul>
 
-<h2 id="tests">Finding the right book</h2>
-<p class="note">Tested 12 November 2026 on the live connector.</p>
-<p>We asked the library 75 questions where we already knew which book had the answer. It found the right book 70 times.</p>
-<p>How we count: when you ask your AI app a question, the library hands it 8 passages to read. If one of them comes from the right book, that counts as found. In 64 of the 75, it was one of the first three.</p>
+<h2 id="tests">Does it find the right book?</h2>
+<p>Yes, almost always. Ask for a quotation you half remember and it finds the book 19 times out of 19. Questions in old spelling: 8 out of 8. Exact phrases: 6 out of 6.</p>
+<p>Across all 75 questions in the test, it found the right book 70 times. The 5 misses are listed below, with the reason for each.</p>
 <div class="tablewrap" role="region" aria-label="Results by kind of question" tabindex="0">
 <table class="stack">
   <caption>Did the library find the right book?</caption>
@@ -121,9 +120,10 @@
   </tbody>
 </table>
 </div>
+<p class="note">How the test works: each question has one book that holds the answer, chosen before the test was run. When you ask a question, the library hands your AI app 8 passages to read. "Found" means one of them came from that book. In 64 of the 75 questions it was one of the first three. Tested 12 November 2026 on the live library.</p>
 <ul class="points">
-  <li><strong>It is strongest on quotations.</strong> If you remember the words, it nearly always finds them.</li>
-  <li><strong>It is weakest on paraphrases.</strong> If you remember only the gist, it finds the passage about seven times in eight. Try two or three phrasings, or one distinctive phrase.</li>
+  <li><strong>It is strongest on quotations.</strong> If you remember the words, it finds them.</li>
+  <li><strong>Paraphrases are harder.</strong> If you remember only the gist, it found the passage 14 times out of 16. Try two or three phrasings, or one distinctive phrase.</li>
   <li><strong>Part of the gain since 11 November is a fairer answer key.</strong> On 11 November it found the right book 65 times out of 75. Two "misses" were Brooks's <em>Precious Remedies</em> and Owen's <em>Mortification of Sin</em>. They were found inside their authors' collected works, which hold the same text. Those volumes now count. The rest of the change came from search and library changes. Doctrine questions were not re-graded: when another sound writer answers, it still counts as a miss.</li>
   <li><strong>The 5 misses.</strong> Two were doctrine questions where other works say much the same. Three were "who said this?" questions. For those it found the right subject but the wrong source. It gave a sermon retelling Augustine's conversion instead of his <em>Confessions</em>. It gave Puritans on sorrow for sin instead of Thomas à Kempis. And it gave other Spurgeon volumes instead of the sermon asked for.</li>
   <li><strong>A search upgrade helped.</strong> Searches are now read by a larger Voyage AI model. Before that, on 11 November, it found the right book 61 times out of 75.</li>
