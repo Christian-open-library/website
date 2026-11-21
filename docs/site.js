@@ -314,17 +314,24 @@
   }
 })();
 
-/* "How do you know your AI is right?" page: the phone shows the plain answer, then the library's answer takes its place, then its link opens the scanned page and reads along the line. Plays once; the button replays it. */
+/* Demo phones (home page and the AI page): play the steps by adding classes, rest, then play again.
+   The replay button (AI page) starts it over at once. Reduced motion: no steps, the finished answer shows. */
 (function () {
-  var p = document.getElementById('phone'), r = document.getElementById('replay');
-  if (!p || !r) return;
+  var p = document.getElementById('phone');
+  if (!p || !p.querySelector('.scanview')) return;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { p.classList.add('done'); return; }
-  var steps = [['s1', 300], ['s2', 900], ['s3', 8200], ['s4', 8650], ['s5', 8700], ['s6', 11300], ['s7', 11700], ['s8', 12700], ['done', 19600]], timers = [];
+  var home = document.body.classList.contains('page-index');
+  var steps = home
+    ? [['s1', 200], ['s2', 700], ['s3', 1400], ['s4', 1900], ['s6', 5400], ['s7', 6000], ['s8', 7300], ['done', 16500]]
+    : [['s1', 300], ['s2', 1000], ['s3', 9500], ['s4', 10100], ['s5', 10150], ['s6', 13600], ['s7', 14200], ['s8', 15500], ['done', 24700]];
+  var rest = 5000, timers = [], base = p.className.replace(/\b(js|s\d|done)\b/g, '').trim();
   function play() {
     timers.forEach(clearTimeout); timers = [];
-    p.className = 'phone js';
+    p.className = base + ' js';
     steps.forEach(function (s) { timers.push(setTimeout(function () { p.classList.add(s[0]); }, s[1])); });
+    timers.push(setTimeout(play, steps[steps.length - 1][1] + rest));
   }
-  r.addEventListener('click', play);
+  var r = document.getElementById('replay');
+  if (r) r.addEventListener('click', play);
   play();
 })();

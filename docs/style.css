@@ -1439,7 +1439,7 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
    then a gold "With the library" pill opens, a light passes over it, the phone glows and the library's answer arrives.
    Without script (or with reduced motion) the library's answer shows at once. */
 .page-check-ai .screen .chat-top { position: relative; display: grid; justify-items: center; align-items: center; min-height: 2.6em; }
-.page-check-ai .chat-top > span { grid-area: 1 / 1; transition: opacity .35s var(--ease), transform .35s var(--ease); }
+.page-check-ai .chat-top > span { grid-area: 1 / 1; transition: opacity .5s var(--ease), transform .5s var(--ease); }
 .page-check-ai .t-b { display: inline-flex; align-items: center; gap: .45em; padding: .28em .85em .28em .4em; border-radius: 999px; background: #e2bc62; color: #1a1a1a; position: relative; overflow: hidden; }
 .page-check-ai .t-b img { width: 1.35em; height: 1.35em; border-radius: .3em; }
 .page-check-ai .t-b::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.85) 50%, transparent 70%); transform: translateX(-120%); }
@@ -1461,21 +1461,21 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
 .page-check-ai .js .t-b { opacity: 0; transform: translateY(-4px); }
 .page-check-ai .js .ans-a { display: flex; }
 .page-check-ai .js .ans-b { display: none; }
-.page-check-ai .js .ans-a > *, .page-check-ai .js .ans-b > *, .page-check-ai .js .me { opacity: 0; transform: translateY(8px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
+.page-check-ai .js .ans-a > *, .page-check-ai .js .ans-b > *, .page-check-ai .js .me { opacity: 0; transform: translateY(8px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
 .page-check-ai .js.s1 .me, .page-check-ai .js.s2 .ans-a > * { opacity: 1; transform: none; }
-.page-check-ai .js.s2 .ans-a .plain { transition-delay: .2s; }
-.page-check-ai .js.s3 .ans-a { opacity: 0; transform: scale(.97); filter: blur(2px); transition: opacity .45s var(--ease), transform .45s var(--ease), filter .45s; }
+.page-check-ai .js.s2 .ans-a .plain { transition-delay: .3s; }
+.page-check-ai .js.s3 .ans-a { opacity: 0; transform: scale(.97); filter: blur(2px); transition: opacity .6s var(--ease), transform .6s var(--ease), filter .6s; }
 .page-check-ai .js.s3 .t-a { opacity: 0; transform: translateY(4px); }
-.page-check-ai .js.s3 .t-b { opacity: 1; transform: none; animation: ca-pill .7s cubic-bezier(.3, 1.5, .5, 1) both; }
-.page-check-ai .js.s3 .t-b::after { animation: ca-shine 1s ease-in-out .55s both; }
+.page-check-ai .js.s3 .t-b { opacity: 1; transform: none; animation: ca-pill .9s cubic-bezier(.3, 1.5, .5, 1) both; }
+.page-check-ai .js.s3 .t-b::after { animation: ca-shine 1.2s ease-in-out .7s both; }
 .page-check-ai .js.s3 { animation: ca-glow 1.4s ease-out .2s both; }
 .page-check-ai .js.s4 .ans-a { display: none; }
 .page-check-ai .js.s4 .ans-b { display: flex; }
 .page-check-ai .js.s5 .ans-b > * { opacity: 1; transform: none; }
-.page-check-ai .js.s5 .ans-b .verdict { transition-delay: .35s; }
-.page-check-ai .js.s5 .ans-b .cite { transition-delay: .95s; }
+.page-check-ai .js.s5 .ans-b .verdict { transition-delay: .5s; }
+.page-check-ai .js.s5 .ans-b .cite { transition-delay: 1.3s; }
 .page-check-ai .js .ans-b blockquote { background: linear-gradient(var(--accent-soft), var(--accent-soft)) no-repeat 0 0 / 0% 100%; }
-.page-check-ai .js.s5 .ans-b blockquote { background-size: 100% 100%; transition: opacity .6s var(--ease) .7s, transform .6s var(--ease) .7s, background-size .9s var(--ease) 1.3s; }
+.page-check-ai .js.s5 .ans-b blockquote { background-size: 100% 100%; transition: opacity .8s var(--ease) .9s, transform .8s var(--ease) .9s, background-size 1.2s var(--ease) 1.7s; }
 @keyframes ca-pill { from { clip-path: inset(0 50% 0 50% round 999px); transform: scale(.85); } to { clip-path: inset(0 0 0 0 round 999px); transform: none; } }
 @keyframes ca-shine { to { transform: translateX(120%); } }
 @keyframes ca-glow { 0% { box-shadow: 0 0 0 1px #2c2d31, 0 0 0 0 rgba(226, 188, 98, .7), 0 40px 80px -30px rgba(0, 0, 0, .55); } 100% { box-shadow: 0 0 0 1px #2c2d31, 0 0 0 26px rgba(226, 188, 98, 0), 0 40px 80px -30px rgba(0, 0, 0, .55); } }
@@ -1504,21 +1504,26 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
 .page-check-ai .t-a { display: inline-flex; align-items: center; gap: .4em; padding: .28em .85em .28em .55em; border-radius: 999px; background: #a8452f; color: #fff; font-weight: 600; }
 .page-check-ai .t-a svg { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
 .page-check-ai .plain { border-left-color: #a8452f; }
-/* Then the source opens: a tap on "Open the scan", the scanned page slides up, then the camera zooms in and reads
-   along the printed line, marking it, moves down to Spurgeon's note and reads that, then pulls back.
-   Positions are in % of the page image (from the scan's OCR boxes); transform-origin is the top left corner. */
-.page-check-ai .screen .cite a { position: relative; }
-.page-check-ai .js.s6 .cite a::after { content: ""; position: absolute; left: 2.2em; top: 50%; width: 2.6em; height: 2.6em; margin: -1.3em; border-radius: 50%; background: rgba(26, 26, 26, .22); animation: ca-tap .5s ease-out both; }
+/* Then the source opens (AI page and home page): a tap on the scan link, the scanned page slides up, then the camera
+   zooms in and reads along the printed lines, marking them, and pulls back. Positions are in % of the page image (from
+   the scan's OCR boxes); transform-origin is the top left corner. Plays when site.js adds the step classes. */
+.phone .screen .cite a { position: relative; }
+.phone.js.s6 .cite a::after { content: ""; position: absolute; left: 2.2em; top: 50%; width: 2.6em; height: 2.6em; margin: -1.3em; border-radius: 50%; background: rgba(26, 26, 26, .22); animation: ca-tap .7s ease-out both; }
 @keyframes ca-tap { from { transform: scale(.3); opacity: 1; } to { transform: scale(1.5); opacity: 0; } }
-.page-check-ai .scanview { position: absolute; left: 0; right: 0; top: 2.35em; bottom: 0; display: flex; flex-direction: column; background: #fbfbf9; transform: translateY(102%); visibility: hidden; }
-.page-check-ai .js.s7 .scanview { visibility: visible; transform: none; transition: transform .6s var(--ease); }
-.page-check-ai .sv-bar { display: flex; align-items: center; gap: .5em; padding: .55em 2.9em .6em .9em; border-bottom: 1px solid #ecebe6; color: #555; font-size: .84em; }
-.page-check-ai .sv-bar svg { width: 1.2em; height: 1.2em; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.page-check-ai .sv-bar span { flex: 1; padding: .35em .8em; border-radius: 999px; background: #f1f0eb; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.page-check-ai .sv-page { position: relative; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; background: #d9c9b3; }
-.page-check-ai .sv-zoom { position: relative; flex: none; transform-origin: 0 0; }
-.page-check-ai .sv-zoom img { display: block; width: 100%; height: auto; }
-.page-check-ai .js.s8 .sv-zoom { animation: ca-read 6.8s both; }
+.scanview { position: absolute; left: 0; right: 0; top: 2.35em; bottom: 0; z-index: 2; display: flex; flex-direction: column; background: #fbfbf9; transform: translateY(102%); visibility: hidden; }
+.phone.js.s7 .scanview { visibility: visible; transform: none; transition: transform .85s var(--ease); }
+.sv-bar { display: flex; align-items: center; gap: .5em; padding: .55em .9em .6em; border-bottom: 1px solid #ecebe6; color: #555; font-size: .84em; }
+.page-check-ai .sv-bar { padding-right: 2.9em; }
+.sv-bar svg { width: 1.2em; height: 1.2em; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.sv-bar span { flex: 1; padding: .35em .8em; border-radius: 999px; background: #f1f0eb; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sv-page { position: relative; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; background: #d9c9b3; }
+.sv-zoom { position: relative; flex: none; transform-origin: 0 0; }
+.sv-zoom img { display: block; width: 100%; height: auto; }
+.sv-hl { position: absolute; border-radius: 2px; background: rgba(226, 188, 98, .5); mix-blend-mode: multiply; transform: scaleX(0); transform-origin: left center; }
+@keyframes ca-hl { to { transform: none; } }
+
+/* AI page: Spurgeon, The Salt-Cellars (1889), p. 89: the proverb, then his note. */
+.page-check-ai .phone.js.s8 .sv-zoom { animation: ca-read 9s both; }
 @keyframes ca-read {
   0%    { transform: translate(0, 0) scale(1); animation-timing-function: cubic-bezier(.6, 0, .2, 1); }
   17.6% { transform: translate(-8.56%, -151.98%) scale(2.6); animation-timing-function: linear; }
@@ -1527,14 +1532,40 @@ table.levels th[scope="row"] { width: 11rem; white-space: nowrap; color: var(--i
   82.4% { transform: translate(-124.14%, -159.52%) scale(2.6); animation-timing-function: cubic-bezier(.5, 0, .3, 1); }
   100%  { transform: translate(-3.48%, -60%) scale(1.6); }
 }
-.page-check-ai .sv-hl { position: absolute; border-radius: 2px; background: rgba(226, 188, 98, .5); mix-blend-mode: multiply; transform: scaleX(0); transform-origin: left center; }
 .page-check-ai .sv-hl.h1 { left: 5.2%; top: 81.1%; width: 57.2%; height: 2.3%; }
 .page-check-ai .sv-hl.h2 { left: 10.2%; top: 83.5%; width: 74%; height: 1.6%; }
 .page-check-ai .sv-hl.h3 { left: 7.7%; top: 85.2%; width: 60%; height: 1.85%; }
-.page-check-ai .js.s8 .sv-hl.h1 { animation: ca-hl 1.8s linear 1.2s both; }
-.page-check-ai .js.s8 .sv-hl.h2 { animation: ca-hl 1.8s linear 3.8s both; }
-.page-check-ai .js.s8 .sv-hl.h3 { animation: ca-hl .8s ease-out 5.7s both; }
-@keyframes ca-hl { to { transform: none; } }
-/* Replay sits above the scan once the whole thing has played. */
+.page-check-ai .phone.js.s8 .sv-hl.h1 { animation: ca-hl 2.38s linear 1.59s both; }
+.page-check-ai .phone.js.s8 .sv-hl.h2 { animation: ca-hl 2.38s linear 5.03s both; }
+.page-check-ai .phone.js.s8 .sv-hl.h3 { animation: ca-hl 1.06s ease-out 7.55s both; }
+/* Replay sits above the scan. */
 .page-check-ai .screen .replay { top: 3.55em; right: .8em; margin-top: -1em; z-index: 3; }
-.page-check-ai .done .scanview ~ .replay, .page-check-ai .done .replay { opacity: 1; pointer-events: auto; }
+
+/* Home page: Spurgeon, Metropolitan Tabernacle Pulpit, vol. 53 (1908), p. 490, three lines read one after another. */
+.page-index .phone.js.s8 .sv-zoom { animation: home-read 9s both; }
+@keyframes home-read {
+  0%    { transform: translate(0, 0) scale(1); animation-timing-function: cubic-bezier(.6, 0, .2, 1); }
+  15.6% { transform: translate(-72.8%, -158.5%) scale(2.6); animation-timing-function: linear; }
+  36.7% { transform: translate(-158.2%, -158.5%) scale(2.6); animation-timing-function: cubic-bezier(.5, 0, .3, 1); }
+  44.4% { transform: translate(-28.3%, -160%) scale(2.6); animation-timing-function: linear; }
+  68.9% { transform: translate(-158.7%, -160%) scale(2.6); animation-timing-function: cubic-bezier(.5, 0, .3, 1); }
+  75.6% { transform: translate(-28.3%, -160%) scale(2.6); animation-timing-function: linear; }
+  91.1% { transform: translate(-98.4%, -160%) scale(2.6); animation-timing-function: cubic-bezier(.5, 0, .3, 1); }
+  100%  { transform: translate(-10.85%, -10%) scale(1.1); }
+}
+.page-index .sv-hl.h1 { left: 30.3%; top: 85.45%; width: 66.7%; height: 1.8%; }
+.page-index .sv-hl.h2 { left: 13.2%; top: 87.3%; width: 84%; height: 1.7%; }
+.page-index .sv-hl.h3 { left: 13.2%; top: 89.05%; width: 60.8%; height: 1.6%; }
+.page-index .phone.js.s8 .sv-hl.h1 { animation: ca-hl 1.9s linear 1.4s both; }
+.page-index .phone.js.s8 .sv-hl.h2 { animation: ca-hl 2.2s linear 4s both; }
+.page-index .phone.js.s8 .sv-hl.h3 { animation: ca-hl 1.4s linear 6.8s both; }
+/* With script, the home phone's answer is played by site.js (so it can loop) instead of the load animation above. */
+.page-index .phone.js .screen .tool, .page-index .phone.js .screen blockquote, .page-index .phone.js .screen .cite { animation: none; opacity: 0; transform: translateY(8px); transition: opacity .8s var(--ease), transform .8s var(--ease); }
+.page-index .phone.js .screen blockquote { background: linear-gradient(var(--accent-soft), var(--accent-soft)) no-repeat 0 0 / 0% 100%; }
+.page-index .phone.js.s2 .screen .tool, .page-index .phone.js.s3 .screen blockquote, .page-index .phone.js.s4 .screen .cite { opacity: 1; transform: none; }
+.page-index .phone.js.s3 .screen blockquote { background-size: 100% 100%; transition: opacity .8s var(--ease), transform .8s var(--ease), background-size 1.2s var(--ease) .7s; }
+.page-index .screen blockquote { font-size: 1.1em; }
+@media (prefers-reduced-motion: reduce) { .phone.js *, .phone.js { transition: none !important; animation: none !important; } }
+/* Where the page is shorter than the screen, the gap takes the paper's own colour. */
+.page-index .sv-page { background: #c09162; }
+.page-check-ai .sv-page { background: #b99d83; }
