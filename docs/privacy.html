@@ -60,7 +60,7 @@
   <div class="wrap">
 <h1>What happens to your question</h1>
 <p class="lead">Your question passes through a few hands. Here is what each one sees and keeps.</p>
-<p class="meta">Last checked 20 November 2026.</p>
+<p class="meta">Last checked 22 November 2026.</p>
   </div>
 </div>
 <div class="wrap prose">
@@ -80,7 +80,7 @@
   <tbody>
     <tr><th scope="row">Your AI app (Claude, ChatGPT, Gemini or Grok)</th><td data-label="Sees">The whole conversation.</td><td data-label="Keeps">Whatever its own privacy terms say. It is the largest holder of your data. The library has no say over it.</td></tr>
     <tr><th scope="row">Cloudflare</th><td data-label="Sees">The requests your AI app sends to the connector, in transit.</td><td data-label="Keeps">Its own traffic records, under Cloudflare's terms.</td></tr>
-    <tr><th scope="row">WorkOS (sign-in)</th><td data-label="Sees">Your email address and when you signed in. If you use Google or GitHub, it sees that account's name and email address.</td><td data-label="Keeps">Your sign-in account. We can see the list of people who have signed in. We use it to count sign-ups and to block abuse if needed.</td></tr>
+    <tr><th scope="row">WorkOS (sign-in)</th><td data-label="Sees">Your email address and when you signed in. If you use Google or GitHub, it sees that account's name and email address. If you sign in with a password, WorkOS keeps it scrambled. We never see it.</td><td data-label="Keeps">Your sign-in account. We can see the list of people who have signed in. We use it to count sign-ups and to block abuse if needed.</td></tr>
     <tr><th scope="row">The connector (a server we run)</th><td data-label="Sees">The search your AI app sends: usually a short query it writes from your question, not the conversation.</td><td data-label="Keeps">No search text. See below.</td></tr>
     <tr><th scope="row">Voyage AI (search)</th><td data-label="Sees">The search words and the library passages being ranked against them.</td><td data-label="Keeps">Nothing. The library's Voyage account is opted out of data use. Voyage deletes the text once it has processed it and doesn't train on it.</td></tr>
   </tbody>
@@ -115,6 +115,23 @@
 
 <h2>Email and public forms</h2>
 <p>Email to <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a> is read by the library's staff. An AI assistant (Claude) sorts new mail first. Nothing in it is shared or used for anything else. The library's forms on GitHub are public. Leave out anything private if you use them.</p>
+
+<h2 id="kept">How long things are kept</h2>
+<ul>
+  <li>Your sign-in account: until you ask us to delete it.</li>
+  <li>The request log: deleted after 12 months. It has no email address and no search words.</li>
+  <li>Counts for the daily limits: a week.</li>
+  <li>An account closed for breaking the rules: its email address stays on the block list. That stops it signing up again.</li>
+  <li>Email to the library: kept in the library's mailbox until it is deleted. Ask and we'll delete yours.</li>
+</ul>
+
+<h2 id="choices">Your choices</h2>
+<ul>
+  <li>Stop any time. Remove the library from your AI app's connectors or apps.</li>
+  <li>Turn it off for one chat in your AI app's tools menu.</li>
+  <li>Have your account deleted. Write to <a href="mailto:hello@christianopenlibrary.org">hello@christianopenlibrary.org</a> from the email you sign in with. We delete the sign-in account and tell you when it's done.</li>
+  <li>Ask what we hold about you. Write to the same address.</li>
+</ul>
 
 <h2>Check it yourself</h2>
 <ul class="points">
