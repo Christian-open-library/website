@@ -1,0 +1,26 @@
+# Christian Open Library
+
+> A free, independent library of over 7,600 public-domain Christian books and the historic records of more than 80 denominations, from the Church Fathers to the early 1900s. Claude, ChatGPT, Gemini and Grok can search it through its MCP connector and quote the books with their sources.
+
+The library holds the Church Fathers, the Reformers and Puritans in their original editions, Spurgeon, Edwards, Owen and Baxter, the historic creeds and confessions, verse-by-verse commentaries (Calvin, Matthew Henry, Gill, Poole, Keil and Delitzsch), sermons, the Princeton Review, Greek and Hebrew lexicons, Bible translations and Bible dictionaries. Church records include constitutions, books of order and discipline, digests and minutes of more than 80 denominations up to 1930. Every work is public domain or openly licensed, apart from church documents shared by their owners' permission. There is no AI-written or AI-translated text.
+
+Each quotation from the connector comes with its author, title, year and page, and a link to the scan or source it was copied from.
+
+MCP connector: https://mcp.christianopenlibrary.org/mcp (free; sign in with an email code, Google or GitHub)
+
+## Pages
+
+- [Set it up](https://christianopenlibrary.org/setup.html): how to add the connector to Claude, ChatGPT, Gemini or Grok, and the rules for using it
+- [Browse](https://christianopenlibrary.org/browse.html): search the list of every work by title or author
+- [Download](https://christianopenlibrary.org/download.html): the books as plain Markdown files on GitHub
+- [Accuracy](https://christianopenlibrary.org/accuracy.html): how to check a quotation, and test results with the misses
+- [Is your AI right?](https://christianopenlibrary.org/check-ai.html): an AI app could not check a famous Spurgeon line; the library opens the printed page
+- [Corrections](https://christianopenlibrary.org/corrections.html): every error found and fixed
+- [For organizations](https://christianopenlibrary.org/organizations.html): a private connector for a denomination's or church's own documents
+- [Privacy](https://christianopenlibrary.org/privacy.html)
+
+## Optional
+
+- [Source code and books on GitHub](https://github.com/Christian-open-library)
+- [Give](https://christianopenlibrary.org/support.html)
+- Contact: hello@christianopenlibrary.org

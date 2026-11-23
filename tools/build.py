@@ -164,6 +164,10 @@ def build():
     (OUT / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls + "</urlset>\n", encoding="utf-8")
     print("wrote docs/sitemap.xml")
+    # llms.txt: a plain-text guide for AI tools (llmstxt.org). The works count is taken from the home page's description.
+    count = re.search(r"Over ([\d,]+)", (SRC / "index.html").read_text(encoding="utf-8")).group(0).lower()
+    (OUT / "llms.txt").write_text((SRC / "llms.txt").read_text(encoding="utf-8").replace("{count}", count), encoding="utf-8")
+    print("wrote docs/llms.txt")
 
 if __name__ == "__main__":
     build()
