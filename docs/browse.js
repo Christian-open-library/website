@@ -43,21 +43,23 @@
   // A light tap on phones that have one. Android: a short vibration (ms; longer is firmer). iPhone (Safari 18+): the
   // tick a switch gives when it flips; one hidden switch is kept and flipped, so a fast drag down the letters can
   // tick on every one without building anything. Nothing on computers.
+  // The switch is built when the page loads: built inside the first touch on the letters, an iPhone dropped that touch.
   var tick = null;
+  if (!calm && !navigator.vibrate && matchMedia('(pointer: coarse)').matches) {
+    try {
+      tick = document.createElement('label');
+      var sw = document.createElement('input');
+      sw.type = 'checkbox'; sw.setAttribute('switch', ''); sw.tabIndex = -1;
+      tick.setAttribute('aria-hidden', 'true');
+      tick.style.cssText = 'position:fixed;left:0;top:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none';
+      tick.appendChild(sw); document.body.appendChild(tick);
+    } catch (e) { tick = null; }
+  }
   function buzz(ms) {
     if (calm) return;
     try {
       if (navigator.vibrate) { navigator.vibrate(ms || 8); return; }
-      if (!matchMedia('(pointer: coarse)').matches) return;
-      if (!tick) {
-        tick = document.createElement('label');
-        var sw = document.createElement('input');
-        sw.type = 'checkbox'; sw.setAttribute('switch', ''); sw.tabIndex = -1;
-        tick.setAttribute('aria-hidden', 'true');
-        tick.style.cssText = 'position:fixed;left:0;top:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none';
-        tick.appendChild(sw); document.body.appendChild(tick);
-      }
-      tick.click();
+      if (tick) tick.click();
     } catch (e) { /* no tap */ }
   }
 
@@ -1029,6 +1031,21 @@
     if (keepLens) lens(y); else unlens();
     Array.prototype.forEach.call(az.children, function (b) { b.classList.remove('touch'); });
     bubbleTimer = setTimeout(function () { bubble.classList.remove('show'); shownL = null; }, 450);
+  }
+  // browse.html#touchlog lists each touch on the page, to see on a phone whether a touch reached the letters.
+  if (location.hash === '#touchlog') {
+    var tlog = document.createElement('pre'), tlines = [], t0 = performance.now();
+    tlog.style.cssText = 'position:fixed;left:0;bottom:0;z-index:99;margin:0;max-width:70vw;padding:.4rem;font:11px/1.3 monospace;background:rgba(0,0,0,.8);color:#fff;pointer-events:none;white-space:pre-wrap';
+    document.body.appendChild(tlog);
+    ['touchstart', 'touchmove', 'touchend', 'touchcancel', 'pointerdown', 'click'].forEach(function (t) {
+      document.addEventListener(t, function (e) {
+        if (e.target === tick || (tick && tick.contains(e.target))) return;
+        if (t === 'touchmove' && tlines.length && tlines[tlines.length - 1].indexOf('touchmove') >= 0) return;
+        var tg = e.target, where = tg && tg.closest ? (tg.closest('#az') ? 'letters ' + (tg.dataset.letter || 'bar') : (tg.id || tg.tagName)) : '?';
+        tlines.push(((performance.now() - t0) / 1000).toFixed(2) + 's ' + t + ' ' + where + (e.cancelable === false ? ' (not cancelable)' : '') + ' bar:' + (az.classList.contains('on') ? 'on' : 'off'));
+        tlog.textContent = tlines.slice(-14).join('\n');
+      }, { capture: true, passive: true });
+    });
   }
   function hold() { dragging = true; az.classList.add('held'); }
   az.addEventListener('touchstart', function (e) { e.preventDefault(); lensTouch = true; hold(); lastL = null; pick(e.touches[0].clientY); }, { passive: false });
