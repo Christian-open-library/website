@@ -1046,6 +1046,17 @@
         tlog.textContent = tlines.slice(-14).join('\n');
       }, { capture: true, passive: true });
     });
+    // When the page starts and stops moving (stopped = no scroll for a quarter second), and where it is.
+    var tmoving = false, tstill = 0;
+    window.addEventListener('scroll', function () {
+      if (!tmoving) { tmoving = true; tlines.push(((performance.now() - t0) / 1000).toFixed(2) + 's scroll starts y=' + Math.round(scrollY)); }
+      clearTimeout(tstill);
+      tstill = setTimeout(function () {
+        tmoving = false;
+        tlines.push(((performance.now() - t0 - 250) / 1000).toFixed(2) + 's scroll stops y=' + Math.round(scrollY));
+        tlog.textContent = tlines.slice(-14).join('\n');
+      }, 250);
+    }, { passive: true });
   }
   function hold() { dragging = true; az.classList.add('held'); }
   // The touches are heard on the whole page, not on the bar. After the page scrolls, an iPhone still has the bar
