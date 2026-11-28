@@ -43,7 +43,7 @@
   // A light tap on phones that have one. Android: a short vibration (ms; longer is firmer). iPhone (Safari 18+): the
   // tick a switch gives when it flips; one hidden switch is kept and flipped, so a fast drag down the letters can
   // tick on every one without building anything. Nothing on computers.
-  // The switch is built when the page loads: built inside the first touch on the letters, an iPhone dropped that touch.
+  // The switch is built once, when the page loads.
   var tick = null;
   if (!calm && !navigator.vibrate && matchMedia('(pointer: coarse)').matches) {
     try {
@@ -1048,10 +1048,22 @@
     });
   }
   function hold() { dragging = true; az.classList.add('held'); }
-  az.addEventListener('touchstart', function (e) { e.preventDefault(); lensTouch = true; hold(); lastL = null; pick(e.touches[0].clientY); }, { passive: false });
-  az.addEventListener('touchmove', function (e) { e.preventDefault(); pick(e.touches[0].clientY); }, { passive: false });
-  az.addEventListener('touchend', function (e) { e.preventDefault(); release(e.changedTouches.length ? e.changedTouches[0].clientY : undefined); }, { passive: false });
-  az.addEventListener('touchcancel', function () { release(); });
+  // The touches are heard on the whole page, not on the bar. After the page scrolls, an iPhone still has the bar
+  // where it was before the scroll, so the first touch on it went to scrolling the page and only the second reached
+  // the letters. Heard on the page, a touch that lands on the bar is always caught.
+  var azTouch = false;
+  document.addEventListener('touchstart', function (e) {
+    if (azTouch) { e.preventDefault(); return; }   // a second finger while one is on the bar
+    azTouch = !az.hidden && az.classList.contains('on') && az.contains(e.target);
+    if (!azTouch) return;
+    e.preventDefault(); lensTouch = true; hold(); lastL = null; pick(e.touches[0].clientY);
+  }, { passive: false, capture: true });
+  document.addEventListener('touchmove', function (e) { if (azTouch) { e.preventDefault(); pick(e.touches[0].clientY); } }, { passive: false, capture: true });
+  document.addEventListener('touchend', function (e) {
+    if (!azTouch || e.touches.length) return;
+    azTouch = false; e.preventDefault(); release(e.changedTouches.length ? e.changedTouches[0].clientY : undefined);
+  }, { passive: false, capture: true });
+  document.addEventListener('touchcancel', function () { if (azTouch) { azTouch = false; release(); } }, { capture: true });
   var mouseDown = false;
   az.addEventListener('mousedown', function (e) { mouseDown = true; lensTouch = false; hold(); pick(e.clientY); e.preventDefault(); });
   document.addEventListener('mousemove', function (e) { if (mouseDown) pick(e.clientY); });
