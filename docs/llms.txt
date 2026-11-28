@@ -1,6 +1,6 @@
 # Christian Open Library
 
-> A free, independent library of over 7,600 public-domain Christian books and the historic records of more than 80 denominations, from the Church Fathers to the early 1900s. Claude, ChatGPT, Gemini and Grok can search it through its MCP connector and quote the books with their sources.
+> A free, independent library of over 9,000 public-domain Christian books and the historic records of more than 80 denominations, from the Church Fathers to the early 1900s. Claude, ChatGPT, Gemini and Grok can search it through its MCP connector and quote the books with their sources.
 
 The library holds the Church Fathers, the Reformers and Puritans in their original editions, Spurgeon, Edwards, Owen and Baxter, the historic creeds and confessions, verse-by-verse commentaries (Calvin, Matthew Henry, Gill, Poole, Keil and Delitzsch), sermons, the Princeton Review, Greek and Hebrew lexicons, Bible translations and Bible dictionaries. Church records include constitutions, books of order and discipline, digests and minutes of more than 80 denominations up to 1930. Every work is public domain or openly licensed, apart from church documents shared by their owners' permission. There is no AI-written or AI-translated text.
 
